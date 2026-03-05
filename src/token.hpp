@@ -97,6 +97,8 @@ namespace dv {
         TEXT_OTHERWISE,
         BEGIN_ENV,
         END_ENV,
+        SOLVE_FOR,    // :=
+        SOLVE_SYSTEM, // @
     };
     
     struct Token {

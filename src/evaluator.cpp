@@ -3,10 +3,13 @@
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "ast.hpp"
+#include <cmath>
 #include <expected>
 #include <format>
 #include <initializer_list>
+#include <limits>
 #include <numeric>
+#include <optional>
 #include <vector>
 #ifdef EVAL_PRINT_AST
 #include <print>
@@ -28,6 +31,7 @@ dv::Evaluator::~Evaluator() = default;
 
 dv::Evaluator::Evaluator(){
     std::vector<dv::AssignExpression> const_expressions = {
+        {"e", "2.718281828459", "1"},
         {"e_c", "1.602*10^{-19}", "\\C"},
         {"e_0", "8.854187817*10^{-12}", "\\frac{\\F}{\\m}"},
         {"k_e", "8.99*10^9", "\\frac{\\N\\m^2}{\\C^2}"},
@@ -63,10 +67,11 @@ dv::Evaluator::MaybeEvaluated dv::Evaluator::evaluate_expression(const Expressio
 
 
 std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_list(const std::span<const dv::Expression> expression_list){
-    evaluated_variables.clear();
     last_formula_results.clear();
+    evaluated_variables.clear();
     custom_functions.clear();
     variable_source_expressions.clear();
+    // Variables, functions, and sources persist across batches (REPL semantics).
     std::vector<dv::MaybeASTDependencies> parsed_expressions;
     parsed_expressions.reserve(expression_list.size());
     for(const auto &expression : expression_list){
@@ -129,11 +134,295 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
     std::iota(evaluation_indices.begin(), evaluation_indices.end(), 0);
     // TODO sort this by dependencies
 
-    for(const auto evaluation_index: evaluation_indices){
+    for(std::size_t loop_i = 0; loop_i < evaluation_indices.size(); loop_i++){
+        const auto evaluation_index = evaluation_indices[loop_i];
         if(!parsed_expressions[evaluation_index]) {
             evaluated[evaluation_index] = std::unexpected{parsed_expressions[evaluation_index].error()};
             continue;
         }
+        const auto root_token_type = parsed_expressions[evaluation_index].value().ast->token.type;
+
+        // ── SOLVE_FOR (:=) ──────────────────────────────────────────────────
+        if(root_token_type == TokenType::SOLVE_FOR) {
+            std::string var = std::string(parsed_expressions[evaluation_index].value().ast->token.text);
+            if(evaluation_index == 0) {
+                evaluated[evaluation_index] = std::unexpected{"':=' has no preceding expression"};
+                continue;
+            }
+
+            // Helper: find first plain '=' in a string (not :=, <=, >=)
+            auto find_plain_eq = [](const std::string& s) -> std::size_t {
+                for(std::size_t i = 0; i < s.size(); i++) {
+                    if(s[i] == '=' && (i == 0 || (s[i-1] != ':' && s[i-1] != '<' && s[i-1] != '>')))
+                        return i;
+                }
+                return std::string::npos;
+            };
+
+            // Build constraint body: the expression whose root we seek (f(var) = 0)
+            std::unique_ptr<dv::AST> owned_body;
+            dv::AST* body_ptr = nullptr;
+
+            if(parsed_expressions[evaluation_index - 1]) {
+                const auto& prev_ast = parsed_expressions[evaluation_index - 1].value().ast;
+                if(prev_ast->token.type == TokenType::EQUAL) {
+                    // lhs = rhs form — solve as lhs - rhs = 0
+                    const auto& ed = std::get<dv::AST::ASTExpression>(prev_ast->data);
+                    Token minus_tok{TokenType::MINUS, "-"};
+                    owned_body = std::make_unique<dv::AST>(minus_tok, ed.lhs->clone(), ed.rhs->clone());
+                    body_ptr = owned_body.get();
+                } else {
+                    body_ptr = prev_ast.get();
+                }
+            } else {
+                // Parse failed — try to rearrange raw text around '='
+                const auto& raw = expression_list[evaluation_index - 1].value_expr;
+                auto eq_pos = find_plain_eq(raw);
+                if(eq_pos == std::string::npos) {
+                    evaluated[evaluation_index] = std::unexpected{"Preceding expression has a parse error"};
+                    continue;
+                }
+                auto rearranged = parse_expression(
+                    "(" + raw.substr(0, eq_pos) + ") - (" + raw.substr(eq_pos + 1) + ")");
+                if(!rearranged) {
+                    evaluated[evaluation_index] = std::unexpected{
+                        std::format("Cannot rearrange preceding expression: {}", rearranged.error())};
+                    continue;
+                }
+                owned_body = std::move(rearranged.value().ast);
+                body_ptr = owned_body.get();
+            }
+
+            // Save existing value of var (if any)
+            std::optional<EValue> saved;
+            if(evaluated_variables.count(var)) saved = evaluated_variables.at(var);
+
+            // Numerical root finding: scan range for sign changes, refine with bisection
+            auto eval_f = [&](double x) -> std::optional<double> {
+                evaluated_variables[var] = UnitValue{(long double)x};
+                auto res = body_ptr->evaluate(*this);
+                if(!res) return std::nullopt;
+                auto* uv = std::get_if<UnitValue>(&*res);
+                return uv ? std::optional<double>((double)uv->value) : std::nullopt;
+            };
+
+            std::vector<double> roots;
+            constexpr int N = 2000;
+            constexpr double LO = -500.0, HI = 500.0;
+            const double step = (HI - LO) / N;  // 0.5
+            double prev_x = LO;
+            auto prev_fv = eval_f(LO);
+            double prev_f = prev_fv ? *prev_fv : std::numeric_limits<double>::quiet_NaN();
+
+            // Check if LO itself is a root
+            if(prev_fv && *prev_fv == 0.0) roots.push_back(LO);
+
+            for(int k = 1; k <= N && roots.size() < 5; k++) {
+                double x = LO + k * step;
+                auto fv_opt = eval_f(x);
+                if(!fv_opt) { prev_x = x; prev_f = std::numeric_limits<double>::quiet_NaN(); continue; }
+                double fx = *fv_opt;
+
+                // Exact zero at a grid point — add as root directly
+                if(fx == 0.0) {
+                    bool dup = false;
+                    for(double r : roots) if(std::abs(r - x) < 1e-9) { dup = true; break; }
+                    if(!dup) roots.push_back(x);
+                    prev_x = x; prev_f = fx;
+                    continue;
+                }
+
+                // Strict sign change between two non-zero points — bisect to refine
+                // Using strict < (not <=) prevents the prev_f=0 case from triggering
+                // bisection that would converge back to the already-found root.
+                if(!std::isnan(prev_f) && prev_f != 0.0 && prev_f * fx < 0.0) {
+                    double a = prev_x, b = x, fa = prev_f;
+                    for(int iter = 0; iter < 60; iter++) {
+                        double m = (a + b) / 2.0;
+                        auto fm_opt = eval_f(m);
+                        if(!fm_opt) break;
+                        double fm = *fm_opt;
+                        if(fa * fm <= 0.0) { b = m; }
+                        else { a = m; fa = fm; }
+                        if(std::abs(b - a) < 1e-12) break;
+                    }
+                    double root = (a + b) / 2.0;
+                    bool dup = false;
+                    for(double r : roots) if(std::abs(r - root) < 1e-9) { dup = true; break; }
+                    if(!dup) roots.push_back(root);
+                }
+                prev_x = x; prev_f = fx;
+            }
+
+            // Restore var
+            if(saved) evaluated_variables[var] = *saved;
+            else evaluated_variables.erase(var);
+
+            if(roots.empty()) {
+                evaluated[evaluation_index] = std::unexpected{std::format("No real roots found for '{}'", var)};
+                continue;
+            }
+            UnitValueList result;
+            for(double r : roots) result.elements.push_back(UnitValue{(long double)r});
+            evaluated[evaluation_index] = EValue{result};
+            evaluated_variables.insert_or_assign("ans", evaluated[evaluation_index].value());
+
+            // Leave the preceding expression blank (no error, no value)
+            evaluated[evaluation_index - 1] = EValue{VoidValue{}};
+            continue;
+        }
+
+        // ── SOLVE_SYSTEM (@) ────────────────────────────────────────────────
+        if(root_token_type == TokenType::SOLVE_SYSTEM) {
+            const auto& call = std::get<dv::AST::ASTCall>(parsed_expressions[evaluation_index].value().ast->data);
+            std::vector<std::string> vars;
+            for(const auto& arg : call.args) vars.push_back(std::string(arg->token.text));
+            const int n = (int)vars.size();
+
+            // Helper: find first plain '=' (not :=, <=, >=)
+            auto find_plain_eq = [](const std::string& s) -> std::size_t {
+                for(std::size_t i = 0; i < s.size(); i++) {
+                    if(s[i] == '=' && (i == 0 || (s[i-1] != ':' && s[i-1] != '<' && s[i-1] != '>')))
+                        return i;
+                }
+                return std::string::npos;
+            };
+
+            // Equations: each has a source index and a constraint body (AST for f(vars)=0)
+            struct Equation {
+                std::size_t source_idx;
+                std::unique_ptr<dv::AST> owned_ast; // non-null when we synthesized the body
+                dv::AST* body_ptr;                  // always valid
+                bool parse_failed;                  // true if source had a parse error
+            };
+            std::vector<Equation> equations;
+
+            for(std::size_t j = 0; j < evaluation_index; j++) {
+                std::unique_ptr<dv::AST> owned;
+                dv::AST* body = nullptr;
+                bool pfailed = false;
+
+                if(parsed_expressions[j]) {
+                    const auto& jast = parsed_expressions[j].value().ast;
+                    const auto& deps = parsed_expressions[j].value().identifier_dependencies;
+                    // Only proceed if at least one system var is referenced
+                    bool has_var = false;
+                    for(const auto& v : vars) if(deps.count(v)) { has_var = true; break; }
+                    if(!has_var) continue;
+
+                    if(jast->token.type == TokenType::EQUAL && !evaluated[j]) {
+                        // lhs = rhs form that failed (undefined var) — use lhs - rhs
+                        const auto& ed = std::get<dv::AST::ASTExpression>(jast->data);
+                        Token minus_tok{TokenType::MINUS, "-"};
+                        owned = std::make_unique<dv::AST>(minus_tok, ed.lhs->clone(), ed.rhs->clone());
+                        body = owned.get();
+                    } else if(jast->token.type != TokenType::EQUAL && !evaluated[j]) {
+                        // Normal expression that failed to evaluate
+                        body = jast.get();
+                    } else {
+                        continue; // successfully evaluated — skip
+                    }
+                } else {
+                    // Parse failed — try to rearrange raw text around '='
+                    const auto& raw = expression_list[j].value_expr;
+                    auto eq_pos = find_plain_eq(raw);
+                    if(eq_pos == std::string::npos) continue;
+                    auto reparsed = parse_expression(
+                        "(" + raw.substr(0, eq_pos) + ") - (" + raw.substr(eq_pos + 1) + ")");
+                    if(!reparsed) continue;
+                    // Check if any var is referenced
+                    const auto& deps = reparsed.value().identifier_dependencies;
+                    bool has_var = false;
+                    for(const auto& v : vars) if(deps.count(v)) { has_var = true; break; }
+                    if(!has_var) continue;
+                    owned = std::move(reparsed.value().ast);
+                    body = owned.get();
+                    pfailed = true;
+                }
+                equations.push_back({j, std::move(owned), body, pfailed});
+            }
+
+            if((int)equations.size() < n) {
+                evaluated[evaluation_index] = std::unexpected{
+                    std::format("Need at least {} equations, found {}", n, equations.size())};
+                continue;
+            }
+
+            // Extract linear coefficients numerically for first n equations
+            for(const auto& v : vars) evaluated_variables[v] = UnitValue{0.0L};
+
+            std::vector<std::vector<double>> A(n, std::vector<double>(n));
+            std::vector<double> b_vec(n);
+            bool coeff_error = false;
+
+            for(int j = 0; j < n; j++) {
+                dv::AST* eq_body = equations[j].body_ptr;
+                for(const auto& v : vars) evaluated_variables[v] = UnitValue{0.0L};
+                auto f0 = eq_body->evaluate(*this);
+                if(!f0) { coeff_error = true; break; }
+                const auto* uv0 = std::get_if<UnitValue>(&*f0);
+                if(!uv0) { coeff_error = true; break; }
+                double c0 = (double)uv0->value;
+                b_vec[j] = -c0;
+                for(int k = 0; k < n; k++) {
+                    for(const auto& v : vars) evaluated_variables[v] = UnitValue{0.0L};
+                    evaluated_variables[vars[k]] = UnitValue{1.0L};
+                    auto fk = eq_body->evaluate(*this);
+                    if(!fk) { coeff_error = true; break; }
+                    const auto* uvk = std::get_if<UnitValue>(&*fk);
+                    if(!uvk) { coeff_error = true; break; }
+                    A[j][k] = (double)uvk->value - c0;
+                }
+                if(coeff_error) break;
+            }
+            for(const auto& v : vars) evaluated_variables.erase(v);
+
+            if(coeff_error) {
+                evaluated[evaluation_index] = std::unexpected{"Failed to extract coefficients"};
+                continue;
+            }
+
+            // Gaussian elimination with partial pivoting on augmented matrix [A | b]
+            std::vector<std::vector<double>> aug(n, std::vector<double>(n + 1));
+            for(int r = 0; r < n; r++) {
+                for(int c = 0; c < n; c++) aug[r][c] = A[r][c];
+                aug[r][n] = b_vec[r];
+            }
+            bool singular = false;
+            for(int col = 0; col < n; col++) {
+                int pivot = col;
+                for(int r = col + 1; r < n; r++)
+                    if(std::abs(aug[r][col]) > std::abs(aug[pivot][col])) pivot = r;
+                std::swap(aug[col], aug[pivot]);
+                if(std::abs(aug[col][col]) < 1e-12) { singular = true; break; }
+                double div = aug[col][col];
+                for(int c = col; c <= n; c++) aug[col][c] /= div;
+                for(int r = 0; r < n; r++) {
+                    if(r == col) continue;
+                    double f = aug[r][col];
+                    for(int c = col; c <= n; c++) aug[r][c] -= f * aug[col][c];
+                }
+            }
+            if(singular) {
+                evaluated[evaluation_index] = std::unexpected{"Singular system — no unique solution"};
+                continue;
+            }
+
+            // Build result list (do not store variables — caller decides what to do with solutions)
+            UnitValueList result;
+            for(int k = 0; k < n; k++)
+                result.elements.push_back(UnitValue{(long double)aug[k][n]});
+
+            // Leave all source equations blank (no error, no value)
+            for(const auto& eq : equations)
+                evaluated[eq.source_idx] = EValue{VoidValue{}};
+
+            evaluated[evaluation_index] = EValue{result};
+            evaluated_variables.insert_or_assign("ans", evaluated[evaluation_index].value());
+            continue;
+        }
+
+        // ── Normal evaluation ────────────────────────────────────────────────
         evaluated[evaluation_index] = parsed_expressions[evaluation_index].value().ast->evaluate(*this);
         // Store last successful result as 'ans'
         if(evaluated[evaluation_index]) {

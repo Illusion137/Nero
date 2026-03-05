@@ -838,8 +838,8 @@ dv::MaybeAST dv::Parser::match_atom(const dv::Token &token){
             }
         }
 
-        // Check for custom function call: IDENTIFIER LEFT_PAREN (but not single-char variables that should implicit multiply)
-        if(peek().type == TokenType::LEFT_PAREN && token.text.size() > 1) {
+        // Check for custom function call: IDENTIFIER LEFT_PAREN
+        if(peek().type == TokenType::LEFT_PAREN) {
             // This looks like a function call: f(x), foo(x,y)
             auto saved = position;
             next(); // consume (
@@ -938,6 +938,34 @@ dv::MaybeAST dv::Parser::match_lhs(const dv::Token &token){
         Token abs_token{TokenType::BUILTIN_FUNC_ABS, "abs"};
         return std::make_unique<AST>(abs_token, std::move(args));
     }
+    if(token.type == TokenType::PLUS_MINUS) {
+        // Prefix \pm expr → [0+expr, 0-expr] = [expr, -expr]
+        auto rhs = parse_expression(11); // right BP of PLUS_MINUS
+        if(!rhs) return rhs;
+        Token zero_tok{TokenType::NUMERIC_LITERAL, 0.0, "0"};
+        auto zero_ast = std::make_unique<AST>(zero_tok);
+        return std::make_unique<AST>(token, std::move(zero_ast), std::move(rhs.value()));
+    }
+    if(token.type == TokenType::SOLVE_SYSTEM) {
+        if(!match(TokenType::EQUAL))
+            return std::unexpected{"'@' must be followed by '= var1, var2, ...'"};
+        std::vector<std::unique_ptr<AST>> var_asts;
+        if(peek().type != TokenType::IDENTIFIER)
+            return std::unexpected{"Expected identifier after '@='"};
+        auto first_tok = next();
+        identifier_dependencies.insert(std::string{first_tok.text});
+        var_asts.push_back(std::make_unique<AST>(first_tok));
+        while(peek().type == TokenType::COMMA) {
+            next(); // consume comma
+            if(peek().type != TokenType::IDENTIFIER)
+                return std::unexpected{"Expected identifier in '@' list"};
+            auto var_tok = next();
+            identifier_dependencies.insert(std::string{var_tok.text});
+            var_asts.push_back(std::make_unique<AST>(var_tok));
+        }
+        Token sys_tok{TokenType::SOLVE_SYSTEM, "@"};
+        return std::make_unique<AST>(sys_tok, std::move(var_asts));
+    }
     if(is_unary_prefix_op(token.type)) {
         if(peek().type == TokenType::TEOF) return std::unexpected{"Unexpected end of expression after unary operator"};
         if(peek().type == TokenType::RIGHT_PAREN || peek().type == TokenType::RIGHT_BRACKET ||
@@ -956,6 +984,16 @@ dv::MaybeAST dv::Parser::match_lhs(const dv::Token &token){
 dv::MaybeAST dv::Parser::parse_expression(std::int32_t min_binding_power) {
     auto lhs = match_lhs(next());
     if(!lhs) return lhs;
+
+    // Intercept := (solve-for): var := — leaf node carrying the variable name
+    if(peek().type == TokenType::SOLVE_FOR) {
+        next(); // consume :=
+        if(lhs.value()->token.type != TokenType::IDENTIFIER)
+            return std::unexpected{"Left side of ':=' must be a variable name"};
+        Token sf{TokenType::SOLVE_FOR, std::string(lhs.value()->token.text)};
+        return std::make_unique<AST>(sf);
+    }
+
     while (true) {
         Token op = peek();
         if(op.type == TokenType::TEOF) break;
@@ -969,6 +1007,8 @@ dv::MaybeAST dv::Parser::parse_expression(std::int32_t min_binding_power) {
         else if(op.type == TokenType::DOUBLE_BACKSLASH) break;
         else if(op.type == TokenType::END_ENV) break;
         else if(op.type == TokenType::TEXT_OTHERWISE) break;
+        else if(op.type == TokenType::SOLVE_FOR) break;
+        else if(op.type == TokenType::SOLVE_SYSTEM) break;
 
         const bool is_implicit_multiplication = !is_binop(op.type);
         if(is_implicit_multiplication) op = {TokenType::TIMES, "*"};

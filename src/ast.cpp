@@ -629,6 +629,20 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
         case TokenType::FUNC_CALL: {
             std::string func_name = std::string(ast->token.text);
             if(!evalulator.custom_functions.contains(func_name)) {
+                // Fall back to scalar multiplication if the name resolves to a variable/constant
+                const EValue* scalar = nullptr;
+                if(evalulator.evaluated_variables.count(func_name))
+                    scalar = &evalulator.evaluated_variables.at(func_name);
+                else if(evalulator.fixed_constants.count(func_name))
+                    scalar = &evalulator.fixed_constants.at(func_name);
+                if(scalar) {
+                    const auto& call = std::get<ASTCall>(ast->data);
+                    if(call.args.size() == 1) {
+                        auto arg = call.args[0]->evaluate(evalulator);
+                        if(!arg) return arg;
+                        return *scalar * *arg;
+                    }
+                }
                 return std::unexpected{std::format("Undefined function '{}'", func_name)};
             }
             auto &cf = evalulator.custom_functions.at(func_name);

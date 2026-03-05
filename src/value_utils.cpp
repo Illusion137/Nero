@@ -160,11 +160,12 @@ std::string dv::unit_to_latex(const UnitVector& unit) {
     return std::format("\\frac{{{}}}{{{}}}", join_cdot(best.num), join_cdot(best.den));
 }
 
-std::string dv::value_to_scientific(const long double& value, int sig_figs) {
+std::string dv::value_to_scientific(const long double& value, int sig_figs, long double imag) {
     // sig_figs == 0: unlimited precision (original behavior)
     // sig_figs >  0: round to that many significant figures
 
     const auto abs_value = std::fabsl(value);
+    std::string result;
 
     if (sig_figs > 0 && abs_value > 0.0L) {
         // Round to sig_figs significant digits using the original exponent
@@ -185,28 +186,39 @@ std::string dv::value_to_scientific(const long double& value, int sig_figs) {
             const double coeff = static_cast<double>(rounded / std::powl(10.0L, (long double)exp_r));
             const int decimals = sig_figs - 1;
             if (decimals <= 0)
-                return std::format("{:.0f}\\times10^{{{}}}", coeff, exp_r);
-            return std::format("{:.{}f}\\times10^{{{}}}", coeff, decimals, exp_r);
+                result = std::format("{:.0f}\\times10^{{{}}}", coeff, exp_r);
+            else
+                result = std::format("{:.{}f}\\times10^{{{}}}", coeff, decimals, exp_r);
         } else {
             // Decimal display: enough decimal places to show all sig figs
             const int dp = sig_figs - 1 - exp_r;
             if (dp <= 0)
-                return std::format("{}", static_cast<long long>(std::roundl(rounded)));
-            return std::format("{:.{}f}", static_cast<double>(rounded), dp);
+                result = std::format("{}", static_cast<long long>(std::roundl(rounded)));
+            else
+                result = std::format("{:.{}f}", static_cast<double>(rounded), dp);
         }
-    }
-
-    if (value == 0.0L) return "0";
-
-    if ((abs_value >= 5e9L) || (abs_value < 5e-4L && abs_value > 0.0L)) {
+    } else if (value == 0.0L) {
+        result = "0";
+    } else if ((abs_value >= 5e9L) || (abs_value < 5e-4L && abs_value > 0.0L)) {
         const int exponent = static_cast<int>(std::floorl(std::log10l(abs_value)));
         const double coefficient = static_cast<double>(value / std::powl(10.0L, exponent));
-        return std::format("{:.10g}\\times10^{{{}}}", coefficient, exponent);
+        result = std::format("{:.10g}\\times10^{{{}}}", coefficient, exponent);
+    } else {
+        const double dval = static_cast<double>(value);
+        if (dval == std::floor(dval) && abs_value < 1e15L)
+            result = std::format("{}", static_cast<long long>(dval));
+        else
+            result = std::format("{:.10g}", dval);
     }
 
-    const double dval = static_cast<double>(value);
-    if (dval == std::floor(dval) && abs_value < 1e15L) {
-        return std::format("{}", static_cast<long long>(dval));
+    // Append imaginary part if present
+    if (imag != 0.0L) {
+        std::string imag_str = value_to_scientific(std::fabsl(imag), sig_figs);
+        if (imag < 0.0L)
+            result += " - " + imag_str + "i";
+        else
+            result += " + " + imag_str + "i";
     }
-    return std::format("{:.10g}", dval);
+
+    return result;
 }

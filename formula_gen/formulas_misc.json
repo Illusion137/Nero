@@ -1140,5 +1140,313 @@
             { "name": "r_1", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Internal resistance of source 1", "constant": false },
             { "name": "r_2", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Internal resistance of source 2", "constant": false }
         ]
+    },
+    {
+        "name": "Ohm's Law",
+        "latex": "V = IR",
+        "variables": [
+            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false },
+            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false }
+        ]
+    },
+    {
+        "name": "Electric Power",
+        "latex": "P = IV",
+        "variables": [
+            { "name": "P", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Power", "constant": false },
+            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false },
+            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false }
+        ]
+    },
+    {
+        "name": "Power from Resistance",
+        "latex": "P = \\frac{V^2}{R}",
+        "variables": [
+            { "name": "P", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Power", "constant": false },
+            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false }
+        ]
+    },
+    {
+        "name": "Resistors in Series",
+        "latex": "R_{eq} = R_1 + R_2 + \\cdots + R_n",
+        "variables": [
+            { "name": "R_{eq}", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Equivalent resistance", "constant": false },
+            { "name": "R_i", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Individual resistance", "constant": false }
+        ]
+    },
+    {
+        "name": "Resistors in Parallel",
+        "latex": "\\frac{1}{R_{eq}} = \\frac{1}{R_1} + \\frac{1}{R_2} + \\cdots + \\frac{1}{R_n}",
+        "variables": [
+            { "name": "R_{eq}", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Equivalent resistance", "constant": false },
+            { "name": "R_i", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Individual resistance", "constant": false }
+        ]
+    },
+    {
+        "name": "Capacitance",
+        "latex": "C = \\frac{Q}{V}",
+        "variables": [
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
+            { "name": "Q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge", "constant": false },
+            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false }
+        ]
+    },
+    {
+        "name": "Capacitors in Series",
+        "latex": "\\frac{1}{C_{eq}} = \\frac{1}{C_1} + \\frac{1}{C_2} + \\cdots + \\frac{1}{C_n}",
+        "variables": [
+            { "name": "C_{eq}", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Equivalent capacitance", "constant": false },
+            { "name": "C_i", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Individual capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "Capacitors in Parallel",
+        "latex": "C_{eq} = C_1 + C_2 + \\cdots + C_n",
+        "variables": [
+            { "name": "C_{eq}", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Equivalent capacitance", "constant": false },
+            { "name": "C_i", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Individual capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "Energy Stored in Capacitor",
+        "latex": "U = \\frac{Q^2}{2C} = \\frac{1}{2}CV^2",
+        "variables": [
+            { "name": "U", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Stored energy", "constant": false },
+            { "name": "Q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
+            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false }
+        ]
+    },
+    {
+        "name": "RC Time Constant",
+        "latex": "\\tau = RC",
+        "variables": [
+            { "name": "\\tau", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time constant", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "RC Discharging Charge",
+        "latex": "q(t) = Q_0 e^{-t/RC}",
+        "variables": [
+            { "name": "q(t)", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge at time t", "constant": false },
+            { "name": "Q_0", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Initial charge", "constant": false },
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "RC Discharging Voltage",
+        "latex": "V(t) = V_0 e^{-t/RC}",
+        "variables": [
+            { "name": "V(t)", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage at time t", "constant": false },
+            { "name": "V_0", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Initial voltage", "constant": false },
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "RC Discharging Energy",
+        "latex": "U(t) = U_0 e^{-2t/RC}",
+        "variables": [
+            { "name": "U(t)", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Energy at time t", "constant": false },
+            { "name": "U_0", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Initial stored energy", "constant": false },
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "RC Discharging Half-Life",
+        "latex": "t_{1/2} = RC \\ln(2)",
+        "variables": [
+            { "name": "t_{1/2}", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Half-life (time to lose half charge/voltage)", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
+            { "name": "\\ln(2)", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Natural log of 2 ≈ 0.6931", "constant": true }
+        ]
+    },
+    {
+        "name": "RC Discharging Energy Half-Life",
+        "latex": "t_{1/2,U} = \\frac{RC \\ln(2)}{2}",
+        "variables": [
+            { "name": "t_{1/2,U}", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time to lose half stored energy", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
+            { "name": "\\ln(2)", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Natural log of 2 ≈ 0.6931", "constant": true }
+        ]
+    },
+    {
+        "name": "RC Charging Charge",
+        "latex": "q(t) = Q_{max}\\left(1 - e^{-t/RC}\\right)",
+        "variables": [
+            { "name": "q(t)", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge at time t", "constant": false },
+            { "name": "Q_{max}", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Maximum charge = CE", "constant": false },
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "RC Charging Voltage",
+        "latex": "V_C(t) = E\\left(1 - e^{-t/RC}\\right)",
+        "variables": [
+            { "name": "V_C(t)", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Capacitor voltage at time t", "constant": false },
+            { "name": "E", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "EMF of battery", "constant": false },
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "RC Charging Current",
+        "latex": "i(t) = \\frac{E}{R} e^{-t/RC}",
+        "variables": [
+            { "name": "i(t)", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current at time t", "constant": false },
+            { "name": "E", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "EMF of battery", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "Kirchhoff's Voltage Law (RC Charging)",
+        "latex": "E = V_R + V_C = iR + \\frac{q}{C}",
+        "variables": [
+            { "name": "E", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "EMF of battery", "constant": false },
+            { "name": "V_R", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage across resistor", "constant": false },
+            { "name": "V_C", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage across capacitor", "constant": false },
+            { "name": "i", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "Power Stored in Capacitor",
+        "latex": "P_C = V_C \\cdot i",
+        "variables": [
+            { "name": "P_C", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Power stored in capacitor", "constant": false },
+            { "name": "V_C", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage across capacitor", "constant": false },
+            { "name": "i", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false }
+        ]
+    },
+    {
+        "name": "Voltage Divider",
+        "latex": "V_{out} = V_{in} \\cdot \\frac{R_2}{R_1 + R_2}",
+        "variables": [
+            { "name": "V_{out}", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Output voltage", "constant": false },
+            { "name": "V_{in}", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Input voltage", "constant": false },
+            { "name": "R_1", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "First resistance", "constant": false },
+            { "name": "R_2", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Second resistance", "constant": false }
+        ]
+    },
+    {
+        "name": "Two Resistors in Parallel",
+        "latex": "R_{eq} = \\frac{R_1 R_2}{R_1 + R_2}",
+        "variables": [
+            { "name": "R_{eq}", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Equivalent resistance", "constant": false },
+            { "name": "R_1", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "First resistance", "constant": false },
+            { "name": "R_2", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Second resistance", "constant": false }
+        ]
+    },
+    {
+        "name": "Percent Charge Remaining (Discharging)",
+        "latex": "p_q = \\frac{q(t)}{Q_0} = e^{-t/RC}",
+        "variables": [
+            { "name": "p_q", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Fraction of charge remaining (unitless, 0 to 1)", "constant": false },
+            { "name": "q(t)", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge at time t", "constant": false },
+            { "name": "Q_0", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Initial charge", "constant": false },
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "Percent Charge Acquired (Charging)",
+        "latex": "p_q = \\frac{q(t)}{Q_{max}} = 1 - e^{-t/RC}",
+        "variables": [
+            { "name": "p_q", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Fraction of maximum charge acquired (unitless, 0 to 1)", "constant": false },
+            { "name": "q(t)", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge at time t", "constant": false },
+            { "name": "Q_{max}", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Maximum charge", "constant": false },
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "Percent Current Remaining (Charging or Discharging)",
+        "latex": "p_i = \\frac{i(t)}{I_0} = e^{-t/RC}",
+        "variables": [
+            { "name": "p_i", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Fraction of initial current remaining (unitless, 0 to 1)", "constant": false },
+            { "name": "i(t)", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current at time t", "constant": false },
+            { "name": "I_0", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Initial current = E/R", "constant": false },
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "Percent Energy Remaining (Discharging)",
+        "latex": "p_U = \\frac{U(t)}{U_0} = e^{-2t/RC}",
+        "variables": [
+            { "name": "p_U", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Fraction of energy remaining (unitless, 0 to 1)", "constant": false },
+            { "name": "U(t)", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Energy at time t", "constant": false },
+            { "name": "U_0", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Initial stored energy", "constant": false },
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
+        ]
+    },
+    {
+        "name": "Time to Reach Percent Charge (Discharging)",
+        "latex": "t = -RC \\ln(p_q)",
+        "variables": [
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time to reach the given fraction of charge", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
+            { "name": "p_q", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Target fraction of charge remaining (unitless, 0 to 1)", "constant": false }
+        ]
+    },
+    {
+        "name": "Time to Reach Percent Charge (Charging)",
+        "latex": "t = -RC \\ln(1 - p_q)",
+        "variables": [
+            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time to acquire the given fraction of maximum charge", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
+            { "name": "p_q", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Target fraction of maximum charge acquired (unitless, 0 to 1)", "constant": false }
+        ]
+    },
+    {
+        "name": "Complementary Current-Charge Relationship (Charging)",
+        "latex": "p_i + p_q = 1",
+        "variables": [
+            { "name": "p_i", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Fraction of maximum current remaining (unitless)", "constant": false },
+            { "name": "p_q", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Fraction of maximum charge acquired (unitless)", "constant": false }
+        ]
+    },
+    {
+        "name": "Current at a Given Charge Fraction (Charging)",
+        "latex": "i = \\frac{V_0}{R}(1 - p_q)",
+        "variables": [
+            { "name": "i", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current at the given charge fraction", "constant": false },
+            { "name": "V_0", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Battery EMF / initial voltage", "constant": false },
+            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
+            { "name": "p_q", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Fraction of maximum charge already acquired (unitless, 0 to 1)", "constant": false }
+        ]
+    },
+    {
+        "name": "Percentage Error",
+        "latex": "\\% \\text{ error} = \\frac{V_{true} - V_{measured}}{V_{true}} \\times 100",
+        "variables": [
+            { "name": "V_{true}", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "True voltage", "constant": false },
+            { "name": "V_{measured}", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Measured voltage", "constant": false }
+        ]
     }
 ]

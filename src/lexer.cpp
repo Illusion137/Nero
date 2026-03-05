@@ -659,6 +659,10 @@ dv::Token dv::Lexer::consume_next_token() noexcept{
     if(!peek()) return {TokenType::TEOF, ""};
     switch (peek()) {
         case '_': return advance_with_token(TokenType::SUBSCRIPT);
+        case ':':
+            if(peek_next() == '=') { advance(); return advance_with_token(TokenType::SOLVE_FOR); }
+            return advance_with_token(TokenType::UNKNOWN);
+        case '@': return advance_with_token(TokenType::SOLVE_SYSTEM);
         case '=': return advance_with_token(TokenType::EQUAL);
         case ',': return advance_with_token(TokenType::COMMA);
         case '+': return advance_with_token(TokenType::PLUS);

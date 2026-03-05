@@ -111,7 +111,11 @@ namespace dv {
         std::string to_result_string() const noexcept;
     };
 
-    using NValue = std::variant<UnitValue, UnitValueList, BooleanValue, Function>;
+    struct VoidValue {
+        std::string to_result_string() const noexcept { return ""; }
+    };
+
+    using NValue = std::variant<UnitValue, UnitValueList, BooleanValue, Function, VoidValue>;
     using EValue = NValue;
 
     // Free operators on EValue (NValue variant) — dispatch via std::visit

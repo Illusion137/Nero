@@ -377,5 +377,236 @@ int main(){
             ok ? " ✓\033[0m" : " ✗\033[0m");
     }
 
+    // === New Feature Tests ===
+    std::println("\n=== New Feature Tests ===");
+
+    // 1. Complex display: value_to_scientific with imag
+    {
+        struct CCase { long double v; long double im; const char* expected; };
+        static const CCase cases[] = {
+            {3.0L,  4.0L,  "3 + 4i"},
+            {3.0L, -4.0L,  "3 - 4i"},
+            {0.0L,  1.0L,  "0 + 1i"},
+            {5.0L,  0.0L,  "5"},          // no imag → unchanged
+        };
+        for (const auto& c : cases) {
+            auto result = dv::value_to_scientific(c.v, 0, c.im);
+            bool ok = result == c.expected;
+            std::println("{} value_to_scientific({},imag={}) = {} (expected: {}){}",
+                ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+                (double)c.v, (double)c.im, result, c.expected,
+                ok ? " ✓\033[0m" : " ✗\033[0m");
+        }
+    }
+
+    // 2. \pm as prefix: \pm 3 → [3, -3]
+    {
+        std::array<dv::Expression, 1> pm_exprs = { dv::Expression{.value_expr = "\\pm 3"} };
+        dv::Evaluator pm_eval;
+        const auto pm_results = pm_eval.evaluate_expression_list(pm_exprs);
+        const auto& r = pm_results[0];
+        bool ok = false;
+        if(r) {
+            if(const auto* uvl = std::get_if<dv::UnitValueList>(&r.value())) {
+                ok = uvl->elements.size() == 2
+                     && std::fabs((double)uvl->elements[0].value - 3.0) < 0.001
+                     && std::fabs((double)uvl->elements[1].value - (-3.0)) < 0.001;
+            }
+        }
+        std::println("{} \\pm 3 → [3,-3] {}",
+            ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+    }
+
+    // 3. :=  solve-for: x^2 - 4 ; x := → roots [-2, 2]
+    {
+        std::vector<dv::Expression> sf_exprs = {
+            dv::Expression{.value_expr = "x^2 - 4"},
+            dv::Expression{.value_expr = "x :="},
+        };
+        dv::Evaluator sf_eval;
+        const auto sf_results = sf_eval.evaluate_expression_list(sf_exprs);
+        const auto& r = sf_results[1];
+        bool ok = false;
+        if(r) {
+            if(const auto* uvl = std::get_if<dv::UnitValueList>(&r.value())) {
+                bool has_neg2 = false, has_pos2 = false;
+                for(const auto& e : uvl->elements) {
+                    if(std::fabs((double)e.value - (-2.0)) < 0.01) has_neg2 = true;
+                    if(std::fabs((double)e.value -   2.0 ) < 0.01) has_pos2 = true;
+                }
+                ok = has_neg2 && has_pos2;
+            }
+        }
+        std::println("{} x^2-4 ; x := → roots include ±2 {}",
+            ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+    }
+
+    // 3b. Triple root: (x+5)(x)(x-3) ; x := → roots -5, 0, 3
+    {
+        std::vector<dv::Expression> tr_exprs = {
+            dv::Expression{.value_expr = "\\left(x-3\\right)\\left(x+5\\right)x"},
+            dv::Expression{.value_expr = "x :="},
+        };
+        dv::Evaluator tr_eval;
+        const auto tr_results = tr_eval.evaluate_expression_list(tr_exprs);
+        const auto& r = tr_results[1];
+        bool ok = false;
+        if(r) {
+            if(const auto* uvl = std::get_if<dv::UnitValueList>(&r.value())) {
+                bool has_neg5 = false, has_zero = false, has_three = false;
+                for(const auto& e : uvl->elements) {
+                    if(std::fabs((double)e.value - (-5.0)) < 0.01) has_neg5 = true;
+                    if(std::fabs((double)e.value -   0.0 ) < 0.01) has_zero = true;
+                    if(std::fabs((double)e.value -   3.0 ) < 0.01) has_three = true;
+                }
+                ok = has_neg5 && has_zero && has_three;
+            }
+        }
+        std::println("{} (x-3)(x+5)x ; x := → roots -5, 0, 3 {}",
+            ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+    }
+
+    // 4. @ linear system: x+y-4 ; x-y-1 ; @=x,y → x=2.5, y=1.5
+    {
+        std::vector<dv::Expression> sys_exprs = {
+            dv::Expression{.value_expr = "x + y - 4"},
+            dv::Expression{.value_expr = "x - y - 1"},
+            dv::Expression{.value_expr = "@ = x, y"},
+        };
+        dv::Evaluator sys_eval;
+        const auto sys_results = sys_eval.evaluate_expression_list(sys_exprs);
+        const auto& r = sys_results[2];
+        bool ok = false;
+        if(r) {
+            if(const auto* uvl = std::get_if<dv::UnitValueList>(&r.value())) {
+                ok = uvl->elements.size() == 2
+                     && std::fabs((double)uvl->elements[0].value - 2.5) < 0.001
+                     && std::fabs((double)uvl->elements[1].value - 1.5) < 0.001;
+            }
+        }
+        std::println("{} x+y-4 ; x-y-1 ; @=x,y → [2.5, 1.5] {}",
+            ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+    }
+
+    // 5. \pm prefix then index: \pm 3 ; ans[0] → 3
+    {
+        std::vector<dv::Expression> pm_idx_exprs = {
+            dv::Expression{.value_expr = "\\pm 3"},
+            dv::Expression{.value_expr = "ans[0]"},
+        };
+        dv::Evaluator pm_idx_eval;
+        const auto pm_idx_results = pm_idx_eval.evaluate_expression_list(pm_idx_exprs);
+        const auto& r = pm_idx_results[1];
+        bool ok = false;
+        if(r) {
+            if(const auto* uv = std::get_if<dv::UnitValue>(&r.value()))
+                ok = std::fabs((double)uv->value - 3.0) < 0.001;
+        }
+        std::println("{} \\pm 3 ; ans[0] → 3 {}",
+            ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+    }
+
+    // 6. := with equality-form preceding expression: a+5=0 ; a := → root -5
+    {
+        std::vector<dv::Expression> eq_sf_exprs = {
+            dv::Expression{.value_expr = "a + 5 = 0"},
+            dv::Expression{.value_expr = "a :="},
+        };
+        dv::Evaluator eq_sf_eval;
+        const auto eq_sf_results = eq_sf_eval.evaluate_expression_list(eq_sf_exprs);
+        const auto& r = eq_sf_results[1];
+        bool ok = false;
+        if(r) {
+            if(const auto* uvl = std::get_if<dv::UnitValueList>(&r.value())) {
+                for(const auto& e : uvl->elements)
+                    if(std::fabs((double)e.value - (-5.0)) < 0.01) { ok = true; break; }
+            }
+        }
+        std::println("{} a+5=0 ; a := → root -5 {}",
+            ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+    }
+
+    // 7. @ with equality-form equations: 2a+3b=14 ; 4a-b=1 ; @=a,b → [a, b]
+    //    2a+3b=14, 4a-b=1 → multiply 2nd by 3: 12a-3b=3 → add: 14a=17 → a=17/14, b=(14-2*17/14)/3
+    //    Actually: a = 17/14 ≈ 1.214, b = (14 - 2*(17/14))/3 = (14 - 34/14)/3 = (196/14 - 34/14)/3 = (162/14)/3 = 162/42 = 27/7 ≈ 3.857
+    //    Check: 2*(17/14)+3*(27/7) = 34/14+81/7 = 34/14+162/14 = 196/14 = 14 ✓
+    //           4*(17/14)-27/7 = 68/14-54/14 = 14/14 = 1 ✓
+    {
+        std::vector<dv::Expression> eq_sys_exprs = {
+            dv::Expression{.value_expr = "2a + 3b = 14"},
+            dv::Expression{.value_expr = "4a - b = 1"},
+            dv::Expression{.value_expr = "@ = a, b"},
+        };
+        dv::Evaluator eq_sys_eval;
+        const auto eq_sys_results = eq_sys_eval.evaluate_expression_list(eq_sys_exprs);
+        const auto& r = eq_sys_results[2];
+        bool ok = false;
+        if(r) {
+            if(const auto* uvl = std::get_if<dv::UnitValueList>(&r.value())) {
+                if(uvl->elements.size() == 2) {
+                    double a = (double)uvl->elements[0].value;
+                    double b = (double)uvl->elements[1].value;
+                    // Verify solution satisfies both equations
+                    ok = std::fabs(2*a + 3*b - 14.0) < 0.001
+                      && std::fabs(4*a -   b -  1.0) < 0.001;
+                }
+            }
+        }
+        std::println("{} 2a+3b=14 ; 4a-b=1 ; @=a,b → satisfies both equations {}",
+            ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+    }
+
+    // 8. @ leaves source equations blank (VoidValue), no error, no assigned value
+    {
+        std::vector<dv::Expression> eq_reeval_exprs = {
+            dv::Expression{.value_expr = "x + y = 10"},
+            dv::Expression{.value_expr = "x - y = 2"},
+            dv::Expression{.value_expr = "@ = x, y"},
+        };
+        dv::Evaluator eq_reeval_eval;
+        const auto eq_reeval_results = eq_reeval_eval.evaluate_expression_list(eq_reeval_exprs);
+        const auto& r = eq_reeval_results[2];
+        bool ok = false;
+        if(r) {
+            if(const auto* uvl = std::get_if<dv::UnitValueList>(&r.value())) {
+                if(uvl->elements.size() == 2) {
+                    double x = (double)uvl->elements[0].value;
+                    double y = (double)uvl->elements[1].value;
+                    ok = std::fabs(x - 6.0) < 0.001 && std::fabs(y - 4.0) < 0.001;
+                }
+            }
+        }
+        std::println("{} x+y=10 ; x-y=2 ; @=x,y → [6,4] {}",
+            ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+        // Verify source equations are blank (VoidValue), not errors
+        bool eq0_blank = eq_reeval_results[0] && std::get_if<dv::VoidValue>(&eq_reeval_results[0].value());
+        bool eq1_blank = eq_reeval_results[1] && std::get_if<dv::VoidValue>(&eq_reeval_results[1].value());
+        std::println("{} @=x,y leaves source equations blank {}",
+            (eq0_blank && eq1_blank) ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            (eq0_blank && eq1_blank) ? "✓\033[0m" : "✗\033[0m");
+    }
+
+    // 9. := leaves preceding expression blank (VoidValue)
+    {
+        std::vector<dv::Expression> sf_clear_exprs = {
+            dv::Expression{.value_expr = "a + 5 = 0"},
+            dv::Expression{.value_expr = "a :="},
+        };
+        dv::Evaluator sf_clear_eval;
+        const auto sf_clear_results = sf_clear_eval.evaluate_expression_list(sf_clear_exprs);
+        bool prec_blank = sf_clear_results[0] && std::get_if<dv::VoidValue>(&sf_clear_results[0].value());
+        std::println("{} a+5=0 ; a := leaves preceding expression blank {}",
+            prec_blank ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            prec_blank ? "✓\033[0m" : "✗\033[0m");
+    }
+
     return EXIT_SUCCESS;
 }

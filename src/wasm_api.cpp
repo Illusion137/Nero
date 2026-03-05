@@ -68,7 +68,7 @@ static JsResult evalue_to_js_result(const EValue& ev) {
             for (int i = 0; i < 7; i++) r.unit[i] = v.unit.vec[i];
             r.unit_latex = (v.unit == dv::UnitVector{dv::DIMENSIONLESS_VEC})
                 ? "" : unit_to_latex(v.unit);
-            r.value_scientific = value_to_scientific(v.value, (int)v.sig_figs);
+            r.value_scientific = value_to_scientific(v.value, (int)v.sig_figs, v.imag);
         } else if constexpr (std::is_same_v<T, dv::UnitValueList>) {
             if (!v.elements.empty()) {
                 r.value = (double)v.elements[0].value;
@@ -77,17 +77,27 @@ static JsResult evalue_to_js_result(const EValue& ev) {
                 for (int i = 0; i < 7; i++) r.unit[i] = v.elements[0].unit.vec[i];
                 r.unit_latex = (v.elements[0].unit == dv::UnitVector{dv::DIMENSIONLESS_VEC})
                     ? "" : unit_to_latex(v.elements[0].unit);
-                r.value_scientific = value_to_scientific(v.elements[0].value, (int)v.elements[0].sig_figs);
+                std::string sci;
+                for(std::size_t i = 0; i < v.elements.size(); i++) {
+                    if(i > 0) sci += ", ";
+                    sci += value_to_scientific(v.elements[i].value, (int)v.elements[i].sig_figs, v.elements[i].imag);
+                }
+                r.value_scientific = sci;
             }
             r.extra_values.reserve(v.elements.size());
             for (const auto& e : v.elements) r.extra_values.push_back((double)e.value);
         } else if constexpr (std::is_same_v<T, dv::BooleanValue>) {
             r.value = v.value ? 1.0 : 0.0;
             r.value_scientific = std::to_string((int)r.value);
-        } else {
+        } else if constexpr (std::is_same_v<T, dv::Function>) {
             // Function — stored successfully; report as success with a display hint
             r.success = true;
             r.error = "function";
+            r.value_scientific = v.to_result_string();
+        } else {
+            // VoidValue — blank: no display, no error
+            r.success = true;
+            r.error = "blank";
         }
     }, ev);
 
