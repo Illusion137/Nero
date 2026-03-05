@@ -1,1 +1,0 @@
-ts-node -T formula_gen/formula_extractor.ts && ts-node -T formula_gen/formulas_to_cpp.ts

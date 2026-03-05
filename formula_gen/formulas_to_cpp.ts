@@ -1,6 +1,11 @@
 import all_formulas from "./all_formulas.json"
 import fs from 'fs';
 
+const auto_generated_header = 
+`/************************************************************
+ *                Auto Generated DON'T MODIFY                *
+ ***********************************************************/\n`;
+
 function chunkify<T>(array: T[], size: number): T[][]{
 	const chunk_map: T[][] = [];
 	for(let i = 0; i < array.length; i += size){
@@ -24,7 +29,7 @@ function to_formula_list(formulas: (typeof all_formulas[0])[]): string[][] {
 
 const formula_chunks = to_formula_list(all_formulas);
 
-const str = `#include "physics_formulas.hpp"
+const str = `#include "../physics_formulas.hpp"
 
 namespace Physics {
     FormulaDatabase::FormulaDatabase() {
@@ -34,10 +39,10 @@ ${new Array(formula_chunks.length).fill(0).map((_, i) => `\t\tbatch_${i}();`).jo
 } // namespace Physics
 `
 
-fs.writeFileSync("src/formulas/physics_formulas_main.cpp", str);
+fs.writeFileSync("src/gen/physics_formulas_main.cpp", auto_generated_header + str);
 for(let i = 0; i < formula_chunks.length; i++){
     const str = 
-`#include "physics_formulas.hpp"
+`#include "../physics_formulas.hpp"
 
 namespace Physics {
     void FormulaDatabase::batch_${i}() {
@@ -45,5 +50,5 @@ ${formula_chunks[i].join('\n')}
     }
 } // namespace Physics
 `
-    fs.writeFileSync(`src/formulas/physics_formulas_batch${i}.cpp`, str);
+    fs.writeFileSync(`src/gen/physics_formulas_batch${i}.cpp`, auto_generated_header + str);
 }

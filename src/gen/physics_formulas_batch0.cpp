@@ -1,4 +1,7 @@
-#include "physics_formulas.hpp"
+/************************************************************
+ *                Auto Generated DON'T MODIFY                *
+ ***********************************************************/
+#include "../physics_formulas.hpp"
 
 namespace Physics {
     void FormulaDatabase::batch_0() {
