@@ -3,7 +3,7 @@ import fs from 'fs';
 
 const auto_generated_header = 
 `/************************************************************
- *                Auto Generated DON'T MODIFY                *
+ *             Auto Generated DO NOT MODIFY                 *
  ***********************************************************/\n`;
 
 function chunkify<T>(array: T[], size: number): T[][]{

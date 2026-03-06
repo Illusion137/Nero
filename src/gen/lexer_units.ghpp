@@ -1,5 +1,5 @@
 /************************************************************
- *                Auto Generated DON'T MODIFY                *
+ *             Auto Generated DO NOT MODIFY                 *
  ***********************************************************/
 
 #define UNIT_CASE(str, value, unit) case strint<str>(): return advance_with_token(dv::UnitValue{value, unit}, sizeof(str) - 1)
@@ -45,6 +45,7 @@ UNIT_CASE_LIST_BEGIN(5) {
 	UNIT_CASE("mu Hz", 1e-6, DIM_HERTZ);
 	UNIT_CASE("daOhm", 1e+1, DIM_OHM);
 	UNIT_CASE("mu Wb", 1e-6, DIM_WEBER);
+	UNIT_CASE("month", 2592000, DIM_SECOND);
 } UNIT_CASE_LIST_END();
 UNIT_CASE_LIST_BEGIN(4) {
 	UNIT_CASE("mu m", 1e-6, DIM_METER);
@@ -101,6 +102,10 @@ UNIT_CASE_LIST_BEGIN(4) {
 	UNIT_CASE("daWb", 1e+1, DIM_WEBER);
 	UNIT_CASE("mu T", 1e-6, DIM_TESLA);
 	UNIT_CASE("mu H", 1e-6, DIM_HENRY);
+	UNIT_CASE("mu L", 1e-9, DIM_LITER);
+	UNIT_CASE("kcal", 4184, DIM_JOULE);
+	UNIT_CASE("hour", 3600, DIM_SECOND);
+	UNIT_CASE("year", 1310400, DIM_SECOND);
 } UNIT_CASE_LIST_END();
 UNIT_CASE_LIST_BEGIN(3) {
 	UNIT_CASE("dam", 1e+1, DIM_METER);
@@ -191,6 +196,13 @@ UNIT_CASE_LIST_BEGIN(3) {
 	UNIT_CASE("yWb", 1e-24, DIM_WEBER);
 	UNIT_CASE("daT", 1e+1, DIM_TESLA);
 	UNIT_CASE("daH", 1e+1, DIM_HENRY);
+	UNIT_CASE("daL", 1e-2, DIM_LITER);
+	UNIT_CASE("nmi", 1852, DIM_METER);
+	UNIT_CASE("cal", 4.184, DIM_JOULE);
+	UNIT_CASE("PSI", 6894.76, DIM_PASCAL);
+	UNIT_CASE("min", 60, DIM_SECOND);
+	UNIT_CASE("day", 86400, DIM_SECOND);
+	UNIT_CASE("ATM", 101325, DIM_PASCAL);
 } UNIT_CASE_LIST_END();
 UNIT_CASE_LIST_BEGIN(2) {
 	UNIT_CASE("Ym", 1e+24, DIM_METER);
@@ -449,6 +461,33 @@ UNIT_CASE_LIST_BEGIN(2) {
 	UNIT_CASE("aH", 1e-18, DIM_HENRY);
 	UNIT_CASE("zH", 1e-21, DIM_HENRY);
 	UNIT_CASE("yH", 1e-24, DIM_HENRY);
+	UNIT_CASE("YL", 1e+21, DIM_LITER);
+	UNIT_CASE("ZL", 1e+18, DIM_LITER);
+	UNIT_CASE("EL", 1e+15, DIM_LITER);
+	UNIT_CASE("PL", 1e+12, DIM_LITER);
+	UNIT_CASE("TL", 1e+9, DIM_LITER);
+	UNIT_CASE("GL", 1e+6, DIM_LITER);
+	UNIT_CASE("ML", 1e+3, DIM_LITER);
+	UNIT_CASE("kL", 1, DIM_LITER);
+	UNIT_CASE("hL", 1e-1, DIM_LITER);
+	UNIT_CASE("dL", 1e-4, DIM_LITER);
+	UNIT_CASE("cL", 1e-5, DIM_LITER);
+	UNIT_CASE("mL", 1e-6, DIM_LITER);
+	UNIT_CASE("nL", 1e-12, DIM_LITER);
+	UNIT_CASE("pL", 1e-15, DIM_LITER);
+	UNIT_CASE("fL", 1e-18, DIM_LITER);
+	UNIT_CASE("aL", 1e-21, DIM_LITER);
+	UNIT_CASE("zL", 1e-24, DIM_LITER);
+	UNIT_CASE("yL", 1e-27, DIM_LITER);
+	UNIT_CASE("AU", 149600000000, DIM_METER);
+	UNIT_CASE("ly", 9461000000000000, DIM_METER);
+	UNIT_CASE("pc", 30860000000000000, DIM_METER);
+	UNIT_CASE("in", 0.0254, DIM_METER);
+	UNIT_CASE("ft", 0.3048, DIM_METER);
+	UNIT_CASE("yd", 0.9144, DIM_METER);
+	UNIT_CASE("mi", 1609.34, DIM_METER);
+	UNIT_CASE("oz", 0.0283495, DIM_KILOGRAM);
+	UNIT_CASE("lb", 0.453592, DIM_KILOGRAM);
 } UNIT_CASE_LIST_END();
 UNIT_CASE_LIST_BEGIN(1) {
 	UNIT_CASE("m", 1, DIM_METER);
@@ -465,4 +504,5 @@ UNIT_CASE_LIST_BEGIN(1) {
 	UNIT_CASE("W", 1, DIM_WATT);
 	UNIT_CASE("T", 1, DIM_TESLA);
 	UNIT_CASE("H", 1, DIM_HENRY);
+	UNIT_CASE("L", 1e-3, DIM_LITER);
 } UNIT_CASE_LIST_END();

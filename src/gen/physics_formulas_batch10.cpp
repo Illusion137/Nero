@@ -1,5 +1,5 @@
 /************************************************************
- *                Auto Generated DON'T MODIFY                *
+ *             Auto Generated DO NOT MODIFY                 *
  ***********************************************************/
 #include "../physics_formulas.hpp"
 

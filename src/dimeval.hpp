@@ -28,6 +28,7 @@
 #define DIM_WEBER    { 2, -2, 1, -1, 0, 0, 0 }
 #define DIM_TESLA    { 0, -2, 1, -1, 0, 0, 0 }
 #define DIM_HENRY    { 2, -2, 1, -2, 0, 0, 0 }
+#define DIM_LITER    { 3, 0, 0, 0, 0, 0, 0 }
 
 namespace dv {
     struct AST; // forward declaration for Function::body
