@@ -208,6 +208,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
             case strint<"arccot">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOT, 6);
             case strint<"right)">(): return advance_with_token(TokenType::RIGHT_PAREN, 6);
             case strint<"right|">(): return advance_with_token(TokenType::RIGHT_ABSOLUTE_BAR, 6);
+            case strint<"right]">(): return advance_with_token(TokenType::RIGHT_BRACKET, 6);
             default: break;
         }
     }
@@ -218,6 +219,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
             case strint<"times">(): return advance_with_token(TokenType::TIMES, 5);
             case strint<"left(">(): return advance_with_token(TokenType::LEFT_PAREN, 5);
             case strint<"left|">(): return advance_with_token(TokenType::LEFT_ABSOLUTE_BAR, 5);
+            case strint<"left[">(): return advance_with_token(TokenType::LEFT_BRACKET, 5);
             case strint<"begin">(): {
                 advance(5);
                 std::array<char, 32> buffer;
