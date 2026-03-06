@@ -99,6 +99,14 @@ namespace dv {
         END_ENV,
         SOLVE_FOR,    // :=
         SOLVE_SYSTEM, // @
+        VECTOR_HAT,   // \hat{i/j/k/x/y/z} — token.value.value = axis index (0/1/2)
+        DOT_PRODUCT,  // \cdot — dot product (distinguished from \times for cross product)
+        BUILTIN_FUNC_RAD,   // \rad(x) — degrees → radians
+        BUILTIN_FUNC_DEG,   // \deg(x) — radians → degrees
+        BUILTIN_FUNC_CELK,  // \CelK(x) — Kelvin → Celsius
+        BUILTIN_FUNC_CELF,  // \CelF(x) — Fahrenheit → Celsius
+        BUILTIN_FUNC_FAHRC, // \FahrC(x) — Celsius → Fahrenheit
+        BUILTIN_FUNC_FAHRK, // \FahrK(x) — Kelvin → Fahrenheit
     };
     
     struct Token {

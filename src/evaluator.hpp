@@ -46,5 +46,9 @@ namespace dv {
         FormulaSearcher searcher;
         MaybeASTDependencies parse_expression(const Expression expression);
         MaybeASTDependencies parse_expression(const std::string expression);
+        mutable std::vector<dv::UnitVector> formula_cache_units_;
+        mutable dv::UnitVector formula_cache_target_;
+        mutable std::vector<Physics::Formula> formula_cache_results_;
+        mutable bool formula_cache_valid_ = false;
     };
 }

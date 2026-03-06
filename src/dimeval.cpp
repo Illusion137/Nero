@@ -1,4 +1,5 @@
 #include "dimeval.hpp"
+#include "value_utils.hpp"
 #include <algorithm>
 #include <cmath>
 
@@ -240,6 +241,60 @@ std::string dv::UnitValueList::to_result_string() const noexcept {
 }
 
 // ============================================================================
+// VectorValue
+// ============================================================================
+
+dv::VectorValue dv::VectorValue::operator+(const VectorValue& rhs) const noexcept {
+    return {x + rhs.x, y + rhs.y, z + rhs.z};
+}
+dv::VectorValue dv::VectorValue::operator-(const VectorValue& rhs) const noexcept {
+    return {x - rhs.x, y - rhs.y, z - rhs.z};
+}
+dv::VectorValue dv::VectorValue::operator-() const noexcept {
+    return {-x, -y, -z};
+}
+dv::VectorValue dv::VectorValue::operator*(const UnitValue& scalar) const noexcept {
+    return {x * scalar, y * scalar, z * scalar};
+}
+dv::VectorValue dv::VectorValue::operator/(const UnitValue& scalar) const noexcept {
+    return {x / scalar, y / scalar, z / scalar};
+}
+dv::UnitValue dv::VectorValue::dot(const VectorValue& rhs) const noexcept {
+    return x * rhs.x + y * rhs.y + z * rhs.z;
+}
+dv::VectorValue dv::VectorValue::cross(const VectorValue& rhs) const noexcept {
+    return {
+        y * rhs.z - z * rhs.y,
+        z * rhs.x - x * rhs.z,
+        x * rhs.y - y * rhs.x
+    };
+}
+dv::UnitValue dv::VectorValue::magnitude() const noexcept {
+    UnitValue sq = x * x + y * y + z * z;
+    return {(long double)std::sqrt((double)sq.value), sq.unit ^ 0.5};
+}
+std::string dv::VectorValue::to_result_string() const noexcept {
+    std::string s;
+    bool first = true;
+    auto append = [&](const UnitValue& v, const char* hat) {
+        // Use epsilon-aware check via value_to_scientific's cleanup
+        long double abs_val = v.value < 0.0L ? -v.value : v.value;
+        if (abs_val < 1e-300L && std::fabsl(v.imag) < 1e-300L) return;
+        if (!first) s += v.value >= 0.0L ? " + " : " - ";
+        else if (v.value < 0.0L) s += "-";
+        if (abs_val != 1.0L || v.imag != 0.0L)
+            s += value_to_scientific(abs_val, (int)v.sig_figs, v.imag);
+        s += hat;
+        first = false;
+    };
+    append(x, "\\hat{i}");
+    append(y, "\\hat{j}");
+    append(z, "\\hat{k}");
+    if (first) s = "0";
+    return s;
+}
+
+// ============================================================================
 // BooleanValue / Function
 // ============================================================================
 
@@ -247,6 +302,7 @@ std::string dv::BooleanValue::to_result_string() const noexcept {
     return value ? "true" : "false";
 }
 std::string dv::Function::to_result_string() const noexcept {
+    if (!display_expr.empty()) return display_expr;
     std::string s = name + "(";
     for (std::size_t i = 0; i < param_names.size(); i++) {
         if (i > 0) s += ", ";
@@ -273,6 +329,8 @@ EValue operator+(const EValue &lhs, const EValue &rhs) noexcept {
             return r + l;
         else if constexpr (std::is_same_v<L, UnitValueList> && std::is_same_v<R, UnitValueList>)
             return l + r;
+        else if constexpr (std::is_same_v<L, VectorValue> && std::is_same_v<R, VectorValue>)
+            return l + r;
         else
             return UnitValue{0.0L};
     }, lhs, rhs);
@@ -294,6 +352,8 @@ EValue operator-(const EValue &lhs, const EValue &rhs) noexcept {
             return result;
         } else if constexpr (std::is_same_v<L, UnitValueList> && std::is_same_v<R, UnitValueList>)
             return l - r;
+        else if constexpr (std::is_same_v<L, VectorValue> && std::is_same_v<R, VectorValue>)
+            return l - r;
         else
             return UnitValue{0.0L};
     }, lhs, rhs);
@@ -311,6 +371,10 @@ EValue operator*(const EValue &lhs, const EValue &rhs) noexcept {
             return r * l;
         else if constexpr (std::is_same_v<L, UnitValueList> && std::is_same_v<R, UnitValueList>)
             return l * r;
+        else if constexpr (std::is_same_v<L, VectorValue> && std::is_same_v<R, UnitValue>)
+            return l * r;
+        else if constexpr (std::is_same_v<L, UnitValue> && std::is_same_v<R, VectorValue>)
+            return r * l;
         else
             return UnitValue{0.0L};
     }, lhs, rhs);
@@ -330,6 +394,8 @@ EValue operator/(const EValue &lhs, const EValue &rhs) noexcept {
             for (const auto &e : r.elements) result.elements.push_back(l / e);
             return result;
         } else if constexpr (std::is_same_v<L, UnitValueList> && std::is_same_v<R, UnitValueList>)
+            return l / r;
+        else if constexpr (std::is_same_v<L, VectorValue> && std::is_same_v<R, UnitValue>)
             return l / r;
         else
             return UnitValue{0.0L};
@@ -363,6 +429,7 @@ EValue operator-(const EValue &ev) noexcept {
         using T = std::decay_t<decltype(v)>;
         if constexpr (std::is_same_v<T, UnitValue>) return -v;
         else if constexpr (std::is_same_v<T, UnitValueList>) return -v;
+        else if constexpr (std::is_same_v<T, VectorValue>) return -v;
         else return UnitValue{0.0L};
     }, ev);
 }
@@ -386,6 +453,7 @@ EValue evalue_abs(const EValue &ev) noexcept {
         if constexpr (std::is_same_v<T, UnitValue>) return v.abs();
         else if constexpr (std::is_same_v<T, UnitValueList>) return v.abs();
         else if constexpr (std::is_same_v<T, BooleanValue>) return UnitValue{v.value ? 1.0L : 0.0L};
+        else if constexpr (std::is_same_v<T, VectorValue>) return v.magnitude();
         else return UnitValue{0.0L};
     }, ev);
 }

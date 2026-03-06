@@ -208,6 +208,14 @@ int main(){
 
         // Array literal
         // [1,2,3] - tested for first element
+
+        // Temperature and angle conversion builtins
+        {"\\rad(180)", M_PI},
+        {"\\deg(\\pi)", 180.0},
+        {"\\CelK(373.15)", 100.0},   // 373.15 K → 100°C
+        {"\\CelF(32)", 0.0},          // 32°F → 0°C
+        {"\\FahrC(100)", 212.0},      // 100°C → 212°F
+        {"\\FahrK(373.15)", 212.0},   // 373.15 K → 212°F
     };
 
     static const std::vector<LatexMultiTest> MULTI_TESTS = {
@@ -254,6 +262,10 @@ int main(){
         {{"x = 5.60", "\\sig(x)"}, 3},   // trailing zeros after decimal count
         {{"x = 100.0", "\\sig(x)"}, 4},  // 100.0 has 4 sig figs
         {{"x = 5.6 * 3.21", "\\sig(x)"}, 2}, // min(2, 3) = 2
+
+        // System solve stores variables
+        {{"x + y = 5", "x - y = 1", "@ = x, y", "x"}, 3},
+        {{"x + y = 5", "x - y = 1", "@ = x, y", "y"}, 2},
 
     };
 
@@ -607,6 +619,100 @@ int main(){
             prec_blank ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             prec_blank ? "✓\033[0m" : "✗\033[0m");
     }
+
+    // === Vector Tests ===
+    std::println("\n=== Vector Tests ===");
+
+    auto vec_test = [](const char* label, const char* expr, auto check) {
+        std::array<dv::Expression, 1> exprs = { dv::Expression{.value_expr = expr} };
+        dv::Evaluator ev;
+        const auto results = ev.evaluate_expression_list(exprs);
+        const auto& r = results[0];
+        bool ok = false;
+        std::string detail;
+        if (!r) {
+            detail = std::format("ERROR({})", r.error());
+        } else {
+            ok = check(r.value(), detail);
+        }
+        std::println("{} {} → {} {}",
+            ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+            label,
+            ok ? "ok" : detail,
+            ok ? "✓\033[0m" : "✗\033[0m");
+    };
+
+    // Dot product of same unit vectors → 1
+    vec_test("\\hat{i} \\cdot \\hat{i}", "\\hat{i} \\cdot \\hat{i}",
+        [](const dv::EValue& v, std::string& d) {
+            if (auto* uv = std::get_if<dv::UnitValue>(&v))
+                return std::fabs((double)uv->value - 1.0) < 0.001;
+            d = "not UnitValue"; return false;
+        });
+
+    // Dot product of orthogonal unit vectors → 0
+    vec_test("\\hat{i} \\cdot \\hat{j}", "\\hat{i} \\cdot \\hat{j}",
+        [](const dv::EValue& v, std::string& d) {
+            if (auto* uv = std::get_if<dv::UnitValue>(&v))
+                return std::fabs((double)uv->value) < 0.001;
+            d = "not UnitValue"; return false;
+        });
+
+    // Vector addition
+    vec_test("3\\hat{i} + 4\\hat{j}", "3\\hat{i} + 4\\hat{j}",
+        [](const dv::EValue& v, std::string& d) {
+            if (auto* vv = std::get_if<dv::VectorValue>(&v))
+                return std::fabs((double)vv->x.value - 3.0) < 0.001
+                    && std::fabs((double)vv->y.value - 4.0) < 0.001
+                    && std::fabs((double)vv->z.value) < 0.001;
+            d = "not VectorValue"; return false;
+        });
+
+    // Dot product of general vectors → 3*1 + 4*2 = 11
+    vec_test("(3\\hat{i}+4\\hat{j}) \\cdot (1\\hat{i}+2\\hat{j})", "(3\\hat{i}+4\\hat{j}) \\cdot (1\\hat{i}+2\\hat{j})",
+        [](const dv::EValue& v, std::string& d) {
+            if (auto* uv = std::get_if<dv::UnitValue>(&v))
+                return std::fabs((double)uv->value - 11.0) < 0.001;
+            d = "not UnitValue"; return false;
+        });
+
+    // Cross product: i × j = k
+    vec_test("\\hat{i} \\times \\hat{j}", "\\hat{i} \\times \\hat{j}",
+        [](const dv::EValue& v, std::string& d) {
+            if (auto* vv = std::get_if<dv::VectorValue>(&v))
+                return std::fabs((double)vv->x.value) < 0.001
+                    && std::fabs((double)vv->y.value) < 0.001
+                    && std::fabs((double)vv->z.value - 1.0) < 0.001;
+            d = "not VectorValue"; return false;
+        });
+
+    // Cross product: j × k = i
+    vec_test("\\hat{j} \\times \\hat{k}", "\\hat{j} \\times \\hat{k}",
+        [](const dv::EValue& v, std::string& d) {
+            if (auto* vv = std::get_if<dv::VectorValue>(&v))
+                return std::fabs((double)vv->x.value - 1.0) < 0.001
+                    && std::fabs((double)vv->y.value) < 0.001
+                    && std::fabs((double)vv->z.value) < 0.001;
+            d = "not VectorValue"; return false;
+        });
+
+    // Magnitude: |3i + 4j| = 5
+    vec_test("|3\\hat{i} + 4\\hat{j}|", "\\left|3\\hat{i} + 4\\hat{j}\\right|",
+        [](const dv::EValue& v, std::string& d) {
+            if (auto* uv = std::get_if<dv::UnitValue>(&v))
+                return std::fabs((double)uv->value - 5.0) < 0.001;
+            d = "not UnitValue"; return false;
+        });
+
+    // Scalar multiplication: 2(3i + 4j) = (6i + 8j)
+    vec_test("2(3\\hat{i} + 4\\hat{j})", "2(3\\hat{i} + 4\\hat{j})",
+        [](const dv::EValue& v, std::string& d) {
+            if (auto* vv = std::get_if<dv::VectorValue>(&v))
+                return std::fabs((double)vv->x.value - 6.0) < 0.001
+                    && std::fabs((double)vv->y.value - 8.0) < 0.001
+                    && std::fabs((double)vv->z.value) < 0.001;
+            d = "not VectorValue"; return false;
+        });
 
     return EXIT_SUCCESS;
 }

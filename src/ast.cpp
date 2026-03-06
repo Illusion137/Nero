@@ -1,6 +1,7 @@
 #include "ast.hpp"
 #include "builtins.hpp"
 #include "evaluator.hpp"
+#include "symbolic_diff.hpp"
 #include "token.hpp"
 #include <format>
 #include <memory>
@@ -115,6 +116,13 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
         }
         case TokenType::NUMERIC_LITERAL:
             return std::get<ASTExpression>(ast->data).value;
+        case TokenType::VECTOR_HAT: {
+            int axis = (int)std::get<UnitValue>(std::get<ASTExpression>(ast->data).value).value;
+            UnitValue zero{0.0L}, one{1.0L};
+            if (axis == 0) return EValue{VectorValue{one, zero, zero}};
+            if (axis == 1) return EValue{VectorValue{zero, one, zero}};
+            return EValue{VectorValue{zero, zero, one}};
+        }
         case TokenType::IDENTIFIER: {
             const auto &token_id = std::string{ast->token.text};
             if(evalulator.fixed_constants.contains(token_id))
@@ -163,7 +171,22 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
             if(!lhs) return lhs;
             auto rhs = expr.rhs->evaluate(evalulator);
             if(!rhs) return rhs;
+            // Cross product: \times between two vectors
+            if (auto* lv = std::get_if<VectorValue>(&*lhs))
+                if (auto* rv = std::get_if<VectorValue>(&*rhs))
+                    return EValue{lv->cross(*rv)};
             return *lhs * *rhs;
+        }
+        case TokenType::DOT_PRODUCT: {
+            const auto &expr = std::get<ASTExpression>(ast->data);
+            auto lhs = expr.lhs->evaluate(evalulator);
+            if(!lhs) return lhs;
+            auto rhs = expr.rhs->evaluate(evalulator);
+            if(!rhs) return rhs;
+            if (auto* lv = std::get_if<VectorValue>(&*lhs))
+                if (auto* rv = std::get_if<VectorValue>(&*rhs))
+                    return EValue{lv->dot(*rv)};
+            return *lhs * *rhs;  // scalar fallback
         }
         case TokenType::DIVIDE:
         case TokenType::FRACTION: {
@@ -536,9 +559,10 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
             } else {
                 // Return a Function that, when called, computes the derivative
                 dv::Function f;
-                f.name = "__deriv_" + var_name;
+                f.name = "\\frac{d}{d" + var_name + "}";
                 f.param_names = {var_name};
                 f.body = std::shared_ptr<AST>(ast->clone().release());
+                f.display_expr = symbolic_diff_latex(call.args[0].get(), var_name);
                 evalulator.custom_functions.insert_or_assign(f.name, f);
                 return f;
             }
@@ -554,6 +578,24 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
                 return std::unexpected{std::format("Undefined function '{}' for derivative", func_name)};
             }
             auto &cf = evalulator.custom_functions.at(func_name);
+
+            // Check if this is a purely symbolic call: single arg is the function's own param
+            // and that param is not defined as a variable (unevaluated)
+            bool is_symbolic = (call.args.size() == 1 &&
+                                call.args[0]->token.type == TokenType::IDENTIFIER &&
+                                !cf.param_names.empty() &&
+                                std::string(call.args[0]->token.text) == cf.param_names[0] &&
+                                !evalulator.evaluated_variables.contains(cf.param_names[0]) &&
+                                !evalulator.fixed_constants.contains(cf.param_names[0]));
+
+            if(is_symbolic) {
+                dv::Function df;
+                df.name = func_name + "'";
+                df.param_names = cf.param_names;
+                df.body = cf.body;
+                df.display_expr = symbolic_diff_latex(cf.body.get(), cf.param_names[0]);
+                return EValue{df};
+            }
 
             std::vector<UnitValue> arg_values;
             for(const auto &arg : call.args) {
@@ -756,6 +798,46 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
             auto uv = as_uv(*arg);
             uv.imag = -uv.imag;
             return uv;
+        }
+        case TokenType::BUILTIN_FUNC_RAD: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            UnitValue v = as_uv(*arg);
+            return UnitValue{v.value * (long double)M_PI / 180.0L};
+        }
+        case TokenType::BUILTIN_FUNC_DEG: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            UnitValue v = as_uv(*arg);
+            return UnitValue{v.value * 180.0L / (long double)M_PI};
+        }
+        case TokenType::BUILTIN_FUNC_CELK: {
+            // Kelvin → Celsius
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            UnitValue v = as_uv(*arg);
+            return UnitValue{v.value - 273.15L, v.unit};
+        }
+        case TokenType::BUILTIN_FUNC_CELF: {
+            // Fahrenheit → Celsius
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            UnitValue v = as_uv(*arg);
+            return UnitValue{(v.value - 32.0L) * 5.0L / 9.0L, v.unit};
+        }
+        case TokenType::BUILTIN_FUNC_FAHRC: {
+            // Celsius → Fahrenheit
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            UnitValue v = as_uv(*arg);
+            return UnitValue{v.value * 9.0L / 5.0L + 32.0L, v.unit};
+        }
+        case TokenType::BUILTIN_FUNC_FAHRK: {
+            // Kelvin → Fahrenheit
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            UnitValue v = as_uv(*arg);
+            return UnitValue{(v.value - 273.15L) * 9.0L / 5.0L + 32.0L, v.unit};
         }
         // Piecewise
         case TokenType::PIECEWISE_BEGIN: {

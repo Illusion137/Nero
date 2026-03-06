@@ -94,6 +94,32 @@ static JsResult evalue_to_js_result(const EValue& ev) {
             r.success = true;
             r.error = "function";
             r.value_scientific = v.to_result_string();
+        } else if constexpr (std::is_same_v<T, dv::VectorValue>) {
+            r.value = (double)v.x.value;
+            r.imag  = (double)v.x.imag;
+            for (int i = 0; i < 7; i++) r.unit[i] = v.x.unit.vec[i];
+            // Build value_scientific using per-component sig_figs
+            {
+                std::string sci;
+                bool first = true;
+                auto add_comp = [&](const dv::UnitValue& c, const char* hat) {
+                    long double abs_v = c.value < 0.0L ? -c.value : c.value;
+                    if (abs_v < 1e-300L && (c.imag < 0.0L ? -c.imag : c.imag) < 1e-300L) return;
+                    if (!first) sci += c.value >= 0.0L ? " + " : " - ";
+                    else if (c.value < 0.0L) sci += "-";
+                    if (abs_v != 1.0L || c.imag != 0.0L)
+                        sci += value_to_scientific(abs_v, (int)c.sig_figs, c.imag);
+                    sci += hat;
+                    first = false;
+                };
+                add_comp(v.x, "\\hat{i}");
+                add_comp(v.y, "\\hat{j}");
+                add_comp(v.z, "\\hat{k}");
+                if (first) sci = "0";
+                r.value_scientific = sci;
+            }
+            r.extra_values = {(double)v.x.value, (double)v.y.value, (double)v.z.value};
+            r.error = "vector";
         } else {
             // VoidValue — blank: no display, no error
             r.success = true;

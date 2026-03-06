@@ -109,6 +109,7 @@ namespace dv {
         std::string name;
         std::vector<std::string> param_names;
         std::shared_ptr<AST> body;
+        std::string display_expr; // LaTeX override for value_scientific (e.g. symbolic derivative)
         std::string to_result_string() const noexcept;
     };
 
@@ -116,7 +117,21 @@ namespace dv {
         std::string to_result_string() const noexcept { return ""; }
     };
 
-    using NValue = std::variant<UnitValue, UnitValueList, BooleanValue, Function, VoidValue>;
+    struct VectorValue {
+        UnitValue x, y, z;
+
+        VectorValue operator+(const VectorValue& rhs) const noexcept;
+        VectorValue operator-(const VectorValue& rhs) const noexcept;
+        VectorValue operator-() const noexcept;
+        VectorValue operator*(const UnitValue& scalar) const noexcept;
+        VectorValue operator/(const UnitValue& scalar) const noexcept;
+        UnitValue   dot(const VectorValue& rhs) const noexcept;
+        VectorValue cross(const VectorValue& rhs) const noexcept;
+        UnitValue   magnitude() const noexcept;
+        std::string to_result_string() const noexcept;
+    };
+
+    using NValue = std::variant<UnitValue, UnitValueList, BooleanValue, Function, VoidValue, VectorValue>;
     using EValue = NValue;
 
     // Free operators on EValue (NValue variant) — dispatch via std::visit

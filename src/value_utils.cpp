@@ -160,9 +160,19 @@ std::string dv::unit_to_latex(const UnitVector& unit) {
     return std::format("\\frac{{{}}}{{{}}}", join_cdot(best.num), join_cdot(best.den));
 }
 
-std::string dv::value_to_scientific(const long double& value, int sig_figs, long double imag) {
+std::string dv::value_to_scientific(long double value, int sig_figs, long double imag) {
     // sig_figs == 0: unlimited precision (original behavior)
     // sig_figs >  0: round to that many significant figures
+
+    // Suppress floating-point noise: treat imag/value as zero if negligible
+    {
+        constexpr long double EPS = 1e-10L;
+        long double ref = std::fabsl(value);
+        if (ref < 1e-300L) ref = 1.0L;
+        if (std::fabsl(imag) < EPS * ref) imag = 0.0L;
+        long double iref = std::fabsl(imag);
+        if (iref > 1e-300L && std::fabsl(value) < EPS * iref) value = 0.0L;
+    }
 
     const auto abs_value = std::fabsl(value);
     std::string result;

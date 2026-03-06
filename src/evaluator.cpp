@@ -3,6 +3,7 @@
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "ast.hpp"
+#include <algorithm>
 #include <cmath>
 #include <expected>
 #include <format>
@@ -16,6 +17,9 @@
 #endif
 
 std::string dv::Expression::get_single_expression() const {
+    // Solve-for and solve-system expressions must not have units wrapped
+    if (value_expr.find(":=") != std::string::npos) return value_expr;
+    if (!value_expr.empty() && value_expr[0] == '@') return value_expr;
     const std::string& unit = unit_expr.empty() ? std::string("1") : unit_expr;
     auto pos = value_expr.find('=');
     if (pos != std::string::npos && pos != 0 && pos != value_expr.size() - 1 && !this->unit_expr.empty()) {
@@ -263,6 +267,20 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
             }
             UnitValueList result;
             for(double r : roots) result.elements.push_back(UnitValue{(long double)r});
+
+            // Attach unit if expression has a unit_expr
+            if(!expression_list[evaluation_index].unit_expr.empty()) {
+                auto unit_eval = evaluate_expression(Expression{"1", expression_list[evaluation_index].unit_expr});
+                if(unit_eval) {
+                    if(const auto* uuv = std::get_if<UnitValue>(&*unit_eval)) {
+                        for(auto& elem : result.elements) elem.unit = uuv->unit;
+                    }
+                }
+            }
+
+            // Store first root as the variable for downstream use
+            evaluated_variables.insert_or_assign(var, EValue{result.elements[0]});
+
             evaluated[evaluation_index] = EValue{result};
             evaluated_variables.insert_or_assign("ans", evaluated[evaluation_index].value());
 
@@ -407,10 +425,12 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
                 continue;
             }
 
-            // Build result list (do not store variables — caller decides what to do with solutions)
+            // Build result list and store solutions in evaluated_variables
             UnitValueList result;
-            for(int k = 0; k < n; k++)
+            for(int k = 0; k < n; k++) {
                 result.elements.push_back(UnitValue{(long double)aug[k][n]});
+                evaluated_variables.insert_or_assign(vars[k], EValue{UnitValue{(long double)aug[k][n]}});
+            }
 
             // Leave all source equations blank (no error, no value)
             for(const auto& eq : equations)
@@ -476,10 +496,37 @@ void dv::Evaluator::insert_constant(const std::string name, const Expression &ex
 std::vector<Physics::Formula> dv::Evaluator::get_available_formulas(const dv::UnitVector &target) const noexcept {
     std::vector<dv::UnitVector> available_units;
     for(const auto &[key, value]: this->evaluated_variables) {
-        if(const auto* uv = std::get_if<UnitValue>(&value))
+        if(const auto* uv = std::get_if<UnitValue>(&value)) {
             available_units.push_back(uv->unit);
+        } else if(const auto* uvl = std::get_if<UnitValueList>(&value)) {
+            for(const auto& e : uvl->elements) available_units.push_back(e.unit);
+        } else if(const auto* vv = std::get_if<VectorValue>(&value)) {
+            available_units.push_back(vv->x.unit);
+            available_units.push_back(vv->y.unit);
+            available_units.push_back(vv->z.unit);
+        }
     }
-    return searcher.find_by_units(available_units, target);
+    // Deduplicate
+    std::sort(available_units.begin(), available_units.end(), [](const auto& a, const auto& b){
+        return a.vec < b.vec;
+    });
+    available_units.erase(
+        std::unique(available_units.begin(), available_units.end(),
+            [](const auto& a, const auto& b){ return a.vec == b.vec; }),
+        available_units.end());
+
+    // Cache check
+    if (formula_cache_valid_ && formula_cache_target_.vec == target.vec &&
+        formula_cache_units_ == available_units) {
+        return formula_cache_results_;
+    }
+
+    auto result = searcher.find_by_units(available_units, target);
+    formula_cache_units_ = available_units;
+    formula_cache_target_ = target;
+    formula_cache_results_ = result;
+    formula_cache_valid_ = true;
+    return result;
 }
 
 dv::MaybeASTDependencies dv::Evaluator::parse_expression(const Expression expression){

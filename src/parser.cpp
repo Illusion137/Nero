@@ -85,6 +85,12 @@ std::int32_t dv::Parser::builtin_function_args(dv::TokenType type){
         case dv::TokenType::BUILTIN_FUNC_RE: return 1;
         case dv::TokenType::BUILTIN_FUNC_IM: return 1;
         case dv::TokenType::BUILTIN_FUNC_CONJ: return 1;
+        case dv::TokenType::BUILTIN_FUNC_RAD: return 1;
+        case dv::TokenType::BUILTIN_FUNC_DEG: return 1;
+        case dv::TokenType::BUILTIN_FUNC_CELK: return 1;
+        case dv::TokenType::BUILTIN_FUNC_CELF: return 1;
+        case dv::TokenType::BUILTIN_FUNC_FAHRC: return 1;
+        case dv::TokenType::BUILTIN_FUNC_FAHRK: return 1;
         case dv::TokenType::BUILTIN_FUNC_MIN: return -2; // variadic, at least 2
         case dv::TokenType::BUILTIN_FUNC_MAX: return -2;
         case dv::TokenType::BUILTIN_FUNC_GCD: return -2;
@@ -113,6 +119,7 @@ std::pair<std::int32_t, std::int32_t> dv::Parser::precedence(dv::TokenType type)
         case dv::TokenType::TIMES:
         case dv::TokenType::DIVIDE:
         case dv::TokenType::MODULO:
+        case dv::TokenType::DOT_PRODUCT:
             return { 20, 21 };
         case dv::TokenType::FACTORIAL:
         case dv::TokenType::PERCENT:
@@ -132,6 +139,7 @@ bool dv::Parser::is_atom(dv::TokenType type) {
         case dv::TokenType::FORMULA_QUERY:
         case dv::TokenType::PIECEWISE_BEGIN:
         case dv::TokenType::MATRIX_BEGIN:
+        case dv::TokenType::VECTOR_HAT:
             return true;
         default: return is_builtin_function(type);
     }
@@ -153,6 +161,7 @@ bool dv::Parser::is_binop(dv::TokenType type) {
         case dv::TokenType::LOGICAL_AND:
         case dv::TokenType::LOGICAL_OR:
         case dv::TokenType::MODULO:
+        case dv::TokenType::DOT_PRODUCT:
             return true;
         default: return false;
     }
@@ -197,6 +206,12 @@ bool dv::Parser::is_builtin_function(dv::TokenType type){
         case dv::TokenType::BUILTIN_FUNC_RE:
         case dv::TokenType::BUILTIN_FUNC_IM:
         case dv::TokenType::BUILTIN_FUNC_CONJ:
+        case dv::TokenType::BUILTIN_FUNC_RAD:
+        case dv::TokenType::BUILTIN_FUNC_DEG:
+        case dv::TokenType::BUILTIN_FUNC_CELK:
+        case dv::TokenType::BUILTIN_FUNC_CELF:
+        case dv::TokenType::BUILTIN_FUNC_FAHRC:
+        case dv::TokenType::BUILTIN_FUNC_FAHRK:
             return true;
         default: return false;
     }
@@ -807,6 +822,7 @@ dv::MaybeAST dv::Parser::match_builtin_function(const dv::Token &token){
 
 dv::MaybeAST dv::Parser::match_atom(const dv::Token &token){
     if(token.type == TokenType::NUMERIC_LITERAL) return std::make_unique<AST>(token);
+    if(token.type == TokenType::VECTOR_HAT) return std::make_unique<AST>(token);
     if(token.type == TokenType::IDENTIFIER) {
         identifier_dependencies.insert(std::string{token.text});
 

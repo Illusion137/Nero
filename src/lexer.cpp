@@ -241,7 +241,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
             case strint<"ceil">(): return advance_with_token(TokenType::BUILTIN_FUNC_CEIL, 4);
             case strint<"fact">(): return advance_with_token(TokenType::BUILTIN_FUNC_FACT, 4);
             case strint<"frac">(): return advance_with_token(TokenType::FRACTION, 4);
-            case strint<"cdot">(): return advance_with_token(TokenType::TIMES, 4);
+            case strint<"cdot">(): return advance_with_token(TokenType::DOT_PRODUCT, 4);
             case strint<"prod">(): return advance_with_token(TokenType::BUILTIN_FUNC_PROD, 4);
             case strint<"lnot">(): return advance_with_token(TokenType::LOGICAL_NOT, 4);
             case strint<"land">(): return advance_with_token(TokenType::LOGICAL_AND, 4);
@@ -262,6 +262,20 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
     }
     if(remaining_length() >= 3) {
         switch(strint(it, 3)) {
+            case strint<"hat">(): {
+                advance(3);
+                std::array<char, 4> buf; std::uint8_t w = 0; buf.fill(0);
+                if (!collect_curly_brackets(buf.data(), buf.size(), w) || w == 0)
+                    return {TokenType::UNKNOWN, "Bad \\hat{}"};
+                char letter = buf[0];
+                int axis = (letter=='i'||letter=='x') ? 0 :
+                           (letter=='j'||letter=='y') ? 1 :
+                           (letter=='k'||letter=='z') ? 2 : -1;
+                if (axis < 0) return {TokenType::IDENTIFIER, std::string(1, letter)};
+                Token tok{TokenType::VECTOR_HAT, std::string("\\hat{")+letter+"}"};
+                tok.value = UnitValue{(long double)axis};
+                return tok;
+            }
             case strint<"sin">(): return advance_with_token(TokenType::BUILTIN_FUNC_SIN, 3);
             case strint<"cos">(): return advance_with_token(TokenType::BUILTIN_FUNC_COS, 3);
             case strint<"tan">(): return advance_with_token(TokenType::BUILTIN_FUNC_TAN, 3);
@@ -285,6 +299,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
             case strint<"geq">(): return advance_with_token(TokenType::GREATER_EQUAL, 3);
             case strint<"mod">(): return advance_with_token(TokenType::MODULO, 3);
             case strint<"div">(): return advance_with_token(TokenType::DIVIDE, 3);
+            case strint<"deg">(): return advance_with_token(TokenType::BUILTIN_FUNC_DEG, 3);
             case strint<"end">(): {
                 advance(3);
                 std::array<char, 32> buffer;
@@ -320,6 +335,8 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
                     case strint<"floor">(): return advance_with_token(TokenType::BUILTIN_FUNC_FLOOR, 0);
                     case strint<"round">(): return advance_with_token(TokenType::BUILTIN_FUNC_ROUND, 0);
                     case strint<"trace">(): return advance_with_token(TokenType::BUILTIN_FUNC_TRACE, 0);
+                    case strint<"FahrC">(): return advance_with_token(TokenType::BUILTIN_FUNC_FAHRC, 0);
+                    case strint<"FahrK">(): return advance_with_token(TokenType::BUILTIN_FUNC_FAHRK, 0);
                     default: break;
                 }
             }
@@ -329,6 +346,8 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
                     case strint<"fact">(): return advance_with_token(TokenType::BUILTIN_FUNC_FACT, 0);
                     case strint<"unit">(): return advance_with_token(TokenType::BUILTIN_FUNC_UNIT, 0);
                     case strint<"conj">(): return advance_with_token(TokenType::BUILTIN_FUNC_CONJ, 0);
+                    case strint<"CelK">(): return advance_with_token(TokenType::BUILTIN_FUNC_CELK, 0);
+                    case strint<"CelF">(): return advance_with_token(TokenType::BUILTIN_FUNC_CELF, 0);
                     default: break;
                 }
             }
@@ -345,6 +364,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
                     case strint<"sig">(): return advance_with_token(TokenType::BUILTIN_FUNC_SIG, 0);
                     case strint<"det">(): return advance_with_token(TokenType::BUILTIN_FUNC_DET, 0);
                     case strint<"mod">(): return advance_with_token(TokenType::MODULO, 0);
+                    case strint<"rad">(): return advance_with_token(TokenType::BUILTIN_FUNC_RAD, 0);
                     default: break;
                 }
             }
