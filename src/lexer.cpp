@@ -284,6 +284,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
             case strint<"leq">(): return advance_with_token(TokenType::LESS_EQUAL, 3);
             case strint<"geq">(): return advance_with_token(TokenType::GREATER_EQUAL, 3);
             case strint<"mod">(): return advance_with_token(TokenType::MODULO, 3);
+            case strint<"div">(): return advance_with_token(TokenType::DIVIDE, 3);
             case strint<"end">(): {
                 advance(3);
                 std::array<char, 32> buffer;
