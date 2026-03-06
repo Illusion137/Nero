@@ -792,6 +792,13 @@ function simplify(n: Node): Node {
       if (l.kind === "div") return simplify(div(l.left, mul(l.right, r)));
       // a/(b/c) → a*c/b
       if (r.kind === "div") return simplify(div(mul(l, r.right), r.left));
+      // expr / (k * other) → (expr/k) / other — only for non-integer k (e.g. ½, ⅓)
+      // This cleans up \frac{E}{\frac{1}{2} m} → \frac{2E}{m}
+      // But leave integer denominators alone: E/(2m) stays as-is
+      if (r.kind === "mul" && is_num(r.left) && r.left.value !== 0 && !Number.isInteger(r.left.value))
+        return simplify(div(mul(num(1 / r.left.value), l), r.right));
+      if (r.kind === "mul" && is_num(r.right) && r.right.value !== 0 && !Number.isInteger(r.right.value))
+        return simplify(div(mul(num(1 / r.right.value), l), r.left));
       // Cancel common factors: (k*a)/a → k, (a*k)/a → k, a/(k*a) → 1/k
       if (nodesEqual(l, r)) return num(1);
       if (l.kind === "mul") {
@@ -1258,10 +1265,42 @@ function nodeToLatex(node: Node): string {
       return `\\frac{${nodeToLatex(node.left)}}{${nodeToLatex(node.right)}}`;
     case "pow": {
       const base = node.left;
+      const exp  = node.right;
+
+      // Rational exponent p/q → \sqrt[q]{base^p}
+      // e.g. x^(1/2) → \sqrt{x},  x^(1/3) → \sqrt[3]{x},  x^(2/3) → \sqrt[3]{x^2}
+      const getRational = (e: Node): { p: number; q: number } | null => {
+        // Numeric float that equals a simple fraction (but not an integer)
+        if (is_num(e) && Number.isFinite(e.value) && e.value > 0 && !Number.isInteger(e.value)) {
+          for (const q of [2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+            const p = Math.round(e.value * q);
+            if (Math.abs(p / q - e.value) < 1e-10 && p > 0) return { p, q };
+          }
+        }
+        // Explicit div node: (p / q) where p,q are positive integers
+        if (e.kind === "div" && is_num(e.left) && is_num(e.right) &&
+            e.left.value > 0 && e.right.value > 1 &&
+            Number.isInteger(e.left.value) && Number.isInteger(e.right.value)) {
+          return { p: e.left.value, q: e.right.value };
+        }
+        return null;
+      };
+
+      const rat = getRational(exp);
+      if (rat) {
+        const { p, q } = rat;
+        const rootIndex = q === 2 ? "" : `[${q}]`;
+        // inner content: no extra parens needed — \sqrt{} is self-grouping
+        const bLatex = nodeToLatex(base);
+        const innerLatex = p === 1 ? bLatex
+          : `${(base.kind === "var" || base.kind === "num") ? bLatex : `\\left(${bLatex}\\right)`}^{${p}}`;
+        return `\\sqrt${rootIndex}{${innerLatex}}`;
+      }
+
       const bStr = (base.kind === "var" || base.kind === "num")
         ? nodeToLatex(base)
         : `\\left(${nodeToLatex(base)}\\right)`;
-      return `${bStr}^{${nodeToLatex(node.right)}}`;
+      return `${bStr}^{${nodeToLatex(exp)}}`;
     }
     case "fn": {
       const latexNames: Record<string, string> = {
