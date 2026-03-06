@@ -68,6 +68,17 @@ function is_var(n: Node): n is Var { return n.kind === "var"; }
 function is_zero(n: Node): boolean { return is_num(n) && n.value === 0; }
 function is_one (n: Node): boolean { return is_num(n) && n.value === 1; }
 
+/** Check if a node represents Euler's number e */
+function is_e(n: Node): boolean {
+  return (is_var(n) && n.name === "e") ||
+         (is_num(n) && Math.abs(n.value - Math.E) < 1e-10);
+}
+
+/** Check if two nodes are structurally equal */
+function nodesEqual(a: Node, b: Node): boolean {
+  return nodeToLatex(a) === nodeToLatex(b);
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Tokeniser
 // ─────────────────────────────────────────────────────────────────────────────
@@ -490,6 +501,209 @@ function collectVars(node: Node, out = new Set<string>()): Set<string> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Transcendental / identity simplifications
+//
+// Applied as a post-pass to collapse patterns like:
+//   ln(e)         → 1
+//   e^(ln(x))     → x
+//   ln(e^x)       → x
+//   log_b(b)      → 1
+//   log_b(b^x)    → x
+//   b^(log_b(x))  → x
+//   sin(arcsin(x))→ x,  arcsin(sin(x)) → x  (and cos/tan variants)
+//   x^1           → x   (already in simplify, but belt-and-braces)
+//   x^(1/1)       → x
+//   (x^a)^(1/a)   → x   (positive integer a)
+//   x * 1         → x,  1 * x → x
+//   x / 1         → x
+//   x^(2*(1/2))   → x   (i.e. (x^2)^(1/2) → x for non-negative context)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function simplifyIdentities(n: Node): Node {
+  switch (n.kind) {
+    case "num":
+    case "var":
+      return n;
+
+    case "neg":
+      return { ...n, arg: simplifyIdentities(n.arg) };
+
+    case "pm":
+      return { ...n, base: simplifyIdentities(n.base), delta: simplifyIdentities(n.delta) };
+
+    case "eq":
+      return eq_(simplifyIdentities(n.left), simplifyIdentities(n.right));
+
+    case "add":
+    case "sub":
+    case "mul":
+    case "div": {
+      const l = simplifyIdentities(n.left);
+      const r = simplifyIdentities(n.right);
+      // ln(a) - ln(b) → ln(a/b)
+      if (n.kind === "sub" &&
+          l.kind === "fn" && l.name === "ln" &&
+          r.kind === "fn" && r.name === "ln")
+        return fn_("ln", div(l.args[0], r.args[0]));
+      // ln(a) + ln(b) → ln(a*b)
+      if (n.kind === "add" &&
+          l.kind === "fn" && l.name === "ln" &&
+          r.kind === "fn" && r.name === "ln")
+        return fn_("ln", mul(l.args[0], r.args[0]));
+      return { ...n, left: l, right: r } as BinOp;
+    }
+
+    case "pow": {
+      const base = simplifyIdentities(n.left);
+      const exp  = simplifyIdentities(n.right);
+
+      // e^(ln(x)) → x
+      if (is_e(base) && exp.kind === "fn" && exp.name === "ln" && exp.args.length === 1)
+        return exp.args[0];
+
+      // e^(log_e(x)) → x  (log base e)
+      if (is_e(base) && exp.kind === "fn" && exp.name === "log" &&
+          exp.args.length === 2 && is_e(exp.args[1]))
+        return exp.args[0];
+
+      // b^(log_b(x)) → x  (any base)
+      if (exp.kind === "fn" && exp.name === "log" && exp.args.length === 2 &&
+          nodesEqual(base, exp.args[1]))
+        return exp.args[0];
+
+      // b^(ln(x)/ln(b)) → x  (change-of-base form)
+      if (exp.kind === "div" &&
+          exp.left.kind === "fn" && exp.left.name === "ln" &&
+          exp.right.kind === "fn" && exp.right.name === "ln" &&
+          nodesEqual(base, exp.right.args[0]))
+        return exp.left.args[0];
+
+      // (x^a)^(1/a) → x  and  (x^a)^b where a*b = 1
+      if (base.kind === "pow") {
+        const innerBase = base.left;
+        const innerExp  = base.right;
+        // numeric exponents: (x^a)^(1/a) = x
+        const a = simplify(innerExp);
+        const b = simplify(exp);
+        if (is_num(a) && is_num(b) && Math.abs(a.value * b.value - 1) < 1e-10)
+          return innerBase;
+        // symbolic: (x^a)^(1/a) where b = div(1, a)
+        if (b.kind === "div" && is_one(b.left) && nodesEqual(a, b.right))
+          return innerBase;
+        // (x^(1/n))^n → x
+        if (a.kind === "div" && is_one(a.left) && nodesEqual(a.right, b))
+          return innerBase;
+      }
+
+      // x^(1/1) → x
+      if (exp.kind === "div" && is_one(exp.left) && is_one(exp.right))
+        return base;
+
+      // x^1 → x  (belt-and-braces)
+      if (is_one(exp)) return base;
+
+      // x^0 → 1
+      if (is_zero(exp)) return num(1);
+
+      return { ...n, left: base, right: exp } as BinOp;
+    }
+
+    case "fn": {
+      const args = n.args.map(simplifyIdentities);
+
+      // ── Single-argument functions ──────────────────────────────────────────
+
+      if (args.length >= 1) {
+        const arg = args[0];
+
+        // ln(e) → 1
+        if (n.name === "ln" && is_e(arg)) return num(1);
+
+        // ln(1) → 0,  ln(e^x) → x
+        if (n.name === "ln") {
+          if (is_one(arg)) return num(0);
+          if (arg.kind === "pow" && is_e(arg.left)) return arg.right;
+          // ln(b^x) → x*ln(b)
+          if (arg.kind === "pow")
+            return simplify(mul(arg.right, fn_("ln", arg.left)));
+        }
+
+        // exp(0) → 1,  exp(ln(x)) → x
+        if (n.name === "exp") {
+          if (is_zero(arg)) return num(1);
+          if (is_one(arg))  return var_("e");
+          if (arg.kind === "fn" && arg.name === "ln") return arg.args[0];
+          // exp(a + b) → exp(a) * exp(b)  — helps collapse exp(ln(x) + y) → x * exp(y)
+          if (arg.kind === "add")
+            return simplify(mul(fn_("exp", arg.left), fn_("exp", arg.right)));
+          // exp(a - b) → exp(a) / exp(b)  — helps collapse exp(ln(x) - y) → x / exp(y)
+          if (arg.kind === "sub")
+            return simplify(div(fn_("exp", arg.left), fn_("exp", arg.right)));
+          // exp(a * ln(b)) → b^a  — e.g. exp(2*ln(x)) → x^2
+          if (arg.kind === "mul") {
+            if (arg.right.kind === "fn" && arg.right.name === "ln")
+              return simplify(pow(arg.right.args[0], arg.left));
+            if (arg.left.kind === "fn" && arg.left.name === "ln")
+              return simplify(pow(arg.left.args[0], arg.right));
+          }
+        }
+
+        // sin(arcsin(x)) → x,  arcsin(sin(x)) → x
+        // cos(arccos(x)) → x,  arccos(cos(x)) → x
+        // tan(arctan(x)) → x,  arctan(tan(x)) → x
+        const inverseMap: Record<string, string> = {
+          sin: "arcsin", arcsin: "sin",
+          cos: "arccos", arccos: "cos",
+          tan: "arctan", arctan: "tan",
+          sinh: "arcsinh", arcsinh: "sinh",
+          cosh: "arccosh", arccosh: "cosh",
+          tanh: "arctanh", arctanh: "tanh",
+          ln: "exp", exp: "ln",
+        };
+        if (arg.kind === "fn" && inverseMap[n.name] === arg.name)
+          return arg.args[0];
+
+        // sqrt(x^2) → |x|  →  x  (assume positive context)
+        if (n.name === "sqrt" && arg.kind === "pow" && is_num(arg.right) && arg.right.value === 2)
+          return arg.left;
+
+        // abs(abs(x)) → abs(x)
+        if (n.name === "abs" && arg.kind === "fn" && arg.name === "abs")
+          return arg;
+      }
+
+      // ── log with base ──────────────────────────────────────────────────────
+
+      if (n.name === "log" && args.length === 2) {
+        const [arg, base] = args;
+
+        // log_b(b) → 1
+        if (nodesEqual(arg, base)) return num(1);
+
+        // log_b(1) → 0
+        if (is_one(arg)) return num(0);
+
+        // log_b(b^x) → x
+        if (arg.kind === "pow" && nodesEqual(arg.left, base)) return arg.right;
+
+        // log_10(10) → 1  (numeric base match)
+        if (is_num(base) && is_num(arg) && Math.abs(arg.value - base.value) < 1e-10)
+          return num(1);
+
+        // log_e(x) → ln(x)
+        if (is_e(base)) return fn_("ln", arg);
+
+        // log_10 with numeric folding
+        if (is_num(base) && is_num(arg) && arg.value > 0 && base.value > 0)
+          return num(Math.log(arg.value) / Math.log(base.value));
+      }
+
+      return { ...n, args } as Fn;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Simplifier  (constant folding + basic algebraic identities)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -574,6 +788,20 @@ function simplify(n: Node): Node {
       if (nodeToLatex(l) === nodeToLatex(r)) return num(1);
       // neg(a)/neg(b) → a/b
       if (l.kind === "neg" && r.kind === "neg") return simplify(div(l.arg, r.arg));
+      // (a/b)/c → a/(b*c)
+      if (l.kind === "div") return simplify(div(l.left, mul(l.right, r)));
+      // a/(b/c) → a*c/b
+      if (r.kind === "div") return simplify(div(mul(l, r.right), r.left));
+      // Cancel common factors: (k*a)/a → k, (a*k)/a → k, a/(k*a) → 1/k
+      if (nodesEqual(l, r)) return num(1);
+      if (l.kind === "mul") {
+        if (nodesEqual(l.left,  r)) return simplify(l.right);
+        if (nodesEqual(l.right, r)) return simplify(l.left);
+      }
+      if (r.kind === "mul") {
+        if (nodesEqual(r.left,  l)) return simplify(div(num(1), r.right));
+        if (nodesEqual(r.right, l)) return simplify(div(num(1), r.left));
+      }
       return div(l, r);
     }
     case "pow": {
@@ -607,14 +835,16 @@ function simplify(n: Node): Node {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// deepSimplify — apply simplify until fixed point
+// deepSimplify — interleave algebraic + identity simplification to fixed point
 // ─────────────────────────────────────────────────────────────────────────────
 
 function deepSimplify(n: Node): Node {
   let prev = "";
   let cur = n;
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 30; i++) {
     cur = simplify(cur);
+    cur = simplifyIdentities(cur);
+    cur = simplify(cur);          // re-run after identity rewrites
     const s = nodeToLatex(cur);
     if (s === prev) break;
     prev = s;
@@ -822,7 +1052,7 @@ function solvePoly(coeffs: PolyCoeffs, _target: string): Node[] | null {
     if (is_zero(b)) {
       // No linear term: ax² + c = 0  →  x = ±√(-c/a)
       const inner = simplify(neg(div(c0, a)));
-      return [pm_(num(0), simplify(pow(inner, div(num(1), num(2)))))];
+      return [pm_(num(0), deepSimplify(pow(inner, div(num(1), num(2)))))];
     }
 
     // Full quadratic formula: x = (-b ± √(b²-4ac)) / (2a)
@@ -918,7 +1148,7 @@ function isolate(lhs: Node, rhs: Node, target: string): Node | null {
         // Even integer exponent → ± result
         if (is_num(expS) && Number.isInteger(expS.value) && expS.value % 2 === 0 && expS.value > 0) {
           const root = pow(rhs, div(num(1), expS));
-          return pm_(num(0), simplify(root));
+          return pm_(num(0), deepSimplify(root));
         }
         return isolate(lhs.left, pow(rhs, div(num(1), lhs.right)), target);
       }
@@ -1113,7 +1343,7 @@ export function rearrangeLatex(latex: string): RearrangementResult[] {
         candidate = isolate(eq.right, eq.left, v);
 
       if (candidate !== null) {
-        const s = simplify(candidate);
+        const s = deepSimplify(candidate);
         // Accept only if result doesn't still contain the target variable
         if (!containsVar(s, v)) solution = s;
       }
@@ -1131,7 +1361,7 @@ export function rearrangeLatex(latex: string): RearrangementResult[] {
         if (!poly) return null;
         const solutions = solvePoly(poly, v);
         if (!solutions || solutions.length === 0) return null;
-        const candidate = simplify(solutions[0]);
+        const candidate = deepSimplify(solutions[0]);
         return containsVar(candidate, v) ? null : candidate;
       };
 
@@ -1161,7 +1391,9 @@ export function rearrangeLatex(latex: string): RearrangementResult[] {
     }
 
     if (solution !== null) {
-      results.push({ variable: v, latex: `${v} = ${nodeToLatex(simplify(solution))}`, solved: true });
+      // Final deep-simplify pass to ensure maximum compactness
+      const finalSolution = deepSimplify(solution);
+      results.push({ variable: v, latex: `${v} = ${nodeToLatex(finalSolution)}`, solved: true });
     } else {
       results.push({
         variable: v,
@@ -1179,27 +1411,34 @@ export function rearrangeLatex(latex: string): RearrangementResult[] {
 // CLI demo
 // ─────────────────────────────────────────────────────────────────────────────
 
-const DEMO_EQUATIONS = [
-  // ── Linear / rational ───────────────────────────────────────────────────
-  "v = u + at",
-  "E = mc^2",
-  "\\frac{1}{2}mv^2 = mgh",
-  "PV = nRT",
-  "F = \\frac{Gm_1 m_2}{r^2}",
-  // ── Quadratic / ± ───────────────────────────────────────────────────────
-  "v^2 = u^2 + 2as",                   // v = ±√(...), u = ±√(...)
-  "x^2 = 4",                           // x = ±2
-  "ax^2 + bx + c = 0",                 // full quadratic formula
-  "x^2 - 5x + 6 = 0",                  // numeric quadratic
-  "\\frac{1}{2}mv^2 = E",              // v = ±√(2E/m)
-  "r^2 = x^2 + y^2",                   // multi-var quadratic
-  // ── Multi-term linear (needs polynomial solver) ──────────────────────────
-  "ax + bx = c",                       // x = c/(a+b)
-  "I_{total} = I_1 + I_2",
-  // ── Transcendental ──────────────────────────────────────────────────────
-  "T = 2\\pi\\sqrt{\\frac{L}{g}}",
-  "\\ln(N) = \\ln(N_0) - \\lambda t",
-  // ── Special variable forms ───────────────────────────────────────────────
-  "\\Delta x = v_0 t + \\frac{1}{2} a t^2",
-  "\\mathcal{L} = \\mathbf{F} \\cdot \\vec{r}",
-];
+// const DEMO_EQUATIONS = [
+//   // ── Linear / rational ───────────────────────────────────────────────────
+//   "v = u + at",
+//   "E = mc^2",
+//   "\\frac{1}{2}mv^2 = mgh",
+//   "PV = nRT",
+//   "F = \\frac{Gm_1 m_2}{r^2}",
+//   // ── Quadratic / ± ───────────────────────────────────────────────────────
+//   "v^2 = u^2 + 2as",                   // v = ±√(...), u = ±√(...)
+//   "x^2 = 4",                           // x = ±2
+//   "ax^2 + bx + c = 0",                 // full quadratic formula
+//   "x^2 - 5x + 6 = 0",                  // numeric quadratic
+//   "\\frac{1}{2}mv^2 = E",              // v = ±√(2E/m)
+//   "r^2 = x^2 + y^2",                   // multi-var quadratic
+//   // ── Multi-term linear (needs polynomial solver) ──────────────────────────
+//   "ax + bx = c",                       // x = c/(a+b)
+//   "I_{total} = I_1 + I_2",
+//   // ── Transcendental ──────────────────────────────────────────────────────
+//   "T = 2\\pi\\sqrt{\\frac{L}{g}}",
+//   "\\ln(N) = \\ln(N_0) - \\lambda t",
+//   // ── Special variable forms ───────────────────────────────────────────────
+//   "\\Delta x = v_0 t + \\frac{1}{2} a t^2",
+//   "\\mathcal{L} = \\mathbf{F} \\cdot \\vec{r}",
+//   // ── Identity / simplification tests ─────────────────────────────────────
+//   "y = \\ln(e^x)",                     // y = x
+//   "y = e^{\\ln(x)}",                   // y = x
+//   "y = \\log_{b}(b^x)",                // y = x
+//   "y = \\sin(\\arcsin(x))",            // y = x
+//   "z = \\frac{x}{\\ln(e)}",           // z = x  (ln(e)=1)
+//   "y = \\log_{10}(10)",               // y = 1
+// ];
