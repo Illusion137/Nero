@@ -72,8 +72,10 @@ dv::Evaluator::MaybeEvaluated dv::Evaluator::evaluate_expression(const Expressio
 std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_list(const std::span<const dv::Expression> expression_list){
     last_formula_results.clear();
     evaluated_variables.clear();
+    consumed_variables.clear();
     custom_functions.clear();
     variable_source_expressions.clear();
+    formula_cache_valid_ = false;
     // Variables, functions, and sources persist across batches (REPL semantics).
     std::vector<dv::MaybeASTDependencies> parsed_expressions;
     parsed_expressions.reserve(expression_list.size());
@@ -476,6 +478,15 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
             for (auto& e : uvl->elements) e.sig_figs = 0;
     }
 
+    // Populate consumed_variables: any variable referenced by another expression
+    for (const auto& parsed : parsed_expressions) {
+        if (!parsed) continue;
+        for (const auto& dep : parsed.value().identifier_dependencies) {
+            if (evaluated_variables.contains(dep) || fixed_constants.contains(dep))
+                consumed_variables.insert(dep);
+        }
+    }
+
     return evaluated;
 }
 
@@ -493,9 +504,10 @@ void dv::Evaluator::insert_constant(const std::string name, const Expression &ex
     fixed_constants.insert_or_assign(name, std::move(value));
 }
 
-std::vector<Physics::Formula> dv::Evaluator::get_available_formulas(const dv::UnitVector &target) const noexcept {
+std::vector<Physics::Formula> dv::Evaluator::get_available_formulas(const dv::UnitVector &target, bool filter_dependencies) const noexcept {
     std::vector<dv::UnitVector> available_units;
     for(const auto &[key, value]: this->evaluated_variables) {
+        if (filter_dependencies && consumed_variables.contains(key)) continue;
         if(const auto* uv = std::get_if<UnitValue>(&value)) {
             available_units.push_back(uv->unit);
         } else if(const auto* uvl = std::get_if<UnitValueList>(&value)) {
@@ -515,8 +527,9 @@ std::vector<Physics::Formula> dv::Evaluator::get_available_formulas(const dv::Un
             [](const auto& a, const auto& b){ return a.vec == b.vec; }),
         available_units.end());
 
-    // Cache check
-    if (formula_cache_valid_ && formula_cache_target_.vec == target.vec &&
+    // Cache check (includes filter flag)
+    if (formula_cache_valid_ && formula_cache_filter_ == filter_dependencies &&
+        formula_cache_target_.vec == target.vec &&
         formula_cache_units_ == available_units) {
         return formula_cache_results_;
     }
@@ -524,6 +537,7 @@ std::vector<Physics::Formula> dv::Evaluator::get_available_formulas(const dv::Un
     auto result = searcher.find_by_units(available_units, target);
     formula_cache_units_ = available_units;
     formula_cache_target_ = target;
+    formula_cache_filter_ = filter_dependencies;
     formula_cache_results_ = result;
     formula_cache_valid_ = true;
     return result;

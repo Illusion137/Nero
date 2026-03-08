@@ -148,8 +148,10 @@ std::vector<Physics::Formula> find_by_units(
             auto mt = missing_types(i, available_pool);
 
             if (mt.empty()) {
-                // Exact sub — no subsub needed
-                double s = score_of(i, available_pool);
+                // Exact sub — no subsub needed.
+                // Large bonus ensures an exact sub always beats a sub+subsub pair,
+                // so "F = qvB" is preferred over "F = q(E+vB) with E = vB" when both work.
+                double s = score_of(i, available_pool) + 1000.0;
                 if (s > best_score) {
                     best_score  = s;
                     best_sub    = i;
@@ -241,15 +243,125 @@ std::vector<Physics::Formula> find_by_units(
     }
 
     // -------------------------------------------------------------------------
-    // STEP 2 — SORT: fewest subs first, then score descending
+    // STEP 2 — RESCORE by multiple signals, then stable sort descending
+    //
+    // Signals (in rough priority order):
+    //   1. chain_util      — fraction of pool units used across the whole chain
+    //   2. name_match      — sub formula's output var name matches a main formula input var
+    //   3. sub_complexity  — sub outputs derived units (e.g. N) not simple base units (e.g. s)
+    //   4. pool_overlap    — penalty when sub uses the same unit type as main's direct pool hit
+    //   5. simplicity      — fewer required inputs → higher
+    //   6. sub/subsub count — prefer shallower chains
     // -------------------------------------------------------------------------
 
-    std::sort(candidates.begin(), candidates.end(),
-        [](const Candidate& a, const Candidate& b) {
-            if (a.subs.size() != b.subs.size())
-                return a.subs.size() < b.subs.size();
-            return a.score > b.score;
-        });
+    auto chain_pool_used = [&](const Candidate& cand) -> int {
+        std::vector<dv::UnitVec> used;
+        auto collect = [&](int idx) {
+            for (const auto& [u, req] : required_counts(idx))
+                if (count_in_pool(u, available_pool) > 0) used.push_back(u);
+        };
+        collect(cand.idx);
+        for (const auto& sub : cand.subs) {
+            collect(sub.idx);
+            for (const auto& ss : sub.subsubs) collect(ss.idx);
+        }
+        std::sort(used.begin(), used.end());
+        used.erase(std::unique(used.begin(), used.end()), used.end());
+        return (int)used.size();
+    };
+
+    // Strip LaTeX decorations from a variable name so "\\vec{F}" → "F"
+    auto basename = [](const std::string& s) -> std::string {
+        std::string r;
+        bool skip_cmd = false;
+        for (size_t i = 0; i < s.size(); i++) {
+            char c = s[i];
+            if (c == '\\') { skip_cmd = true; }
+            else if (c == '{') { skip_cmd = false; }
+            else if (c == '}' || c == ' ' || c == '^') { /* skip */ }
+            else if (skip_cmd && std::isalpha(static_cast<unsigned char>(c))) { /* skip command chars */ }
+            else { r += c; skip_cmd = false; }
+        }
+        return r;
+    };
+
+    // Sum of absolute exponents — measures how "derived" (specific) a unit is.
+    // e.g. seconds [0,1,…] → 1  (simple, generic)
+    //      Newtons [1,-2,1,…] → 4  (derived, specific to mechanics)
+    auto unit_complexity = [](const dv::UnitVec& uv) -> int {
+        int c = 0;
+        for (auto v : uv) c += std::abs(static_cast<int>(v));
+        return c;
+    };
+
+    // Count unit types shared between main formula's direct pool inputs and each sub's pool inputs.
+    // A high overlap means the sub "wastes" pool units already covered by the main formula —
+    // a sign of a coincidental dimensional match rather than a coherent chain.
+    auto pool_overlap_count = [&](const Candidate& cand) -> int {
+        std::vector<dv::UnitVec> main_direct;
+        for (const auto& [u, req] : required_counts(cand.idx))
+            if (count_in_pool(u, available_pool) > 0) main_direct.push_back(u);
+        int overlap = 0;
+        for (const auto& sub : cand.subs) {
+            for (const auto& [u, req] : required_counts(sub.idx)) {
+                if (count_in_pool(u, available_pool) == 0) continue;
+                for (const auto& m : main_direct)
+                    if (u == m) { overlap++; break; }
+            }
+        }
+        return overlap;
+    };
+
+    // Bonus when a sub formula's output variable name matches one of the main
+    // formula's required input variable names (after stripping LaTeX decoration).
+    // e.g. sub solve_for "\\vec{F}" → "F" matches "F" in Newton's Second Law ✓
+    //      sub solve_for "T" (period) does NOT match "t" (time) in Free Fall Velocity ✓
+    auto name_match_bonus = [&](const Candidate& cand) -> double {
+        const auto& main_f = all_formulas[cand.idx];
+        double bonus = 0.0;
+        for (const auto& sub : cand.subs) {
+            std::string sub_out = basename(all_formulas[sub.idx].solve_for);
+            for (const auto& v : main_f.variables) {
+                if (v.name == main_f.solve_for) continue;  // skip the formula's own output
+                if (v.is_constant) continue;
+                if (basename(v.name) == sub_out) { bonus += 5.0; break; }
+            }
+        }
+        return bonus;
+    };
+
+    // Prefer chains whose sub formulas produce derived units (complexity > 1).
+    // This separates "F = qvB → a = F/m" (sub produces N, complexity 4) from
+    // "T = 2πm/qB → g = v/T" (sub produces seconds, complexity 1).
+    auto sub_complexity_score = [&](const Candidate& cand) -> double {
+        double score = 0.0;
+        for (const auto& sub : cand.subs)
+            if (auto out = output_of(sub.idx))
+                score += unit_complexity(*out) * 0.1;
+        return score;
+    };
+
+    {
+        const double pool_size = available_pool.empty() ? 1.0 : (double)available_pool.size();
+        for (auto& cand : candidates) {
+            int used = chain_pool_used(cand);
+            double chain_util   = (double)used / pool_size;
+            double simplicity   = 1.0 / ((double)required_counts(cand.idx).size() + 1.0);
+            int total_subsubs   = 0;
+            for (const auto& sub : cand.subs) total_subsubs += (int)sub.subsubs.size();
+
+            cand.score = chain_util * 100.0
+                       + name_match_bonus(cand)
+                       + sub_complexity_score(cand)
+                       - (double)pool_overlap_count(cand) * 10.0
+                       + simplicity * 10.0
+                       - (double)cand.subs.size() * 5.0
+                       - (double)total_subsubs * 3.0;
+        }
+    }
+
+    std::stable_sort(candidates.begin(), candidates.end(),
+        [](const Candidate& a, const Candidate& b) { return a.score > b.score; });
 
     // -------------------------------------------------------------------------
     // STEP 3 — FLATTEN

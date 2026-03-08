@@ -98,6 +98,8 @@ static JsResult evalue_to_js_result(const EValue& ev) {
             r.value = (double)v.x.value;
             r.imag  = (double)v.x.imag;
             for (int i = 0; i < 7; i++) r.unit[i] = v.x.unit.vec[i];
+            r.unit_latex = (v.x.unit == dv::UnitVector{dv::DIMENSIONLESS_VEC})
+                ? "" : unit_to_latex(v.x.unit);
             // Build value_scientific using per-component sig_figs
             {
                 std::string sci;
@@ -248,7 +250,22 @@ std::vector<JsFormula> dv_get_available_formulas(const std::vector<int>& target_
     for (int i = 0; i < 7; i++)
         target.vec[i] = static_cast<int8_t>(target_unit_vec[i]);
 
-    auto formulas = g_eval->get_available_formulas(target);
+    auto formulas = g_eval->get_available_formulas(target, false);
+    std::vector<JsFormula> out;
+    out.reserve(formulas.size());
+    for (const auto& f : formulas)
+        out.push_back(physics_formula_to_js(f));
+    return out;
+}
+
+std::vector<JsFormula> dv_get_available_formulas_filtered(const std::vector<int>& target_unit_vec) {
+    if (!g_eval || target_unit_vec.size() != 7) return {};
+
+    UnitVector target;
+    for (int i = 0; i < 7; i++)
+        target.vec[i] = static_cast<int8_t>(target_unit_vec[i]);
+
+    auto formulas = g_eval->get_available_formulas(target, true);
     std::vector<JsFormula> out;
     out.reserve(formulas.size());
     for (const auto& f : formulas)
@@ -375,8 +392,9 @@ EMSCRIPTEN_BINDINGS(UnitEval) {
 
     // --- Formulas ---
 
-    function("dv_get_available_formulas",  &dv_get_available_formulas);
-    function("dv_get_last_formula_results",&dv_get_last_formula_results);
+    function("dv_get_available_formulas",          &dv_get_available_formulas);
+    function("dv_get_available_formulas_filtered", &dv_get_available_formulas_filtered);
+    function("dv_get_last_formula_results",        &dv_get_last_formula_results);
 
     // --- Variables ---
 

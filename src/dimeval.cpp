@@ -291,6 +291,9 @@ std::string dv::VectorValue::to_result_string() const noexcept {
     append(y, "\\hat{j}");
     append(z, "\\hat{k}");
     if (first) s = "0";
+    // Append unit suffix if non-dimensionless
+    if (!(x.unit == dv::UnitVector{dv::DIMENSIONLESS_VEC}))
+        s += "\\ " + unit_to_latex(x.unit);
     return s;
 }
 

@@ -714,5 +714,20 @@ int main(){
             d = "not VectorValue"; return false;
         });
 
+    // Quick formula chain check
+    {
+        std::vector<dv::Expression> ex = {
+            dv::Expression{.value_expr="q=1",.unit_expr="\\C"},
+            dv::Expression{.value_expr="v=1",.unit_expr="\\frac{\\m}{\\s}"},
+            dv::Expression{.value_expr="B=1",.unit_expr="\\T"},
+            dv::Expression{.value_expr="m=1",.unit_expr="\\kg"},
+        };
+        dv::Evaluator ev; ev.evaluate_expression_list(ex);
+        dv::UnitVector tgt; tgt.vec={1,-2,0,0,0,0,0};
+        auto fs = ev.get_available_formulas(tgt,false);
+        std::println("Formula chain (T,C,m/s,kg → m/s²):");
+        for (int i=0;i<(int)std::min(fs.size(),(std::size_t)4);i++)
+            std::println("  [{}] {} ({})", i+1, fs[i].name, fs[i].category.empty()?"main":fs[i].category);
+    }
     return EXIT_SUCCESS;
 }
