@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 EVERETT_PATH="/Users/illusion/dev/Everett"
 
 ts-node unit_gen/unit_gen.ts
