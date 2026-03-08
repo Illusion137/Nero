@@ -10,13 +10,13 @@
         "evaluator",
         "parser"
     ],
-    "homepage": "https://github.com/Illusion137/unit-evaluation#readme",
+    "homepage": "https://github.com/Illusion137/Nero#readme",
     "bugs": {
-        "url": "https://github.com/Illusion137/unit-evaluation/issues"
+        "url": "https://github.com/Illusion137/Nero/issues"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Illusion137/unit-evaluation.git"
+        "url": "git+https://github.com/Illusion137/Nero.git"
     },
     "license": "ISC",
     "author": "Sumi!",
