@@ -23,8 +23,6 @@ if(EMSCRIPTEN)
         -sENVIRONMENT=web
         -sALLOW_MEMORY_GROWTH=1
         -sFILESYSTEM=0
-        # -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAP8','HEAPU8','HEAPU32','HEAP32','HEAPF64','HEAPF32']
-        # -sEXPORTED_FUNCTIONS=['_malloc','_free']
         -lembind
         --emit-tsd Nero.d.ts
     )
@@ -33,7 +31,7 @@ if(EMSCRIPTEN)
         OUTPUT_NAME "Nero"
         SUFFIX ".js"
     )
-    target_include_directories(NeroWasm PRIVATE /Users/illusion/dev/emsdk/upstream/emscripten/system/include/)
+    # target_include_directories(NeroWasm PRIVATE /Users/illusion/dev/emsdk/upstream/emscripten/system/include/)
 else()
     # add_library(UnitEvalCore STATIC ${SRC_FILES})
 
@@ -47,6 +45,7 @@ else()
         src/main.cpp
         ${SRC_FILES}
     )
-    target_compile_options(Nero PRIVATE -Wall -O3 -Wno-reorder-init-list)
-    target_include_directories(Nero PRIVATE /Users/illusion/dev/emsdk/upstream/emscripten/system/include/)
+    target_compile_options(Nero PRIVATE)
+    # target_compile_options(Nero PRIVATE -Wall -O3 -Wno-reorder-init-list)
+    # target_include_directories(Nero PRIVATE /Users/illusion/dev/emsdk/upstream/emscripten/system/include/)
 endif()

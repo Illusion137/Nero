@@ -1,9 +1,11 @@
 #include "evaluator.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
+#include "print.hpp"
 #include <array>
-#include <print>
 #include <span>
+#include <cmath>
+
 struct LatexTest {
     const std::string expression;
     const double expected_result;
@@ -25,9 +27,9 @@ static inline void print_tokens_red(const std::string view){
     dv::Lexer lexer{view};
     const auto &tokens = lexer.extract_all_tokens();
     if(!tokens) return;
-    std::print("\033[31m");
-    std::println("{}", tokens.value());
-    std::print("\033[0m\n");
+    nero_print("\033[31m");
+    nero_println("{}", tokens.value());
+    nero_print("\033[0m\n");
 }
 
 static inline void print_ast_red(const std::string view){
@@ -37,9 +39,9 @@ static inline void print_ast_red(const std::string view){
     dv::Parser parser{tokens.value()};
     const auto &ast = parser.parse();
     if(!ast) return;
-    std::print("\033[31m");
-    std::println("{}", *ast.value().ast);
-    std::print("\033[0m\n");
+    nero_print("\033[31m");
+    nero_println("{}", *ast.value().ast);
+    nero_print("\033[0m\n");
 }
 
 static inline bool run_non_related_tests(const std::span<const LatexTest> tests){
@@ -56,28 +58,28 @@ static inline bool run_non_related_tests(const std::span<const LatexTest> tests)
         if(!value){
             success = false;
             print_tokens_red(single_expression_list[0].get_single_expression());
-            std::println("\033[31m[FAIL] {} = ERROR({}) ✗\033[0m", single_expression_list[0].get_single_expression(), value.error());
+            nero_println("\033[31m[FAIL] {} = ERROR({}) ✗\033[0m", single_expression_list[0].get_single_expression(), value.error());
             continue;
         }
         if(std::fabs((double)get_scalar_val(value.value()) - test.expected_result) > epsilon){
             success = false;
-            std::println("\033[31m[FAIL] {} = {} : Expected {} ✗\033[0m", single_expression_list[0].get_single_expression(), (double)get_scalar_val(value.value()), test.expected_result);
+            nero_println("\033[31m[FAIL] {} = {} : Expected {} ✗\033[0m", single_expression_list[0].get_single_expression(), (double)get_scalar_val(value.value()), test.expected_result);
             print_ast_red(single_expression_list[0].get_single_expression());
             continue;
         }
         else {
             passed++;
-            std::println("\033[0;32m[PASS] {} = {} ✓\033[0m", single_expression_list[0].get_single_expression(), test.expected_result);
+            nero_println("\033[0;32m[PASS] {} = {} ✓\033[0m", single_expression_list[0].get_single_expression(), test.expected_result);
         }
     }
     if(tests.size() - passed == 0) {
-        std::println("\033[0;32m[PASSED] {}\033[0m", passed);
+        nero_println("\033[0;32m[PASSED] {}\033[0m", passed);
     }
     else if(passed == 0){
-        std::println("\033[31m[FAILED] {} \033[0m", tests.size() - passed);
+        nero_println("\033[31m[FAILED] {} \033[0m", tests.size() - passed);
     }
     else {
-        std::println("\033[31m[FAILED] {} \033[0m: \033[0;32m[PASSED] {}\033[0m", tests.size() - passed, passed);
+        nero_println("\033[31m[FAILED] {} \033[0m: \033[0;32m[PASSED] {}\033[0m", tests.size() - passed, passed);
     }
     return success;
 }
@@ -101,27 +103,27 @@ static inline bool run_multi_tests(const std::span<const LatexMultiTest> tests){
         }
         if(!value){
             success = false;
-            std::println("\033[31m[FAIL] {} = ERROR({}) ✗\033[0m", desc, value.error());
+            nero_println("\033[31m[FAIL] {} = ERROR({}) ✗\033[0m", desc, value.error());
             continue;
         }
         if(std::fabs((double)get_scalar_val(value.value()) - test.expected_result) > epsilon){
             success = false;
-            std::println("\033[31m[FAIL] {} = {} : Expected {} ✗\033[0m", desc, (double)get_scalar_val(value.value()), test.expected_result);
+            nero_println("\033[31m[FAIL] {} = {} : Expected {} ✗\033[0m", desc, (double)get_scalar_val(value.value()), test.expected_result);
             continue;
         }
         else {
             passed++;
-            std::println("\033[0;32m[PASS] {} = {} ✓\033[0m", desc, test.expected_result);
+            nero_println("\033[0;32m[PASS] {} = {} ✓\033[0m", desc, test.expected_result);
         }
     }
     if(tests.size() - passed == 0) {
-        std::println("\033[0;32m[MULTI PASSED] {}\033[0m", passed);
+        nero_println("\033[0;32m[MULTI PASSED] {}\033[0m", passed);
     }
     else if(passed == 0){
-        std::println("\033[31m[MULTI FAILED] {} \033[0m", tests.size() - passed);
+        nero_println("\033[31m[MULTI FAILED] {} \033[0m", tests.size() - passed);
     }
     else {
-        std::println("\033[31m[MULTI FAILED] {} \033[0m: \033[0;32m[PASSED] {}\033[0m", tests.size() - passed, passed);
+        nero_println("\033[31m[MULTI FAILED] {} \033[0m: \033[0;32m[PASSED] {}\033[0m", tests.size() - passed, passed);
     }
     return success;
 }

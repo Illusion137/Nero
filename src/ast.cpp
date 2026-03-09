@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES 
 #include "ast.hpp"
 #include "builtins.hpp"
 #include "evaluator.hpp"

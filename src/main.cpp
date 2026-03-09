@@ -1,9 +1,11 @@
-#include <print>
+#define _USE_MATH_DEFINES 
+#include "print.hpp"
 #include "evaluator.hpp"
 #include "testing.hpp"
 #include "value_utils.hpp"
 #include <cstdlib>
 #include <span>
+#include <cmath>
 
 int main(){
     static const std::vector<LatexTest> ALL_TESTS = {
@@ -269,10 +271,10 @@ int main(){
 
     };
 
-    std::println("=== Single Expression Tests ===");
+    nero_println("=== Single Expression Tests ===");
     run_non_related_tests(ALL_TESTS);
 
-    std::println("\n=== Multi Expression Tests ===");
+    nero_println("\n=== Multi Expression Tests ===");
     run_multi_tests(MULTI_TESTS);
 
     std::array<dv::Expression, 2> expressions = {
@@ -282,24 +284,24 @@ int main(){
     dv::Evaluator evaluator;
     const auto evaled = evaluator.evaluate_expression_list(expressions);
     for(const auto &eval : evaled){
-        if(!eval) std::println("[ERROR]: {}", eval.error());
+        if(!eval) nero_println("[ERROR]: {}", eval.error());
         else {
             std::visit([](const auto& v) {
                 using T = std::decay_t<decltype(v)>;
                 if constexpr (std::is_same_v<T, dv::UnitValue>)
-                    std::println("[VALUE]: {} {}", (double)v.value, v.unit.vec);
+                    nero_println("[VALUE]: {} {}", (double)v.value, v.unit.vec);
                 else if constexpr (std::is_same_v<T, dv::UnitValueList>)
-                    std::println("[LIST]: {}", v.to_result_string());
+                    nero_println("[LIST]: {}", v.to_result_string());
                 else if constexpr (std::is_same_v<T, dv::BooleanValue>)
-                    std::println("[BOOL]: {}", v.value);
+                    nero_println("[BOOL]: {}", v.value);
                 else
-                    std::println("[FUNC]: {}", v.to_result_string());
+                    nero_println("[FUNC]: {}", v.to_result_string());
             }, eval.value());
         }
     }
 
     // === Phase 2 Manual Tests ===
-    std::println("\n=== Phase 2 Manual Tests ===");
+    nero_println("\n=== Phase 2 Manual Tests ===");
 
     // Conversion unit: 5000 m → 5 km
     {
@@ -311,15 +313,15 @@ int main(){
         const auto conv_results = conv_eval.evaluate_expression_list(conv_exprs);
         const auto &r = conv_results[0];
         if (!r) {
-            std::println("\033[31m[FAIL] conversion test: ERROR({}) ✗\033[0m", r.error());
+            nero_println("\033[31m[FAIL] conversion test: ERROR({}) ✗\033[0m", r.error());
         } else if (const auto* uv = std::get_if<dv::UnitValue>(&r.value())) {
             if (std::fabs((double)uv->value - 5.0) < epsilon) {
-                std::println("\033[0;32m[PASS] 5000 m → {} km ✓\033[0m", (double)uv->value);
+                nero_println("\033[0;32m[PASS] 5000 m → {} km ✓\033[0m", (double)uv->value);
             } else {
-                std::println("\033[31m[FAIL] 5000 m → {} km (expected 5) ✗\033[0m", (double)uv->value);
+                nero_println("\033[31m[FAIL] 5000 m → {} km (expected 5) ✗\033[0m", (double)uv->value);
             }
         } else {
-            std::println("\033[31m[FAIL] conversion test: wrong type ✗\033[0m");
+            nero_println("\033[31m[FAIL] conversion test: wrong type ✗\033[0m");
         }
     }
 
@@ -332,9 +334,9 @@ int main(){
         const auto int_results = int_eval.evaluate_expression_list(int_exprs);
         const auto &r = int_results[0];
         if (!r) {
-            std::println("\033[0;32m[PASS] \\int without dx → error ✓\033[0m");
+            nero_println("\033[0;32m[PASS] \\int without dx → error ✓\033[0m");
         } else {
-            std::println("\033[31m[FAIL] \\int without dx should have returned an error ✗\033[0m");
+            nero_println("\033[31m[FAIL] \\int without dx should have returned an error ✗\033[0m");
         }
     }
 
@@ -356,12 +358,12 @@ int main(){
             auto result = dv::value_to_scientific(c.v, c.sf);
             bool ok = result == c.expected;
             if (!ok) sf_ok = false;
-            std::println("{} value_to_scientific({}, sf={}) = {} (expected: {})",
+            nero_println("{} value_to_scientific({}, sf={}) = {} (expected: {})",
                 ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
                 (double)c.v, c.sf, result, c.expected);
         }
-        if (sf_ok) std::print("\033[0m");
-        else std::print("\033[0m");
+        if (sf_ok) nero_print("\033[0m");
+        else nero_print("\033[0m");
     }
 
     // Leaf detection: sig_figs only present on display leaves
@@ -381,7 +383,7 @@ int main(){
                   && a_uv->sig_figs == 0   // a = 5.6: not a display leaf → zeroed
                   && b_uv->sig_figs == 0   // b = 3.21: not a display leaf → zeroed
                   && x_uv->sig_figs == 2;  // x = a*b: display leaf → min(2,3)=2
-        std::println("{} leaf detection: a.sf={} b.sf={} x.sf={}{}",
+        nero_println("{} leaf detection: a.sf={} b.sf={} x.sf={}{}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             a_uv ? (int)a_uv->sig_figs : -1,
             b_uv ? (int)b_uv->sig_figs : -1,
@@ -390,7 +392,7 @@ int main(){
     }
 
     // === New Feature Tests ===
-    std::println("\n=== New Feature Tests ===");
+    nero_println("\n=== New Feature Tests ===");
 
     // 1. Complex display: value_to_scientific with imag
     {
@@ -404,7 +406,7 @@ int main(){
         for (const auto& c : cases) {
             auto result = dv::value_to_scientific(c.v, 0, c.im);
             bool ok = result == c.expected;
-            std::println("{} value_to_scientific({},imag={}) = {} (expected: {}){}",
+            nero_println("{} value_to_scientific({},imag={}) = {} (expected: {}){}",
                 ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
                 (double)c.v, (double)c.im, result, c.expected,
                 ok ? " ✓\033[0m" : " ✗\033[0m");
@@ -425,7 +427,7 @@ int main(){
                      && std::fabs((double)uvl->elements[1].value - (-3.0)) < 0.001;
             }
         }
-        std::println("{} \\pm 3 → [3,-3] {}",
+        nero_println("{} \\pm 3 → [3,-3] {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
     }
@@ -450,7 +452,7 @@ int main(){
                 ok = has_neg2 && has_pos2;
             }
         }
-        std::println("{} x^2-4 ; x := → roots include ±2 {}",
+        nero_println("{} x^2-4 ; x := → roots include ±2 {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
     }
@@ -476,7 +478,7 @@ int main(){
                 ok = has_neg5 && has_zero && has_three;
             }
         }
-        std::println("{} (x-3)(x+5)x ; x := → roots -5, 0, 3 {}",
+        nero_println("{} (x-3)(x+5)x ; x := → roots -5, 0, 3 {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
     }
@@ -499,7 +501,7 @@ int main(){
                      && std::fabs((double)uvl->elements[1].value - 1.5) < 0.001;
             }
         }
-        std::println("{} x+y-4 ; x-y-1 ; @=x,y → [2.5, 1.5] {}",
+        nero_println("{} x+y-4 ; x-y-1 ; @=x,y → [2.5, 1.5] {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
     }
@@ -518,7 +520,7 @@ int main(){
             if(const auto* uv = std::get_if<dv::UnitValue>(&r.value()))
                 ok = std::fabs((double)uv->value - 3.0) < 0.001;
         }
-        std::println("{} \\pm 3 ; ans[0] → 3 {}",
+        nero_println("{} \\pm 3 ; ans[0] → 3 {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
     }
@@ -539,7 +541,7 @@ int main(){
                     if(std::fabs((double)e.value - (-5.0)) < 0.01) { ok = true; break; }
             }
         }
-        std::println("{} a+5=0 ; a := → root -5 {}",
+        nero_println("{} a+5=0 ; a := → root -5 {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
     }
@@ -570,7 +572,7 @@ int main(){
                 }
             }
         }
-        std::println("{} 2a+3b=14 ; 4a-b=1 ; @=a,b → satisfies both equations {}",
+        nero_println("{} 2a+3b=14 ; 4a-b=1 ; @=a,b → satisfies both equations {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
     }
@@ -595,13 +597,13 @@ int main(){
                 }
             }
         }
-        std::println("{} x+y=10 ; x-y=2 ; @=x,y → [6,4] {}",
+        nero_println("{} x+y=10 ; x-y=2 ; @=x,y → [6,4] {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
         // Verify source equations are blank (VoidValue), not errors
         bool eq0_blank = eq_reeval_results[0] && std::get_if<dv::VoidValue>(&eq_reeval_results[0].value());
         bool eq1_blank = eq_reeval_results[1] && std::get_if<dv::VoidValue>(&eq_reeval_results[1].value());
-        std::println("{} @=x,y leaves source equations blank {}",
+        nero_println("{} @=x,y leaves source equations blank {}",
             (eq0_blank && eq1_blank) ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             (eq0_blank && eq1_blank) ? "✓\033[0m" : "✗\033[0m");
     }
@@ -615,13 +617,13 @@ int main(){
         dv::Evaluator sf_clear_eval;
         const auto sf_clear_results = sf_clear_eval.evaluate_expression_list(sf_clear_exprs);
         bool prec_blank = sf_clear_results[0] && std::get_if<dv::VoidValue>(&sf_clear_results[0].value());
-        std::println("{} a+5=0 ; a := leaves preceding expression blank {}",
+        nero_println("{} a+5=0 ; a := leaves preceding expression blank {}",
             prec_blank ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             prec_blank ? "✓\033[0m" : "✗\033[0m");
     }
 
     // === Vector Tests ===
-    std::println("\n=== Vector Tests ===");
+    nero_println("\n=== Vector Tests ===");
 
     auto vec_test = [](const char* label, const char* expr, auto check) {
         std::array<dv::Expression, 1> exprs = { dv::Expression{.value_expr = expr} };
@@ -635,7 +637,7 @@ int main(){
         } else {
             ok = check(r.value(), detail);
         }
-        std::println("{} {} → {} {}",
+        nero_println("{} {} → {} {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             label,
             ok ? "ok" : detail,
@@ -725,9 +727,9 @@ int main(){
         dv::Evaluator ev; ev.evaluate_expression_list(ex);
         dv::UnitVector tgt; tgt.vec={1,-2,0,0,0,0,0};
         auto fs = ev.get_available_formulas(tgt,false);
-        std::println("Formula chain (T,C,m/s,kg → m/s²):");
+        nero_println("Formula chain (T,C,m/s,kg → m/s²):");
         for (int i=0;i<(int)std::min(fs.size(),(std::size_t)4);i++)
-            std::println("  [{}] {} ({})", i+1, fs[i].name, fs[i].category.empty()?"main":fs[i].category);
+            nero_println("  [{}] {} ({})", i+1, fs[i].name, fs[i].category.empty()?"main":fs[i].category);
     }
     return EXIT_SUCCESS;
 }

@@ -13,7 +13,7 @@
 #include <optional>
 #include <vector>
 #ifdef EVAL_PRINT_AST
-#include <print>
+#include "print.hpp"
 #endif
 
 std::string dv::Expression::get_single_expression() const {
@@ -553,7 +553,7 @@ dv::MaybeASTDependencies dv::Evaluator::parse_expression(const Expression expres
     Parser parser{tokens.value()};
 #ifdef EVAL_PRINT_AST
     auto p = parser.parse();
-    std::println("{}", *p.value());
+    nero_println("{}", *p.value());
     return p;
 #else
     return parser.parse();
@@ -569,7 +569,7 @@ dv::MaybeASTDependencies dv::Evaluator::parse_expression(const std::string expre
     Parser parser{tokens.value()};
 #ifdef EVAL_PRINT_AST
     auto p = parser.parse();
-    std::println("{}", *p.value());
+    nero_println("{}", *p.value());
     return p;
 #else
     return parser.parse();

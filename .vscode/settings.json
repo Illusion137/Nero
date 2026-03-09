@@ -2,6 +2,7 @@
 	"editor.formatOnSave": false,
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"clangd.fallbackFlags": [
+		"-std=c++23",
 		"-I/Users/illusion/dev/emsdk/upstream/emscripten/system/include"
 	]
 }

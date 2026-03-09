@@ -122,7 +122,7 @@ unit_case_map.push(["ATM", get_unit_case("ATM", 101325, "DIM_PASCAL")]);
 let file_str = auto_generated_header;
 file_str += `
 #define UNIT_CASE(str, value, unit) case strint<str>(): return advance_with_token(dv::UnitValue{value, unit}, sizeof(str) - 1)
-#define UNIT_CASE_LIST_BEGIN(size) if(remaining_length() >= size) { switch(strint(it, size)) { default: break;
+#define UNIT_CASE_LIST_BEGIN(size) if(remaining_length() >= size) { switch(strint_fn(it, size)) { default: break;
 #define UNIT_CASE_LIST_END(size) }}
 `;
 

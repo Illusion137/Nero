@@ -1,19 +1,34 @@
 # Nero
 
-A C++23 library for evaluating LaTeX math expressions with SI unit tracking. Has a WASM build for use in the browser.
+<div style="text-align: center;" align="center">
+    <img src="public/nero.png" height="200px" alt="Nero cat">
+    <hr>
+</div>
 
-## Build
+A C++23 library for evaluating LaTeX math expressions with builtin dimensional analysis and formula finding. Nero supports both a C++ interface as well as a WASM one for use in the browser.\
+For a demo of Nero being used in a React application, see [Everett](https://github.com/Illusion137/Everett). For the demo of Everett, see [Everett Demo](https://sumii.me/everett.html).
+
+## Installation as Library
+```bash
+git clone https://github.com/Illusion137/Nero.git
+```
+
+### Build
 
 ```bash
 # Native
 cmake -S . -B build
 cmake --build build
-./build/Nero        # runs test suite
+./build/Nero        # runs tests
 
 # WASM (requires Emscripten)
 emcmake cmake -S . -B build-wasm
 cmake --build build-wasm
 ```
+
+## Usage
+
+
 
 ## What it does
 
@@ -45,6 +60,10 @@ Supported:
 - `ans` holds the last evaluated result
 
 Built-in physical constants: `c`, `h`, `e_c`, `e_0`, `k_e`, `m_e`, `m_p`, `m_n`, `a_0`, `N_A`, `C_K`
+
+## Features
+
+## Benchmarks
 
 ## C++ usage
 

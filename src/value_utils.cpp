@@ -63,7 +63,7 @@ std::string join_cdot(const std::vector<std::string>& parts) {
 } // anonymous namespace
 
 std::string dv::unit_to_latex(const UnitVector& unit) {
-    constexpr std::array<std::string, 7> BASE_UNITS = {"m", "s", "kg", "A", "K", "mol", "cd"};
+    const std::array<std::string, 7> BASE_UNITS = {"m", "s", "kg", "A", "K", "mol", "cd"};
 
     struct DerivedUnit {
         std::string symbol;

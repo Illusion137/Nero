@@ -1,6 +1,8 @@
+#define _USE_MATH_DEFINES 
 #include "lexer.hpp"
 #include "dimeval.hpp"
 #include "token.hpp"
+#include <cmath>
 #include <array>
 #include <cctype>
 #include <cstdint>
@@ -24,7 +26,7 @@ consteval __uint128_t strint(){
     }
     return val;
 }
-constexpr __uint128_t strint(const char *str, std::size_t size){
+constexpr __uint128_t strint_fn(const char *str, std::size_t size){
     __uint128_t val = 0;
     for(std::uint32_t i = 0; i < size; i++){
         val |= (__uint128_t)str[i] << (8 * i);
@@ -188,7 +190,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
         return advance_with_token(TokenType::PERCENT);
     }
     if(remaining_length() >= 8) {
-        switch(strint(it, 8)) {
+        switch(strint_fn(it, 8)) {
             case strint<"sin^{-1}">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSIN, 8);
             case strint<"cos^{-1}">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOS, 8);
             case strint<"tan^{-1}">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCTAN, 8);
@@ -199,7 +201,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
         }
     }
     if(remaining_length() >= 6) {
-        switch(strint(it, 6)) {
+        switch(strint_fn(it, 6)) {
             case strint<"arcsin">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSIN, 6);
             case strint<"arccos">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOS, 6);
             case strint<"arctan">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCTAN, 6);
@@ -213,7 +215,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
         }
     }
     if(remaining_length() >= 5) {
-        switch(strint(it, 5)) {
+        switch(strint_fn(it, 5)) {
             case strint<"floor">(): return advance_with_token(TokenType::BUILTIN_FUNC_FLOOR, 5);
             case strint<"round">(): return advance_with_token(TokenType::BUILTIN_FUNC_ROUND, 5);
             case strint<"times">(): return advance_with_token(TokenType::TIMES, 5);
@@ -261,7 +263,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
         }
     }
     if(remaining_length() >= 3) {
-        switch(strint(it, 3)) {
+        switch(strint_fn(it, 3)) {
             case strint<"hat">(): {
                 advance(3);
                 std::array<char, 4> buf; std::uint8_t w = 0; buf.fill(0);
@@ -331,7 +333,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
             auto result = collect_curly_brackets(buffer.data(), buffer.size(), write);
             if(!result) return {TokenType::UNKNOWN, "Bad Operator name result"};
             if(write >= 5) {
-                switch(strint(buffer.data(), 5)) {
+                switch(strint_fn(buffer.data(), 5)) {
                     case strint<"floor">(): return advance_with_token(TokenType::BUILTIN_FUNC_FLOOR, 0);
                     case strint<"round">(): return advance_with_token(TokenType::BUILTIN_FUNC_ROUND, 0);
                     case strint<"trace">(): return advance_with_token(TokenType::BUILTIN_FUNC_TRACE, 0);
@@ -352,7 +354,7 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
                 }
             }
             if(write >= 3) {
-                switch(strint(buffer.data(), 3)) {
+                switch(strint_fn(buffer.data(), 3)) {
                     case strint<"abs">(): return advance_with_token(TokenType::BUILTIN_FUNC_ABS, 0);
                     case strint<"nCr">(): return advance_with_token(TokenType::BUILTIN_FUNC_NCR, 0);
                     case strint<"nPr">(): return advance_with_token(TokenType::BUILTIN_FUNC_NPR, 0);
@@ -472,7 +474,7 @@ dv::Token dv::Lexer::consume_next_token() noexcept{
                     return get_indentifier_token();
                 }
                 // Check for known multi-char identifiers like "ans"
-                if(alpha_count == 3 && remaining_length() >= 3 && strint(it, 3) == strint<"ans">()) {
+                if(alpha_count == 3 && remaining_length() >= 3 && strint_fn(it, 3) == strint<"ans">()) {
                     return get_indentifier_token(3);
                 }
                 return get_indentifier_token(1);
