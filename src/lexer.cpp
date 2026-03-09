@@ -189,8 +189,16 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
     if(peek() == '%') {
         return advance_with_token(TokenType::PERCENT);
     }
+    if(remaining_length() >= 9) {
+        switch(strint_fn(it, 9)) {
+            case strint<"nleqslant">(): return advance_with_token(TokenType::GREATER_THAN, 9);
+            case strint<"ngeqslant">(): return advance_with_token(TokenType::LESS_THAN, 9);
+            default: break;
+        }
+    }
     if(remaining_length() >= 8) {
         switch(strint_fn(it, 8)) {
+            case strint<"leqslant">(): return advance_with_token(TokenType::LESS_EQUAL, 8);
             case strint<"sin^{-1}">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSIN, 8);
             case strint<"cos^{-1}">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOS, 8);
             case strint<"tan^{-1}">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCTAN, 8);
@@ -216,6 +224,8 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
     }
     if(remaining_length() >= 5) {
         switch(strint_fn(it, 5)) {
+            case strint<"infty">(): return advance_with_token(INFINITY, 5);
+            case strint<"nless">(): return advance_with_token(TokenType::GREATER_EQUAL, 5);
             case strint<"floor">(): return advance_with_token(TokenType::BUILTIN_FUNC_FLOOR, 5);
             case strint<"round">(): return advance_with_token(TokenType::BUILTIN_FUNC_ROUND, 5);
             case strint<"times">(): return advance_with_token(TokenType::TIMES, 5);
@@ -386,15 +396,10 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
     return get_indentifier_token();
 }
 
-// ban = bar.split('\n').map(a => a.trim()).filter(s => s).sort((a,b) => {
-    // return a.split(',')[0].length - b.split(',')[0].length;
-// })
-
 nero::Token nero::Lexer::get_unit_token() noexcept {
     #include "gen/lexer_units.ghpp"
     return {};
 }
-
 
 void nero::Lexer::devoure_whitespace() noexcept{
     while(std::isspace(peek())) advance();
