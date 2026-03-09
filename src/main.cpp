@@ -212,12 +212,12 @@ int main(){
         // [1,2,3] - tested for first element
 
         // Temperature and angle conversion builtins
-        {"\\rad(180)", M_PI},
+        {"\\operatorname{rad}(180)", M_PI},
         {"\\deg(\\pi)", 180.0},
-        {"\\CelK(373.15)", 100.0},   // 373.15 K → 100°C
-        {"\\CelF(32)", 0.0},          // 32°F → 0°C
-        {"\\FahrC(100)", 212.0},      // 100°C → 212°F
-        {"\\FahrK(373.15)", 212.0},   // 373.15 K → 212°F
+        {"\\operatorname{CelK}(373.15)", 100.0},   // 373.15 K → 100°C
+        {"\\operatorname{CelF}(32)", 0.0},          // 32°F → 0°C
+        {"\\operatorname{FahrC}(100)", 212.0},      // 100°C → 212°F
+        {"\\operatorname{FahrK}(373.15)", 212.0},   // 373.15 K → 212°F
     };
 
     static const std::vector<LatexMultiTest> MULTI_TESTS = {
