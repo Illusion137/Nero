@@ -27,8 +27,26 @@ cmake --build build-wasm
 ```
 
 ## Usage
+### Evaluate Single Expression
+```cpp
+#include "evaluator.hpp"
 
-
+nero::Expression single_expression = nero::Expression{.value_expr = "13 + 7", .unit_expr="\\mm^{2}"}; // -> 2 * 10^{-5} m^2
+nero::Evaluator evaluator{};
+const auto &result = evaluator.evaluate_expression(single_expression);
+if(!result) { // Bad result
+    // handle bad result
+    std::string err = value.error();
+    return -1.0;
+}
+// Single value
+if (auto p = std::get_if<nero::UnitValue>(&result.value())) return p->value;
+// Multiple values
+if (auto p = std::get_if<nero::UnitValueList>(&result.value())) return p->elements.empty() ? 0.0L : p->elements[0].value;
+// Boolean value
+if (auto p = std::get_if<nero::BooleanValue>(&result.value())) return p->value ? 1.0L : 0.0L;
+```
+Notice how the value can be many things. Not limited to just these; values can also be `UnitValue`, `UnitValueList`, `BooleanValue`, `Function`, `VoidValue`, `VectorValue`.
 
 ## What it does
 
@@ -37,11 +55,11 @@ Parses and evaluates LaTeX expressions in sequence, with a shared variable conte
 ```
 x = 5.6
 y = 3.21
-z = x * y          → 17.976 (sig figs: 2)
+z = x * y       → 17.976 (sig figs: 2)
 ```
 
 Supported:
-- Arithmetic: `+`, `-`, `*`, `/`, `^`, `\frac{}{}`, `\sqrt{}`
+- Arithmetic: `+`, `-`, `*`, `/`, `^`, `\frac{}{}`, `\sqrt{}`, `\sqrt[n]{}`, `\div`
 - Trig / log: `\sin`, `\cos`, `\tan`, `\sec`, `\csc`, `\cot`, `\ln`, `\log`, `\log_b`
 - Combinatorics: `n!`, `\nCr`, `\nPr`
 - Complex numbers (imaginary results propagate automatically)
@@ -59,9 +77,80 @@ Supported:
 - Unit conversion via `conversion_unit_expr` on the `Expression` struct
 - `ans` holds the last evaluated result
 
-Built-in physical constants: `c`, `h`, `e_c`, `e_0`, `k_e`, `m_e`, `m_p`, `m_n`, `a_0`, `N_A`, `C_K`
+### Constants
 
-## Features
+| Constant                                                               | Name                     |
+| ---------------------------------------------------------------------- | ------------------------ |
+| $\pi = 3.14159265358979323846 \cdot \mathrm{1}$                        | Pi                       |
+| $\mathrm{e} = 2.718281828459 \cdot \mathrm{1}$                         | Euler's Constant         |
+| $\mathrm{e_c} = 1.602 \cdot 10^{-19} \cdot \mathrm{C}$                 | Elementary Charge        |
+| $\mathrm{e_0} = 8.854187817 \cdot 10^{-12} \cdot \mathrm{\frac{F}{m}}$ | Electric Constant        |
+| $\mathrm{k_e} = 8.99 \cdot 10^9 \cdot \mathrm{\frac{Nm^2}{C^2}}$       | Coulomb constant         |
+| $\mathrm{c} = 2.99792458 \cdot 10^8 \cdot \mathrm{\frac{m}{s}}$        | Speed of light in vacuum |
+| $\mathrm{m_e} = 9.1938 \cdot 10^{-31} \cdot \mathrm{kg}$               | Electron mass            |
+| $\mathrm{m_p} = 1.67262 \cdot 10^{-27} \cdot \mathrm{kg}$              | Proton mass              |
+| $\mathrm{m_n} = 1.674927 \cdot 10^{-27} \cdot \mathrm{kg}$             | Neutron mass             |
+| $\mathrm{R_g} = 8.31446 \cdot \mathrm{JK^{-1}mol^{-1}}$                | Ideal gas constant       |
+| $\mathrm{C_K} = 273.15 \cdot \mathrm{K}$                               | Celsius–Kelvin offset    |
+| $\mathrm{h} = 6.620607015 \cdot 10^{-34} \cdot \mathrm{Js}$            | Planck constant          |
+| $\mathrm{a_0} = 5.291772 \cdot 10^{-11} \cdot \mathrm{m}$              | Bohr radius              |
+| $\mathrm{N_A} = 6.022 \cdot 10^{23} \cdot \mathrm{mol^{-1}}$           | Avogadro constant        |
+
+### Functions
+
+#### Basic Math
+
+`sqrt` `ceil` `floor` `round` `abs`
+
+#### Trigonometric
+
+`sin` `cos` `tan`  
+`sec` `csc` `cot`
+
+#### Inverse Trigonometric
+
+`arcsin` `arccos` `arctan`  
+`arcsec` `arccsc` `arccot`
+
+#### Logarithmic
+
+`log` `ln`
+
+#### Combinatorics
+
+`nCr` `nPr`
+
+#### Aggregates
+
+`sum` `prod` `min` `max`
+
+#### Number Theory
+
+`gcd` `lcm`
+
+#### Linear Algebra
+
+`det` `trace`
+
+#### Complex Numbers
+
+`conj` `Re` `Im`
+
+#### Utility
+
+`fact` `sig` `val` `unit`
+
+#### Integration
+
+`int`
+
+#### Temperature Conversion
+
+`FahrC` `FahrK` `CelK` `CelF`
+
+#### Angle Conversion
+
+`rad` `deg`
 
 ## Benchmarks
 

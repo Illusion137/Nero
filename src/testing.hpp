@@ -49,27 +49,25 @@ static inline bool run_non_related_tests(const std::span<const LatexTest> tests)
     std::int32_t passed = 0;
     bool success = true;
     for(const auto &test: tests){
-        std::array<nero::Expression, 1> single_expression_list = {
-            nero::Expression{.value_expr = test.expression}
-        };
+        nero::Expression single_expression = nero::Expression{.value_expr = test.expression};
         nero::Evaluator evaluator{};
-        const auto &eval = evaluator.evaluate_expression_list(single_expression_list);
-        const auto &value = eval[0];
+        const auto &eval = evaluator.evaluate_expression(single_expression);
+        const auto &value = eval;
         if(!value){
             success = false;
-            print_tokens_red(single_expression_list[0].get_single_expression());
-            nero_println("\033[31m[FAIL] {} = ERROR({}) ✗\033[0m", single_expression_list[0].get_single_expression(), value.error());
+            print_tokens_red(single_expression.get_single_expression());
+            nero_println("\033[31m[FAIL] {} = ERROR({}) ✗\033[0m", single_expression.get_single_expression(), value.error());
             continue;
         }
         if(std::fabs((double)get_scalar_val(value.value()) - test.expected_result) > epsilon){
             success = false;
-            nero_println("\033[31m[FAIL] {} = {} : Expected {} ✗\033[0m", single_expression_list[0].get_single_expression(), (double)get_scalar_val(value.value()), test.expected_result);
-            print_ast_red(single_expression_list[0].get_single_expression());
+            nero_println("\033[31m[FAIL] {} = {} : Expected {} ✗\033[0m", single_expression.get_single_expression(), (double)get_scalar_val(value.value()), test.expected_result);
+            print_ast_red(single_expression.get_single_expression());
             continue;
         }
         else {
             passed++;
-            nero_println("\033[0;32m[PASS] {} = {} ✓\033[0m", single_expression_list[0].get_single_expression(), test.expected_result);
+            nero_println("\033[0;32m[PASS] {} = {} ✓\033[0m", single_expression.get_single_expression(), test.expected_result);
         }
     }
     if(tests.size() - passed == 0) {
