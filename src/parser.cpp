@@ -6,41 +6,41 @@
 #include <format>
 #include <memory>
 
-static std::string describe_token(const dv::Token& token) {
+static std::string describe_token(const nero::Token& token) {
     switch(token.type) {
-        case dv::TokenType::TEOF: return "end of expression";
-        case dv::TokenType::NUMERIC_LITERAL: return std::format("number '{}'", token.text);
-        case dv::TokenType::IDENTIFIER: return std::format("identifier '{}'", token.text);
-        case dv::TokenType::FORMULA_QUERY: return "'?'";
-        case dv::TokenType::EQUAL: return "'='";
-        case dv::TokenType::PLUS: return "'+'";
-        case dv::TokenType::MINUS: return "'-'";
-        case dv::TokenType::TIMES: return "'*'";
-        case dv::TokenType::DIVIDE: return "'/'";
-        case dv::TokenType::FRACTION: return "'\\frac'";
-        case dv::TokenType::EXPONENT: return "'^'";
-        case dv::TokenType::FACTORIAL: return "'!'";
-        case dv::TokenType::ABSOLUTE_BAR: return "'|'";
-        case dv::TokenType::LEFT_PAREN: return "'('";
-        case dv::TokenType::RIGHT_PAREN: return "')'";
-        case dv::TokenType::LEFT_CURLY_BRACKET: return "'{'";
-        case dv::TokenType::RIGHT_CURLY_BRACKET: return "'}'";
-        case dv::TokenType::LEFT_BRACKET: return "'['";
-        case dv::TokenType::RIGHT_BRACKET: return "']'";
-        case dv::TokenType::LEFT_ABSOLUTE_BAR: return "'\\left|'";
-        case dv::TokenType::RIGHT_ABSOLUTE_BAR: return "'\\right|'";
-        case dv::TokenType::COMMA: return "','";
-        case dv::TokenType::SUBSCRIPT: return "'_'";
-        case dv::TokenType::PLUS_MINUS: return "'\\pm'";
-        case dv::TokenType::LESS_THAN: return "'<'";
-        case dv::TokenType::GREATER_THAN: return "'>'";
-        case dv::TokenType::LESS_EQUAL: return "'\\leq'";
-        case dv::TokenType::GREATER_EQUAL: return "'\\geq'";
-        case dv::TokenType::LOGICAL_AND: return "'\\land'";
-        case dv::TokenType::LOGICAL_OR: return "'\\lor'";
-        case dv::TokenType::LOGICAL_NOT: return "'\\lnot'";
-        case dv::TokenType::MODULO: return "'\\mod'";
-        case dv::TokenType::PERCENT: return "'\\%'";
+        case nero::TokenType::TEOF: return "end of expression";
+        case nero::TokenType::NUMERIC_LITERAL: return std::format("number '{}'", token.text);
+        case nero::TokenType::IDENTIFIER: return std::format("identifier '{}'", token.text);
+        case nero::TokenType::FORMULA_QUERY: return "'?'";
+        case nero::TokenType::EQUAL: return "'='";
+        case nero::TokenType::PLUS: return "'+'";
+        case nero::TokenType::MINUS: return "'-'";
+        case nero::TokenType::TIMES: return "'*'";
+        case nero::TokenType::DIVIDE: return "'/'";
+        case nero::TokenType::FRACTION: return "'\\frac'";
+        case nero::TokenType::EXPONENT: return "'^'";
+        case nero::TokenType::FACTORIAL: return "'!'";
+        case nero::TokenType::ABSOLUTE_BAR: return "'|'";
+        case nero::TokenType::LEFT_PAREN: return "'('";
+        case nero::TokenType::RIGHT_PAREN: return "')'";
+        case nero::TokenType::LEFT_CURLY_BRACKET: return "'{'";
+        case nero::TokenType::RIGHT_CURLY_BRACKET: return "'}'";
+        case nero::TokenType::LEFT_BRACKET: return "'['";
+        case nero::TokenType::RIGHT_BRACKET: return "']'";
+        case nero::TokenType::LEFT_ABSOLUTE_BAR: return "'\\left|'";
+        case nero::TokenType::RIGHT_ABSOLUTE_BAR: return "'\\right|'";
+        case nero::TokenType::COMMA: return "','";
+        case nero::TokenType::SUBSCRIPT: return "'_'";
+        case nero::TokenType::PLUS_MINUS: return "'\\pm'";
+        case nero::TokenType::LESS_THAN: return "'<'";
+        case nero::TokenType::GREATER_THAN: return "'>'";
+        case nero::TokenType::LESS_EQUAL: return "'\\leq'";
+        case nero::TokenType::GREATER_EQUAL: return "'\\geq'";
+        case nero::TokenType::LOGICAL_AND: return "'\\land'";
+        case nero::TokenType::LOGICAL_OR: return "'\\lor'";
+        case nero::TokenType::LOGICAL_NOT: return "'\\lnot'";
+        case nero::TokenType::MODULO: return "'\\mod'";
+        case nero::TokenType::PERCENT: return "'\\%'";
         default: {
             if(!token.text.empty()) return std::format("'{}'", token.text);
             return "unknown token";
@@ -48,210 +48,210 @@ static std::string describe_token(const dv::Token& token) {
     }
 }
 
-bool dv::Parser::match(dv::TokenType type) {
+bool nero::Parser::match(nero::TokenType type) {
     if (peek().type == type) { position++; return true; }
     return false;
 }
 
-std::int32_t dv::Parser::builtin_function_args(dv::TokenType type){
+std::int32_t nero::Parser::builtin_function_args(nero::TokenType type){
     switch (type) {
-        case dv::TokenType::BUILTIN_FUNC_LN: return 1;
-        case dv::TokenType::BUILTIN_FUNC_SIN: return 1;
-        case dv::TokenType::BUILTIN_FUNC_COS: return 1;
-        case dv::TokenType::BUILTIN_FUNC_TAN: return 1;
-        case dv::TokenType::BUILTIN_FUNC_SEC: return 1;
-        case dv::TokenType::BUILTIN_FUNC_CSC: return 1;
-        case dv::TokenType::BUILTIN_FUNC_COT: return 1;
-        case dv::TokenType::BUILTIN_FUNC_LOG: return 1;
-        case dv::TokenType::BUILTIN_FUNC_ABS: return 1;
-        case dv::TokenType::BUILTIN_FUNC_NCR: return 2;
-        case dv::TokenType::BUILTIN_FUNC_NPR: return 2;
-        case dv::TokenType::BUILTIN_FUNC_SQRT: return 1;
-        case dv::TokenType::BUILTIN_FUNC_CEIL: return 1;
-        case dv::TokenType::BUILTIN_FUNC_FACT: return 1;
-        case dv::TokenType::BUILTIN_FUNC_FLOOR: return 1;
-        case dv::TokenType::BUILTIN_FUNC_ROUND: return 2;
-        case dv::TokenType::BUILTIN_FUNC_ARCSIN: return 1;
-        case dv::TokenType::BUILTIN_FUNC_ARCCOS: return 1;
-        case dv::TokenType::BUILTIN_FUNC_ARCTAN: return 1;
-        case dv::TokenType::BUILTIN_FUNC_ARCSEC: return 1;
-        case dv::TokenType::BUILTIN_FUNC_ARCCSC: return 1;
-        case dv::TokenType::BUILTIN_FUNC_ARCCOT: return 1;
-        case dv::TokenType::BUILTIN_FUNC_VALUE: return 1;
-        case dv::TokenType::BUILTIN_FUNC_UNIT: return 1;
-        case dv::TokenType::BUILTIN_FUNC_SIG: return 1;
-        case dv::TokenType::BUILTIN_FUNC_DET: return 1;
-        case dv::TokenType::BUILTIN_FUNC_TRACE: return 1;
-        case dv::TokenType::BUILTIN_FUNC_RE: return 1;
-        case dv::TokenType::BUILTIN_FUNC_IM: return 1;
-        case dv::TokenType::BUILTIN_FUNC_CONJ: return 1;
-        case dv::TokenType::BUILTIN_FUNC_RAD: return 1;
-        case dv::TokenType::BUILTIN_FUNC_DEG: return 1;
-        case dv::TokenType::BUILTIN_FUNC_CELK: return 1;
-        case dv::TokenType::BUILTIN_FUNC_CELF: return 1;
-        case dv::TokenType::BUILTIN_FUNC_FAHRC: return 1;
-        case dv::TokenType::BUILTIN_FUNC_FAHRK: return 1;
-        case dv::TokenType::BUILTIN_FUNC_MIN: return -2; // variadic, at least 2
-        case dv::TokenType::BUILTIN_FUNC_MAX: return -2;
-        case dv::TokenType::BUILTIN_FUNC_GCD: return -2;
-        case dv::TokenType::BUILTIN_FUNC_LCM: return -2;
+        case nero::TokenType::BUILTIN_FUNC_LN: return 1;
+        case nero::TokenType::BUILTIN_FUNC_SIN: return 1;
+        case nero::TokenType::BUILTIN_FUNC_COS: return 1;
+        case nero::TokenType::BUILTIN_FUNC_TAN: return 1;
+        case nero::TokenType::BUILTIN_FUNC_SEC: return 1;
+        case nero::TokenType::BUILTIN_FUNC_CSC: return 1;
+        case nero::TokenType::BUILTIN_FUNC_COT: return 1;
+        case nero::TokenType::BUILTIN_FUNC_LOG: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ABS: return 1;
+        case nero::TokenType::BUILTIN_FUNC_NCR: return 2;
+        case nero::TokenType::BUILTIN_FUNC_NPR: return 2;
+        case nero::TokenType::BUILTIN_FUNC_SQRT: return 1;
+        case nero::TokenType::BUILTIN_FUNC_CEIL: return 1;
+        case nero::TokenType::BUILTIN_FUNC_FACT: return 1;
+        case nero::TokenType::BUILTIN_FUNC_FLOOR: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ROUND: return 2;
+        case nero::TokenType::BUILTIN_FUNC_ARCSIN: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCCOS: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCTAN: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCSEC: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCCSC: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCCOT: return 1;
+        case nero::TokenType::BUILTIN_FUNC_VALUE: return 1;
+        case nero::TokenType::BUILTIN_FUNC_UNIT: return 1;
+        case nero::TokenType::BUILTIN_FUNC_SIG: return 1;
+        case nero::TokenType::BUILTIN_FUNC_DET: return 1;
+        case nero::TokenType::BUILTIN_FUNC_TRACE: return 1;
+        case nero::TokenType::BUILTIN_FUNC_RE: return 1;
+        case nero::TokenType::BUILTIN_FUNC_IM: return 1;
+        case nero::TokenType::BUILTIN_FUNC_CONJ: return 1;
+        case nero::TokenType::BUILTIN_FUNC_RAD: return 1;
+        case nero::TokenType::BUILTIN_FUNC_DEG: return 1;
+        case nero::TokenType::BUILTIN_FUNC_CELK: return 1;
+        case nero::TokenType::BUILTIN_FUNC_CELF: return 1;
+        case nero::TokenType::BUILTIN_FUNC_FAHRC: return 1;
+        case nero::TokenType::BUILTIN_FUNC_FAHRK: return 1;
+        case nero::TokenType::BUILTIN_FUNC_MIN: return -2; // variadic, at least 2
+        case nero::TokenType::BUILTIN_FUNC_MAX: return -2;
+        case nero::TokenType::BUILTIN_FUNC_GCD: return -2;
+        case nero::TokenType::BUILTIN_FUNC_LCM: return -2;
         default: return 0;
     }
 }
 
-std::pair<std::int32_t, std::int32_t> dv::Parser::precedence(dv::TokenType type){
+std::pair<std::int32_t, std::int32_t> nero::Parser::precedence(nero::TokenType type){
     switch (type) {
-        case dv::TokenType::EQUAL:
+        case nero::TokenType::EQUAL:
             return { 1, 1 };
-        case dv::TokenType::LOGICAL_OR:
+        case nero::TokenType::LOGICAL_OR:
             return { 2, 3 };
-        case dv::TokenType::LOGICAL_AND:
+        case nero::TokenType::LOGICAL_AND:
             return { 4, 5 };
-        case dv::TokenType::LESS_THAN:
-        case dv::TokenType::GREATER_THAN:
-        case dv::TokenType::LESS_EQUAL:
-        case dv::TokenType::GREATER_EQUAL:
+        case nero::TokenType::LESS_THAN:
+        case nero::TokenType::GREATER_THAN:
+        case nero::TokenType::LESS_EQUAL:
+        case nero::TokenType::GREATER_EQUAL:
             return { 6, 7 };
-        case dv::TokenType::PLUS:
-        case dv::TokenType::MINUS:
-        case dv::TokenType::PLUS_MINUS:
+        case nero::TokenType::PLUS:
+        case nero::TokenType::MINUS:
+        case nero::TokenType::PLUS_MINUS:
             return { 10, 11 };
-        case dv::TokenType::TIMES:
-        case dv::TokenType::DIVIDE:
-        case dv::TokenType::MODULO:
-        case dv::TokenType::DOT_PRODUCT:
+        case nero::TokenType::TIMES:
+        case nero::TokenType::DIVIDE:
+        case nero::TokenType::MODULO:
+        case nero::TokenType::DOT_PRODUCT:
             return { 20, 21 };
-        case dv::TokenType::FACTORIAL:
-        case dv::TokenType::PERCENT:
+        case nero::TokenType::FACTORIAL:
+        case nero::TokenType::PERCENT:
             return { 20, 25 };
-        case dv::TokenType::EXPONENT:
+        case nero::TokenType::EXPONENT:
             return { 31, 30 };
         default: return {-1, -1};
     }
 }
 
-bool dv::Parser::is_atom(dv::TokenType type) {
+bool nero::Parser::is_atom(nero::TokenType type) {
     switch(type) {
-        case dv::TokenType::NUMERIC_LITERAL:
-        case dv::TokenType::IDENTIFIER:
-        case dv::TokenType::ABSOLUTE_BAR:
-        case dv::TokenType::FRACTION:
-        case dv::TokenType::FORMULA_QUERY:
-        case dv::TokenType::PIECEWISE_BEGIN:
-        case dv::TokenType::MATRIX_BEGIN:
-        case dv::TokenType::VECTOR_HAT:
+        case nero::TokenType::NUMERIC_LITERAL:
+        case nero::TokenType::IDENTIFIER:
+        case nero::TokenType::ABSOLUTE_BAR:
+        case nero::TokenType::FRACTION:
+        case nero::TokenType::FORMULA_QUERY:
+        case nero::TokenType::PIECEWISE_BEGIN:
+        case nero::TokenType::MATRIX_BEGIN:
+        case nero::TokenType::VECTOR_HAT:
             return true;
         default: return is_builtin_function(type);
     }
 }
 
-bool dv::Parser::is_binop(dv::TokenType type) {
+bool nero::Parser::is_binop(nero::TokenType type) {
     switch(type) {
-        case dv::TokenType::PLUS:
-        case dv::TokenType::MINUS:
-        case dv::TokenType::TIMES:
-        case dv::TokenType::DIVIDE:
-        case dv::TokenType::EXPONENT:
-        case dv::TokenType::EQUAL:
-        case dv::TokenType::PLUS_MINUS:
-        case dv::TokenType::LESS_THAN:
-        case dv::TokenType::GREATER_THAN:
-        case dv::TokenType::LESS_EQUAL:
-        case dv::TokenType::GREATER_EQUAL:
-        case dv::TokenType::LOGICAL_AND:
-        case dv::TokenType::LOGICAL_OR:
-        case dv::TokenType::MODULO:
-        case dv::TokenType::DOT_PRODUCT:
+        case nero::TokenType::PLUS:
+        case nero::TokenType::MINUS:
+        case nero::TokenType::TIMES:
+        case nero::TokenType::DIVIDE:
+        case nero::TokenType::EXPONENT:
+        case nero::TokenType::EQUAL:
+        case nero::TokenType::PLUS_MINUS:
+        case nero::TokenType::LESS_THAN:
+        case nero::TokenType::GREATER_THAN:
+        case nero::TokenType::LESS_EQUAL:
+        case nero::TokenType::GREATER_EQUAL:
+        case nero::TokenType::LOGICAL_AND:
+        case nero::TokenType::LOGICAL_OR:
+        case nero::TokenType::MODULO:
+        case nero::TokenType::DOT_PRODUCT:
             return true;
         default: return false;
     }
 }
 
-bool dv::Parser::is_builtin_function(dv::TokenType type){
+bool nero::Parser::is_builtin_function(nero::TokenType type){
     switch(type){
-        case dv::TokenType::BUILTIN_FUNC_LN:
-        case dv::TokenType::BUILTIN_FUNC_SIN:
-        case dv::TokenType::BUILTIN_FUNC_COS:
-        case dv::TokenType::BUILTIN_FUNC_TAN:
-        case dv::TokenType::BUILTIN_FUNC_SEC:
-        case dv::TokenType::BUILTIN_FUNC_CSC:
-        case dv::TokenType::BUILTIN_FUNC_COT:
-        case dv::TokenType::BUILTIN_FUNC_LOG:
-        case dv::TokenType::BUILTIN_FUNC_ABS:
-        case dv::TokenType::BUILTIN_FUNC_NCR:
-        case dv::TokenType::BUILTIN_FUNC_NPR:
-        case dv::TokenType::BUILTIN_FUNC_SQRT:
-        case dv::TokenType::BUILTIN_FUNC_CEIL:
-        case dv::TokenType::BUILTIN_FUNC_FACT:
-        case dv::TokenType::BUILTIN_FUNC_FLOOR:
-        case dv::TokenType::BUILTIN_FUNC_ROUND:
-        case dv::TokenType::BUILTIN_FUNC_ARCSIN:
-        case dv::TokenType::BUILTIN_FUNC_ARCCOS:
-        case dv::TokenType::BUILTIN_FUNC_ARCTAN:
-        case dv::TokenType::BUILTIN_FUNC_ARCSEC:
-        case dv::TokenType::BUILTIN_FUNC_ARCCSC:
-        case dv::TokenType::BUILTIN_FUNC_ARCCOT:
-        case dv::TokenType::BUILTIN_FUNC_VALUE:
-        case dv::TokenType::BUILTIN_FUNC_UNIT:
-        case dv::TokenType::BUILTIN_FUNC_SUM:
-        case dv::TokenType::BUILTIN_FUNC_PROD:
-        case dv::TokenType::BUILTIN_FUNC_INT:
-        case dv::TokenType::BUILTIN_FUNC_MIN:
-        case dv::TokenType::BUILTIN_FUNC_MAX:
-        case dv::TokenType::BUILTIN_FUNC_GCD:
-        case dv::TokenType::BUILTIN_FUNC_LCM:
-        case dv::TokenType::BUILTIN_FUNC_SIG:
-        case dv::TokenType::BUILTIN_FUNC_DET:
-        case dv::TokenType::BUILTIN_FUNC_TRACE:
-        case dv::TokenType::BUILTIN_FUNC_RE:
-        case dv::TokenType::BUILTIN_FUNC_IM:
-        case dv::TokenType::BUILTIN_FUNC_CONJ:
-        case dv::TokenType::BUILTIN_FUNC_RAD:
-        case dv::TokenType::BUILTIN_FUNC_DEG:
-        case dv::TokenType::BUILTIN_FUNC_CELK:
-        case dv::TokenType::BUILTIN_FUNC_CELF:
-        case dv::TokenType::BUILTIN_FUNC_FAHRC:
-        case dv::TokenType::BUILTIN_FUNC_FAHRK:
+        case nero::TokenType::BUILTIN_FUNC_LN:
+        case nero::TokenType::BUILTIN_FUNC_SIN:
+        case nero::TokenType::BUILTIN_FUNC_COS:
+        case nero::TokenType::BUILTIN_FUNC_TAN:
+        case nero::TokenType::BUILTIN_FUNC_SEC:
+        case nero::TokenType::BUILTIN_FUNC_CSC:
+        case nero::TokenType::BUILTIN_FUNC_COT:
+        case nero::TokenType::BUILTIN_FUNC_LOG:
+        case nero::TokenType::BUILTIN_FUNC_ABS:
+        case nero::TokenType::BUILTIN_FUNC_NCR:
+        case nero::TokenType::BUILTIN_FUNC_NPR:
+        case nero::TokenType::BUILTIN_FUNC_SQRT:
+        case nero::TokenType::BUILTIN_FUNC_CEIL:
+        case nero::TokenType::BUILTIN_FUNC_FACT:
+        case nero::TokenType::BUILTIN_FUNC_FLOOR:
+        case nero::TokenType::BUILTIN_FUNC_ROUND:
+        case nero::TokenType::BUILTIN_FUNC_ARCSIN:
+        case nero::TokenType::BUILTIN_FUNC_ARCCOS:
+        case nero::TokenType::BUILTIN_FUNC_ARCTAN:
+        case nero::TokenType::BUILTIN_FUNC_ARCSEC:
+        case nero::TokenType::BUILTIN_FUNC_ARCCSC:
+        case nero::TokenType::BUILTIN_FUNC_ARCCOT:
+        case nero::TokenType::BUILTIN_FUNC_VALUE:
+        case nero::TokenType::BUILTIN_FUNC_UNIT:
+        case nero::TokenType::BUILTIN_FUNC_SUM:
+        case nero::TokenType::BUILTIN_FUNC_PROD:
+        case nero::TokenType::BUILTIN_FUNC_INT:
+        case nero::TokenType::BUILTIN_FUNC_MIN:
+        case nero::TokenType::BUILTIN_FUNC_MAX:
+        case nero::TokenType::BUILTIN_FUNC_GCD:
+        case nero::TokenType::BUILTIN_FUNC_LCM:
+        case nero::TokenType::BUILTIN_FUNC_SIG:
+        case nero::TokenType::BUILTIN_FUNC_DET:
+        case nero::TokenType::BUILTIN_FUNC_TRACE:
+        case nero::TokenType::BUILTIN_FUNC_RE:
+        case nero::TokenType::BUILTIN_FUNC_IM:
+        case nero::TokenType::BUILTIN_FUNC_CONJ:
+        case nero::TokenType::BUILTIN_FUNC_RAD:
+        case nero::TokenType::BUILTIN_FUNC_DEG:
+        case nero::TokenType::BUILTIN_FUNC_CELK:
+        case nero::TokenType::BUILTIN_FUNC_CELF:
+        case nero::TokenType::BUILTIN_FUNC_FAHRC:
+        case nero::TokenType::BUILTIN_FUNC_FAHRK:
             return true;
         default: return false;
     }
 }
 
-bool dv::Parser::is_unary_prefix_op(dv::TokenType type){
+bool nero::Parser::is_unary_prefix_op(nero::TokenType type){
     switch (type) {
-        case dv::TokenType::PLUS:
-        case dv::TokenType::MINUS:
-        case dv::TokenType::LOGICAL_NOT:
+        case nero::TokenType::PLUS:
+        case nero::TokenType::MINUS:
+        case nero::TokenType::LOGICAL_NOT:
             return true;
         default: return false;
     }
 }
 
-bool dv::Parser::is_unary_postfix_op(dv::TokenType type){
+bool nero::Parser::is_unary_postfix_op(nero::TokenType type){
     switch (type) {
-        case dv::TokenType::FACTORIAL:
-        case dv::TokenType::PERCENT:
+        case nero::TokenType::FACTORIAL:
+        case nero::TokenType::PERCENT:
             return true;
         default: return false;
     }
 }
 
-bool dv::Parser::can_implicit_multiply_left(const Token& token) {
+bool nero::Parser::can_implicit_multiply_left(const Token& token) {
     // Prevent implicit multiplication after exponent operations
     if (token.type == TokenType::EXPONENT) return false;
     return is_atom(token.type);
 }
 
-dv::MaybeAST dv::Parser::split_single_numeric(){
+nero::MaybeAST nero::Parser::split_single_numeric(){
     if(peek().text[0] == '.') return std::unexpected{"Split numeric can't be '.'"};
     Token base_token = {TokenType::NUMERIC_LITERAL, (double)(peek().text[0] - '0'), peek().text.substr(0, 1)};
-    dv::MaybeAST value = std::make_unique<AST>(base_token);
+    nero::MaybeAST value = std::make_unique<AST>(base_token);
     peek().text = peek().text.substr(1);
     peek().value = std::atof(std::string{peek().text}.c_str());
     return value;
 }
 
-dv::MaybeAST dv::Parser::match_square_bracket(){
+nero::MaybeAST nero::Parser::match_square_bracket(){
     if(!match(TokenType::LEFT_BRACKET)){
         return std::unexpected{std::format("Expected '[' but found {}", describe_token(peek()))};
     }
@@ -263,7 +263,7 @@ dv::MaybeAST dv::Parser::match_square_bracket(){
     return ast;
 }
 
-dv::MaybeAST dv::Parser::match_curly_bracket(){
+nero::MaybeAST nero::Parser::match_curly_bracket(){
     if(!match(TokenType::LEFT_CURLY_BRACKET)){
         return std::unexpected{std::format("Expected '{{' but found {}", describe_token(peek()))};
     }
@@ -275,7 +275,7 @@ dv::MaybeAST dv::Parser::match_curly_bracket(){
     return ast;
 }
 
-dv::MaybeAST dv::Parser::match_parentheses(){
+nero::MaybeAST nero::Parser::match_parentheses(){
     if(!match(TokenType::LEFT_PAREN)){
         return std::unexpected{std::format("Expected '(' but found {}", describe_token(peek()))};
     }
@@ -287,7 +287,7 @@ dv::MaybeAST dv::Parser::match_parentheses(){
     return ast;
 }
 
-dv::MaybeAST dv::Parser::match_fraction(const dv::Token &token){
+nero::MaybeAST nero::Parser::match_fraction(const nero::Token &token){
     // Check for derivative pattern: \frac{d}{dx} or \frac{d^n}{dx^n}
     // Save position to potentially backtrack
     auto saved_pos = position;
@@ -401,7 +401,7 @@ dv::MaybeAST dv::Parser::match_fraction(const dv::Token &token){
     return std::make_unique<AST>(token, std::move(numerator.value()), std::move(denominator.value()));
 }
 
-dv::MaybeAST dv::Parser::match_exponent(std::int32_t right_binding_power){
+nero::MaybeAST nero::Parser::match_exponent(std::int32_t right_binding_power){
     const bool uses_brackets = match(TokenType::LEFT_CURLY_BRACKET);
     MaybeAST rhs = nullptr;
     if(uses_brackets){
@@ -431,7 +431,7 @@ dv::MaybeAST dv::Parser::match_exponent(std::int32_t right_binding_power){
     return std::move(rhs.value());
 }
 
-dv::MaybeAST dv::Parser::match_absolute_bar(const dv::Token &token){
+nero::MaybeAST nero::Parser::match_absolute_bar(const nero::Token &token){
     auto arg = parse_expression(0);
     if(!arg) return arg;
     if(!match(TokenType::ABSOLUTE_BAR)){
@@ -444,7 +444,7 @@ dv::MaybeAST dv::Parser::match_absolute_bar(const dv::Token &token){
     return std::make_unique<AST>(abs_token, std::move(args));
 }
 
-dv::MaybeAST dv::Parser::match_sqrt(const dv::Token &token){
+nero::MaybeAST nero::Parser::match_sqrt(const nero::Token &token){
     MaybeAST n = nullptr;
     std::vector<std::unique_ptr<AST>> args;
     args.reserve(1);
@@ -464,7 +464,7 @@ dv::MaybeAST dv::Parser::match_sqrt(const dv::Token &token){
     return std::make_unique<AST>(token, std::move(args), std::move(n.value()));
 }
 
-dv::MaybeAST dv::Parser::match_log(const dv::Token &token){
+nero::MaybeAST nero::Parser::match_log(const nero::Token &token){
     MaybeAST base = nullptr;
     std::vector<std::unique_ptr<AST>> args;
     args.reserve(1);
@@ -509,7 +509,7 @@ dv::MaybeAST dv::Parser::match_log(const dv::Token &token){
 }
 
 // Parse \sum_{i=a}^{b} expr or \prod_{i=a}^{b} expr
-dv::MaybeAST dv::Parser::match_sum_prod(const dv::Token &token) {
+nero::MaybeAST nero::Parser::match_sum_prod(const nero::Token &token) {
     // Parse subscript _{i=start}
     if(!match(TokenType::SUBSCRIPT)) {
         return std::unexpected{std::format("'{}' requires subscript _{{}}", token.text)};
@@ -569,7 +569,7 @@ dv::MaybeAST dv::Parser::match_sum_prod(const dv::Token &token) {
 }
 
 // Parse \int_{a}^{b} expr \, dx
-dv::MaybeAST dv::Parser::match_integral(const dv::Token &token) {
+nero::MaybeAST nero::Parser::match_integral(const nero::Token &token) {
     // Parse subscript _{lower}
     if(!match(TokenType::SUBSCRIPT)) {
         return std::unexpected{"\\int requires subscript _{lower}"};
@@ -651,7 +651,7 @@ dv::MaybeAST dv::Parser::match_integral(const dv::Token &token) {
 }
 
 // Parse \begin{cases} expr & cond \\ expr & cond \\ expr & \text{otherwise} \end{cases}
-dv::MaybeAST dv::Parser::match_piecewise(const dv::Token &token) {
+nero::MaybeAST nero::Parser::match_piecewise(const nero::Token &token) {
     std::vector<std::unique_ptr<AST>> args;
 
     while(true) {
@@ -693,7 +693,7 @@ dv::MaybeAST dv::Parser::match_piecewise(const dv::Token &token) {
 }
 
 // Parse \begin{bmatrix} a & b \\ c & d \end{bmatrix}
-dv::MaybeAST dv::Parser::match_matrix(const dv::Token &token) {
+nero::MaybeAST nero::Parser::match_matrix(const nero::Token &token) {
     std::vector<std::unique_ptr<AST>> args; // flattened: row elements
     // We'll store rows×cols as a special value
     int rows = 1, cols = 0, current_col = 0;
@@ -745,7 +745,7 @@ dv::MaybeAST dv::Parser::match_matrix(const dv::Token &token) {
     return std::make_unique<AST>(mat_token, std::move(args));
 }
 
-dv::MaybeAST dv::Parser::match_builtin_function(const dv::Token &token){
+nero::MaybeAST nero::Parser::match_builtin_function(const nero::Token &token){
     const auto args_count = builtin_function_args(token.type);
 
     if(token.type == TokenType::BUILTIN_FUNC_SQRT) return match_sqrt(token);
@@ -820,7 +820,7 @@ dv::MaybeAST dv::Parser::match_builtin_function(const dv::Token &token){
         : std::make_unique<AST>(peeked_exponent, std::make_unique<AST>(token, std::move(args)), std::move(exponent.value()));
 }
 
-dv::MaybeAST dv::Parser::match_atom(const dv::Token &token){
+nero::MaybeAST nero::Parser::match_atom(const nero::Token &token){
     if(token.type == TokenType::NUMERIC_LITERAL) return std::make_unique<AST>(token);
     if(token.type == TokenType::VECTOR_HAT) return std::make_unique<AST>(token);
     if(token.type == TokenType::IDENTIFIER) {
@@ -896,7 +896,7 @@ dv::MaybeAST dv::Parser::match_atom(const dv::Token &token){
     return std::unexpected{std::format("Expected a value (number, variable, or function), found {}", describe_token(token))};
 }
 
-dv::MaybeAST dv::Parser::match_lhs(const dv::Token &token){
+nero::MaybeAST nero::Parser::match_lhs(const nero::Token &token){
     if(is_atom(token.type)){
         auto lhs = match_atom(token);
         if(!lhs) return lhs;
@@ -997,7 +997,7 @@ dv::MaybeAST dv::Parser::match_lhs(const dv::Token &token){
     return std::unexpected{std::format("Unexpected {} at start of expression", describe_token(token))};
 }
 
-dv::MaybeAST dv::Parser::parse_expression(std::int32_t min_binding_power) {
+nero::MaybeAST nero::Parser::parse_expression(std::int32_t min_binding_power) {
     auto lhs = match_lhs(next());
     if(!lhs) return lhs;
 

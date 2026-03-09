@@ -18,24 +18,24 @@ public:
     // Returns exact matches first, then close matches (missing 1 unit) at the end.
     // Deduplicates by formula name.
 std::vector<Physics::Formula> find_by_units(
-    const std::vector<dv::UnitVector>& available_units,
-    const dv::UnitVector& targetUnit
+    const std::vector<nero::UnitVector>& available_units,
+    const nero::UnitVector& targetUnit
 ) const {
 
     const std::vector<Physics::Formula> all_formulas = db.get_formulas();
     const int N = static_cast<int>(all_formulas.size());
 
     // -------------------------------------------------------------------------
-    // POOL HELPERS — everything is dv::UnitVec internally
+    // POOL HELPERS — everything is nero::UnitVec internally
     // -------------------------------------------------------------------------
 
-    std::vector<dv::UnitVec> available_pool;
+    std::vector<nero::UnitVec> available_pool;
     for (const auto& u : available_units)
         available_pool.push_back(u.vec);
 
     auto count_in_pool = [](
-        const dv::UnitVec& needle,
-        const std::vector<dv::UnitVec>& pool
+        const nero::UnitVec& needle,
+        const std::vector<nero::UnitVec>& pool
     ) -> int {
         int n = 0;
         for (const auto& u : pool) if (u == needle) n++;
@@ -47,7 +47,7 @@ std::vector<Physics::Formula> find_by_units(
     // -------------------------------------------------------------------------
 
     // Output unit of formula[idx], or nullopt if solve_for var not found
-    auto output_of = [&](int idx) -> std::optional<dv::UnitVec> {
+    auto output_of = [&](int idx) -> std::optional<nero::UnitVec> {
         for (const auto& v : all_formulas[idx].variables)
             if (v.name == all_formulas[idx].solve_for)
                 return v.units.vec;
@@ -56,10 +56,10 @@ std::vector<Physics::Formula> find_by_units(
 
     // Build a {unit → required_count} map for all non-constant non-output inputs
     auto required_counts = [&](int idx)
-        -> std::vector<std::pair<dv::UnitVec, int>>
+        -> std::vector<std::pair<nero::UnitVec, int>>
     {
         const auto& f = all_formulas[idx];
-        std::vector<std::pair<dv::UnitVec, int>> req;
+        std::vector<std::pair<nero::UnitVec, int>> req;
         for (const auto& v : f.variables) {
             if (v.is_constant)         continue;
             if (v.name == f.solve_for) continue;
@@ -73,7 +73,7 @@ std::vector<Physics::Formula> find_by_units(
     };
 
     // Is formula[idx] fully satisfied by pool (respecting multiplicity)?
-    auto satisfied_by = [&](int idx, const std::vector<dv::UnitVec>& pool) -> bool {
+    auto satisfied_by = [&](int idx, const std::vector<nero::UnitVec>& pool) -> bool {
         for (const auto& [unit, req] : required_counts(idx))
             if (count_in_pool(unit, pool) < req) return false;
         return true;
@@ -81,10 +81,10 @@ std::vector<Physics::Formula> find_by_units(
 
     // Unique unit types that formula[idx] is missing from pool (one entry per type,
     // regardless of how many extra instances are needed)
-    auto missing_types = [&](int idx, const std::vector<dv::UnitVec>& pool)
-        -> std::vector<dv::UnitVec>
+    auto missing_types = [&](int idx, const std::vector<nero::UnitVec>& pool)
+        -> std::vector<nero::UnitVec>
     {
-        std::vector<dv::UnitVec> missing;
+        std::vector<nero::UnitVec> missing;
         for (const auto& [unit, req] : required_counts(idx))
             if (count_in_pool(unit, pool) < req)
                 missing.push_back(unit);
@@ -92,7 +92,7 @@ std::vector<Physics::Formula> find_by_units(
     };
 
     // Score formula[idx] against pool — higher is better
-    auto score_of = [&](int idx, const std::vector<dv::UnitVec>& pool) -> double {
+    auto score_of = [&](int idx, const std::vector<nero::UnitVec>& pool) -> double {
         int matched = 0, total = 0;
         for (const auto& [unit, req] : required_counts(idx)) {
             total += req;
@@ -108,9 +108,9 @@ std::vector<Physics::Formula> find_by_units(
     // Build a pool augmented with enough copies of `unit` to satisfy formula[idx]
     auto augment_for = [&](
         int idx,
-        const dv::UnitVec& unit,
-        const std::vector<dv::UnitVec>& pool
-    ) -> std::vector<dv::UnitVec> {
+        const nero::UnitVec& unit,
+        const std::vector<nero::UnitVec>& pool
+    ) -> std::vector<nero::UnitVec> {
         auto aug = pool;
         for (const auto& [u, req] : required_counts(idx)) {
             if (u != unit) continue;
@@ -134,7 +134,7 @@ std::vector<Physics::Formula> find_by_units(
     // Picks the highest-scored valid pair.
     // -------------------------------------------------------------------------
 
-    auto can_resolve = [&](const dv::UnitVec& target)
+    auto can_resolve = [&](const nero::UnitVec& target)
         -> std::pair<int, int>
     {
         int    best_sub    = -1;
@@ -163,7 +163,7 @@ std::vector<Physics::Formula> find_by_units(
             if (mt.size() == 1) {
                 // Sub needs one more unit — look for a subsub that produces it
                 // exactly from available_pool
-                const dv::UnitVec& sub_missing = mt[0];
+                const nero::UnitVec& sub_missing = mt[0];
 
                 for (int j = 0; j < N; ++j) {
                     auto out2 = output_of(j);
@@ -255,7 +255,7 @@ std::vector<Physics::Formula> find_by_units(
     // -------------------------------------------------------------------------
 
     auto chain_pool_used = [&](const Candidate& cand) -> int {
-        std::vector<dv::UnitVec> used;
+        std::vector<nero::UnitVec> used;
         auto collect = [&](int idx) {
             for (const auto& [u, req] : required_counts(idx))
                 if (count_in_pool(u, available_pool) > 0) used.push_back(u);
@@ -288,7 +288,7 @@ std::vector<Physics::Formula> find_by_units(
     // Sum of absolute exponents — measures how "derived" (specific) a unit is.
     // e.g. seconds [0,1,…] → 1  (simple, generic)
     //      Newtons [1,-2,1,…] → 4  (derived, specific to mechanics)
-    auto unit_complexity = [](const dv::UnitVec& uv) -> int {
+    auto unit_complexity = [](const nero::UnitVec& uv) -> int {
         int c = 0;
         for (auto v : uv) c += std::abs(static_cast<int>(v));
         return c;
@@ -298,7 +298,7 @@ std::vector<Physics::Formula> find_by_units(
     // A high overlap means the sub "wastes" pool units already covered by the main formula —
     // a sign of a coincidental dimensional match rather than a coherent chain.
     auto pool_overlap_count = [&](const Candidate& cand) -> int {
-        std::vector<dv::UnitVec> main_direct;
+        std::vector<nero::UnitVec> main_direct;
         for (const auto& [u, req] : required_counts(cand.idx))
             if (count_in_pool(u, available_pool) > 0) main_direct.push_back(u);
         int overlap = 0;

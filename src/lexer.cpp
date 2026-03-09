@@ -38,12 +38,12 @@ constexpr bool isnumeric(char c){
     return std::isdigit(c) || c == '.';
 }
 
-dv::Lexer::Lexer(const std::string_view view) noexcept{
+nero::Lexer::Lexer(const std::string_view view) noexcept{
     begin = view.data();
     it = begin;
     length = view.size();
 }
-dv::Lexer::MaybeTokens dv::Lexer::extract_all_tokens() noexcept{
+nero::Lexer::MaybeTokens nero::Lexer::extract_all_tokens() noexcept{
     std::vector<Token> tokens;
     tokens.reserve(length / 2);
     Token token;
@@ -57,20 +57,20 @@ dv::Lexer::MaybeTokens dv::Lexer::extract_all_tokens() noexcept{
     return tokens;
 }
 
-std::uint32_t dv::Lexer::remaining_length() const noexcept { return length - (it - begin); }
-char dv::Lexer::peek() const noexcept { return *it; }
-char dv::Lexer::peek_next() const noexcept { return *(it + 1); }
-void dv::Lexer::advance() noexcept { it++; }
-void dv::Lexer::advance(const std::uint32_t count) noexcept { it += count; }
-dv::Token dv::Lexer::advance_with_token(const TokenType token_type) noexcept { 
+std::uint32_t nero::Lexer::remaining_length() const noexcept { return length - (it - begin); }
+char nero::Lexer::peek() const noexcept { return *it; }
+char nero::Lexer::peek_next() const noexcept { return *(it + 1); }
+void nero::Lexer::advance() noexcept { it++; }
+void nero::Lexer::advance(const std::uint32_t count) noexcept { it += count; }
+nero::Token nero::Lexer::advance_with_token(const TokenType token_type) noexcept { 
     it++;
     return {token_type, {it - 1, 1}};
 }
-dv::Token dv::Lexer::advance_with_token(const TokenType token_type, const std::uint32_t count) noexcept {
+nero::Token nero::Lexer::advance_with_token(const TokenType token_type, const std::uint32_t count) noexcept {
     it += count;
     return {token_type, {it - count, count}};
 }
-dv::Token dv::Lexer::advance_with_token(const UnitValue token_value, const std::uint32_t count) noexcept {
+nero::Token nero::Lexer::advance_with_token(const UnitValue token_value, const std::uint32_t count) noexcept {
     it += count;
     return {token_value, {it - count, count}};
 }
@@ -95,7 +95,7 @@ static int8_t count_sig_figs(std::string_view num_str) {
     return static_cast<int8_t>(std::max(1, count));
 }
 
-dv::Token dv::Lexer::get_numeric_literal_token() noexcept{
+nero::Token nero::Lexer::get_numeric_literal_token() noexcept{
     const char *begit = it;
     bool used_decimal = false;
     std::array<char, 32> buffer;
@@ -111,12 +111,12 @@ dv::Token dv::Lexer::get_numeric_literal_token() noexcept{
         buffer[write++] = c;
         advance();
     }
-    dv::UnitValue uv{(long double)std::atof(buffer.data())};
+    nero::UnitValue uv{(long double)std::atof(buffer.data())};
     uv.sig_figs = count_sig_figs(std::string_view{buffer.data(), (size_t)write});
     return {uv, {begit, it}};
 }
 
-std::int32_t dv::Lexer::collect_subscript(char *buffer, std::size_t size, std::uint8_t &write) noexcept{
+std::int32_t nero::Lexer::collect_subscript(char *buffer, std::size_t size, std::uint8_t &write) noexcept{
     if(peek() == '_' && peek_next() == '{') {
         buffer[write++] = '_';
         buffer[write++] = '{';
@@ -140,7 +140,7 @@ std::int32_t dv::Lexer::collect_subscript(char *buffer, std::size_t size, std::u
     return 1;
 }
 
-std::int32_t dv::Lexer::collect_curly_brackets(char *buffer, std::size_t size, std::uint8_t &write) noexcept{
+std::int32_t nero::Lexer::collect_curly_brackets(char *buffer, std::size_t size, std::uint8_t &write) noexcept{
     if(peek() == '{') {
         advance(1);
         char c;
@@ -157,7 +157,7 @@ std::int32_t dv::Lexer::collect_curly_brackets(char *buffer, std::size_t size, s
     return 1;
 }
 
-dv::Token dv::Lexer::get_indentifier_token(std::uint32_t max_length) noexcept{
+nero::Token nero::Lexer::get_indentifier_token(std::uint32_t max_length) noexcept{
     const char *begit = it;
     std::array<char, 32> buffer;
     buffer.fill(0);
@@ -174,7 +174,7 @@ dv::Token dv::Lexer::get_indentifier_token(std::uint32_t max_length) noexcept{
     }
     return {TokenType::IDENTIFIER, {begit, it}};
 }
-dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
+nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
     advance();
     // Check for \\ (double backslash) - row separator
     if(peek() == '\\') {
@@ -390,17 +390,17 @@ dv::Token dv::Lexer::get_special_indentifier_token() noexcept{
     // return a.split(',')[0].length - b.split(',')[0].length;
 // })
 
-dv::Token dv::Lexer::get_unit_token() noexcept {
+nero::Token nero::Lexer::get_unit_token() noexcept {
     #include "gen/lexer_units.ghpp"
     return {};
 }
 
 
-void dv::Lexer::devoure_whitespace() noexcept{
+void nero::Lexer::devoure_whitespace() noexcept{
     while(std::isspace(peek())) advance();
 }
 
-dv::Token dv::Lexer::consume_next_token() noexcept{
+nero::Token nero::Lexer::consume_next_token() noexcept{
     devoure_whitespace();
     if(!peek()) return {TokenType::TEOF, ""};
     switch (peek()) {

@@ -13,33 +13,33 @@ static int8_t combine_sig_figs(int8_t a, int8_t b) {
 // UnitVector
 // ============================================================================
 
-bool dv::UnitVector::operator==(const UnitVector &rhs) const noexcept {
+bool nero::UnitVector::operator==(const UnitVector &rhs) const noexcept {
     return this->vec == rhs.vec;
 }
-bool dv::UnitVector::operator==(const UnitVec &rhs) const noexcept {
+bool nero::UnitVector::operator==(const UnitVec &rhs) const noexcept {
     return this->vec == rhs;
 }
-dv::UnitVector dv::UnitVector::operator+(const UnitVector &rhs) const noexcept {
+nero::UnitVector nero::UnitVector::operator+(const UnitVector &rhs) const noexcept {
     UnitVector temp_vec = *this;
     if (temp_vec != rhs) temp_vec.vec.fill(0);
     return temp_vec;
 }
-dv::UnitVector dv::UnitVector::operator-(const UnitVector &rhs) const noexcept {
+nero::UnitVector nero::UnitVector::operator-(const UnitVector &rhs) const noexcept {
     UnitVector temp_vec = *this;
     if (temp_vec != rhs) temp_vec.vec.fill(0);
     return temp_vec;
 }
-dv::UnitVector dv::UnitVector::operator*(const UnitVector &rhs) const noexcept {
+nero::UnitVector nero::UnitVector::operator*(const UnitVector &rhs) const noexcept {
     UnitVector temp_vec;
     for (uint32_t i = 0; i < vec.size(); i++) temp_vec.vec[i] = this->vec[i] + rhs.vec[i];
     return temp_vec;
 }
-dv::UnitVector dv::UnitVector::operator/(const UnitVector &rhs) const noexcept {
+nero::UnitVector nero::UnitVector::operator/(const UnitVector &rhs) const noexcept {
     UnitVector temp_vec;
     for (uint32_t i = 0; i < vec.size(); i++) temp_vec.vec[i] = this->vec[i] - rhs.vec[i];
     return temp_vec;
 }
-dv::UnitVector dv::UnitVector::operator^(const UnitVector &rhs) const noexcept {
+nero::UnitVector nero::UnitVector::operator^(const UnitVector &rhs) const noexcept {
     UnitVector temp_vec;
     if (rhs == DIMENSIONLESS_VEC) {
         temp_vec.vec.fill(0);
@@ -48,7 +48,7 @@ dv::UnitVector dv::UnitVector::operator^(const UnitVector &rhs) const noexcept {
     for (uint32_t i = 0; i < vec.size(); i++) temp_vec.vec[i] = this->vec[i] * rhs.vec[i];
     return temp_vec;
 }
-dv::UnitVector dv::UnitVector::operator^(const double value) const noexcept {
+nero::UnitVector nero::UnitVector::operator^(const double value) const noexcept {
     UnitVector temp_vec;
     for (uint32_t i = 0; i < vec.size(); i++) temp_vec.vec[i] = (int8_t)(this->vec[i] * value);
     return temp_vec;
@@ -58,10 +58,10 @@ dv::UnitVector dv::UnitVector::operator^(const double value) const noexcept {
 // UnitValue
 // ============================================================================
 
-dv::UnitValue dv::UnitValue::operator+() const noexcept {
+nero::UnitValue nero::UnitValue::operator+() const noexcept {
     return *this;
 }
-dv::UnitValue dv::UnitValue::operator+(const UnitValue &rhs) const noexcept {
+nero::UnitValue nero::UnitValue::operator+(const UnitValue &rhs) const noexcept {
     auto unit_result = this->unit + rhs.unit;
     UnitValue result;
     if (is_complex() || rhs.is_complex()) {
@@ -72,12 +72,12 @@ dv::UnitValue dv::UnitValue::operator+(const UnitValue &rhs) const noexcept {
     result.sig_figs = combine_sig_figs(this->sig_figs, rhs.sig_figs);
     return result;
 }
-dv::UnitValue dv::UnitValue::operator-() const noexcept {
+nero::UnitValue nero::UnitValue::operator-() const noexcept {
     UnitValue result{-this->value, -this->imag, this->unit};
     result.sig_figs = this->sig_figs;
     return result;
 }
-dv::UnitValue dv::UnitValue::operator-(const UnitValue &rhs) const noexcept {
+nero::UnitValue nero::UnitValue::operator-(const UnitValue &rhs) const noexcept {
     auto unit_result = this->unit - rhs.unit;
     UnitValue result;
     if (is_complex() || rhs.is_complex()) {
@@ -88,7 +88,7 @@ dv::UnitValue dv::UnitValue::operator-(const UnitValue &rhs) const noexcept {
     result.sig_figs = combine_sig_figs(this->sig_figs, rhs.sig_figs);
     return result;
 }
-dv::UnitValue dv::UnitValue::operator*(const UnitValue &rhs) const noexcept {
+nero::UnitValue nero::UnitValue::operator*(const UnitValue &rhs) const noexcept {
     auto unit_result = this->unit * rhs.unit;
     UnitValue result;
     if (is_complex() || rhs.is_complex()) {
@@ -101,7 +101,7 @@ dv::UnitValue dv::UnitValue::operator*(const UnitValue &rhs) const noexcept {
     result.sig_figs = combine_sig_figs(this->sig_figs, rhs.sig_figs);
     return result;
 }
-dv::UnitValue dv::UnitValue::operator/(const UnitValue &rhs) const noexcept {
+nero::UnitValue nero::UnitValue::operator/(const UnitValue &rhs) const noexcept {
     auto unit_result = this->unit / rhs.unit;
     UnitValue result;
     if (is_complex() || rhs.is_complex()) {
@@ -115,7 +115,7 @@ dv::UnitValue dv::UnitValue::operator/(const UnitValue &rhs) const noexcept {
     result.sig_figs = combine_sig_figs(this->sig_figs, rhs.sig_figs);
     return result;
 }
-dv::UnitValue dv::UnitValue::operator^(const UnitValue &rhs) const noexcept {
+nero::UnitValue nero::UnitValue::operator^(const UnitValue &rhs) const noexcept {
     auto unit_result = (rhs.unit == DIMENSIONLESS_VEC)
         ? (this->unit ^ rhs.value)
         : (this->unit ^ rhs.unit);
@@ -139,18 +139,18 @@ dv::UnitValue dv::UnitValue::operator^(const UnitValue &rhs) const noexcept {
     result.sig_figs = combine_sig_figs(this->sig_figs, rhs.sig_figs);
     return result;
 }
-dv::UnitValue dv::UnitValue::fact() const noexcept {
+nero::UnitValue nero::UnitValue::fact() const noexcept {
     long double f = 1;
     for (uint32_t i = 2; i <= (uint64_t)this->value; i++) f *= i;
     return {f, UnitVector{DIMENSIONLESS_VEC}};
 }
-dv::UnitValue dv::UnitValue::abs() const noexcept {
+nero::UnitValue nero::UnitValue::abs() const noexcept {
     if (is_complex()) {
         return {(long double)std::hypot((double)value, (double)imag), this->unit};
     }
     return {(long double)std::fabs((double)this->value), this->unit};
 }
-std::string dv::UnitValue::to_result_string() const noexcept {
+std::string nero::UnitValue::to_result_string() const noexcept {
     if (is_complex()) {
         return std::to_string((double)value) + " + " + std::to_string((double)imag) + "i";
     }
@@ -161,77 +161,77 @@ std::string dv::UnitValue::to_result_string() const noexcept {
 // UnitValueList
 // ============================================================================
 
-dv::UnitValueList dv::UnitValueList::operator+(const UnitValue &scalar) const noexcept {
+nero::UnitValueList nero::UnitValueList::operator+(const UnitValue &scalar) const noexcept {
     UnitValueList result;
     result.elements.reserve(elements.size());
     for (const auto &e : elements) result.elements.push_back(e + scalar);
     return result;
 }
-dv::UnitValueList dv::UnitValueList::operator-(const UnitValue &scalar) const noexcept {
+nero::UnitValueList nero::UnitValueList::operator-(const UnitValue &scalar) const noexcept {
     UnitValueList result;
     result.elements.reserve(elements.size());
     for (const auto &e : elements) result.elements.push_back(e - scalar);
     return result;
 }
-dv::UnitValueList dv::UnitValueList::operator*(const UnitValue &scalar) const noexcept {
+nero::UnitValueList nero::UnitValueList::operator*(const UnitValue &scalar) const noexcept {
     UnitValueList result;
     result.elements.reserve(elements.size());
     for (const auto &e : elements) result.elements.push_back(e * scalar);
     return result;
 }
-dv::UnitValueList dv::UnitValueList::operator/(const UnitValue &scalar) const noexcept {
+nero::UnitValueList nero::UnitValueList::operator/(const UnitValue &scalar) const noexcept {
     UnitValueList result;
     result.elements.reserve(elements.size());
     for (const auto &e : elements) result.elements.push_back(e / scalar);
     return result;
 }
-dv::UnitValueList dv::UnitValueList::operator+(const UnitValueList &rhs) const noexcept {
+nero::UnitValueList nero::UnitValueList::operator+(const UnitValueList &rhs) const noexcept {
     UnitValueList result;
     std::size_t n = std::min(elements.size(), rhs.elements.size());
     result.elements.reserve(n);
     for (std::size_t i = 0; i < n; i++) result.elements.push_back(elements[i] + rhs.elements[i]);
     return result;
 }
-dv::UnitValueList dv::UnitValueList::operator-(const UnitValueList &rhs) const noexcept {
+nero::UnitValueList nero::UnitValueList::operator-(const UnitValueList &rhs) const noexcept {
     UnitValueList result;
     std::size_t n = std::min(elements.size(), rhs.elements.size());
     result.elements.reserve(n);
     for (std::size_t i = 0; i < n; i++) result.elements.push_back(elements[i] - rhs.elements[i]);
     return result;
 }
-dv::UnitValueList dv::UnitValueList::operator*(const UnitValueList &rhs) const noexcept {
+nero::UnitValueList nero::UnitValueList::operator*(const UnitValueList &rhs) const noexcept {
     UnitValueList result;
     std::size_t n = std::min(elements.size(), rhs.elements.size());
     result.elements.reserve(n);
     for (std::size_t i = 0; i < n; i++) result.elements.push_back(elements[i] * rhs.elements[i]);
     return result;
 }
-dv::UnitValueList dv::UnitValueList::operator/(const UnitValueList &rhs) const noexcept {
+nero::UnitValueList nero::UnitValueList::operator/(const UnitValueList &rhs) const noexcept {
     UnitValueList result;
     std::size_t n = std::min(elements.size(), rhs.elements.size());
     result.elements.reserve(n);
     for (std::size_t i = 0; i < n; i++) result.elements.push_back(elements[i] / rhs.elements[i]);
     return result;
 }
-dv::UnitValueList dv::UnitValueList::operator-() const noexcept {
+nero::UnitValueList nero::UnitValueList::operator-() const noexcept {
     UnitValueList result;
     result.elements.reserve(elements.size());
     for (const auto &e : elements) result.elements.push_back(-e);
     return result;
 }
-dv::UnitValueList dv::UnitValueList::abs() const noexcept {
+nero::UnitValueList nero::UnitValueList::abs() const noexcept {
     UnitValueList result;
     result.elements.reserve(elements.size());
     for (const auto &e : elements) result.elements.push_back(e.abs());
     return result;
 }
-dv::UnitValueList dv::UnitValueList::fact() const noexcept {
+nero::UnitValueList nero::UnitValueList::fact() const noexcept {
     UnitValueList result;
     result.elements.reserve(elements.size());
     for (const auto &e : elements) result.elements.push_back(e.fact());
     return result;
 }
-std::string dv::UnitValueList::to_result_string() const noexcept {
+std::string nero::UnitValueList::to_result_string() const noexcept {
     std::string s = "[";
     for (std::size_t i = 0; i < elements.size(); i++) {
         if (i > 0) s += ", ";
@@ -244,36 +244,36 @@ std::string dv::UnitValueList::to_result_string() const noexcept {
 // VectorValue
 // ============================================================================
 
-dv::VectorValue dv::VectorValue::operator+(const VectorValue& rhs) const noexcept {
+nero::VectorValue nero::VectorValue::operator+(const VectorValue& rhs) const noexcept {
     return {x + rhs.x, y + rhs.y, z + rhs.z};
 }
-dv::VectorValue dv::VectorValue::operator-(const VectorValue& rhs) const noexcept {
+nero::VectorValue nero::VectorValue::operator-(const VectorValue& rhs) const noexcept {
     return {x - rhs.x, y - rhs.y, z - rhs.z};
 }
-dv::VectorValue dv::VectorValue::operator-() const noexcept {
+nero::VectorValue nero::VectorValue::operator-() const noexcept {
     return {-x, -y, -z};
 }
-dv::VectorValue dv::VectorValue::operator*(const UnitValue& scalar) const noexcept {
+nero::VectorValue nero::VectorValue::operator*(const UnitValue& scalar) const noexcept {
     return {x * scalar, y * scalar, z * scalar};
 }
-dv::VectorValue dv::VectorValue::operator/(const UnitValue& scalar) const noexcept {
+nero::VectorValue nero::VectorValue::operator/(const UnitValue& scalar) const noexcept {
     return {x / scalar, y / scalar, z / scalar};
 }
-dv::UnitValue dv::VectorValue::dot(const VectorValue& rhs) const noexcept {
+nero::UnitValue nero::VectorValue::dot(const VectorValue& rhs) const noexcept {
     return x * rhs.x + y * rhs.y + z * rhs.z;
 }
-dv::VectorValue dv::VectorValue::cross(const VectorValue& rhs) const noexcept {
+nero::VectorValue nero::VectorValue::cross(const VectorValue& rhs) const noexcept {
     return {
         y * rhs.z - z * rhs.y,
         z * rhs.x - x * rhs.z,
         x * rhs.y - y * rhs.x
     };
 }
-dv::UnitValue dv::VectorValue::magnitude() const noexcept {
+nero::UnitValue nero::VectorValue::magnitude() const noexcept {
     UnitValue sq = x * x + y * y + z * z;
     return {(long double)std::sqrt((double)sq.value), sq.unit ^ 0.5};
 }
-std::string dv::VectorValue::to_result_string() const noexcept {
+std::string nero::VectorValue::to_result_string() const noexcept {
     std::string s;
     bool first = true;
     auto append = [&](const UnitValue& v, const char* hat) {
@@ -292,7 +292,7 @@ std::string dv::VectorValue::to_result_string() const noexcept {
     append(z, "\\hat{k}");
     if (first) s = "0";
     // Append unit suffix if non-dimensionless
-    if (!(x.unit == dv::UnitVector{dv::DIMENSIONLESS_VEC}))
+    if (!(x.unit == nero::UnitVector{nero::DIMENSIONLESS_VEC}))
         s += "\\ " + unit_to_latex(x.unit);
     return s;
 }
@@ -301,10 +301,10 @@ std::string dv::VectorValue::to_result_string() const noexcept {
 // BooleanValue / Function
 // ============================================================================
 
-std::string dv::BooleanValue::to_result_string() const noexcept {
+std::string nero::BooleanValue::to_result_string() const noexcept {
     return value ? "true" : "false";
 }
-std::string dv::Function::to_result_string() const noexcept {
+std::string nero::Function::to_result_string() const noexcept {
     if (!display_expr.empty()) return display_expr;
     std::string s = name + "(";
     for (std::size_t i = 0; i < param_names.size(); i++) {
@@ -318,7 +318,7 @@ std::string dv::Function::to_result_string() const noexcept {
 // Free EValue operators (std::visit dispatch)
 // ============================================================================
 
-namespace dv {
+namespace nero {
 
 EValue operator+(const EValue &lhs, const EValue &rhs) noexcept {
     return std::visit([](const auto &l, const auto &r) -> EValue {
@@ -461,4 +461,4 @@ EValue evalue_abs(const EValue &ev) noexcept {
     }, ev);
 }
 
-} // namespace dv
+} // namespace nero

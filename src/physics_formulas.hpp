@@ -9,7 +9,7 @@ namespace Physics {
 
 struct Variable {
     std::string name;                    // "F", "q_1", "r", etc.
-    dv::UnitVector units;           // [m, s, kg, A, K, mol, cd]
+    nero::UnitVector units;           // [m, s, kg, A, K, mol, cd]
     std::string description;             // "Force", "Charge 1", "Distance"
     bool is_constant;                    // true for k, G, epsilon_0, etc.
 };

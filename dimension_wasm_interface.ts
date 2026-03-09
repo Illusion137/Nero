@@ -88,20 +88,20 @@ export class DimensionalEvaluator {
     constructor(wasm_module: MainModule) {
         this.module = wasm_module;
 
-        if (!this.module.dv_init()) {
+        if (!this.module.nero_init()) {
             throw new Error('Failed to initialize evaluator');
         }
     }
 
     destroy(): void {
         if (!this.is_destroyed) {
-            this.module.dv_destroy();
+            this.module.nero_destroy();
             this.is_destroyed = true;
         }
     }
 
     is_initialized(): boolean {
-        return !this.is_destroyed && this.module.dv_is_initialized();
+        return !this.is_destroyed && this.module.nero_is_initialized();
     }
 
     // ========================================================================
@@ -110,22 +110,22 @@ export class DimensionalEvaluator {
 
     set_constant(name: string, value_expr: string, unit_expr: string): boolean {
         this._check_initialized();
-        return this.module.dv_set_constant(name, value_expr, unit_expr);
+        return this.module.nero_set_constant(name, value_expr, unit_expr);
     }
 
     remove_constant(name: string): boolean {
         this._check_initialized();
-        return this.module.dv_remove_constant(name);
+        return this.module.nero_remove_constant(name);
     }
 
     clear_constants(): void {
         this._check_initialized();
-        this.module.dv_clear_constants();
+        this.module.nero_clear_constants();
     }
 
     get_constant_count(): number {
         this._check_initialized();
-        return this.module.dv_get_constant_count();
+        return this.module.nero_get_constant_count();
     }
 
     // ========================================================================
@@ -134,7 +134,7 @@ export class DimensionalEvaluator {
 
     eval(value_expr: string, unit_expr: string = ""): EvalResult {
         this._check_initialized();
-        const raw = this.module.dv_eval(value_expr, unit_expr);
+        const raw = this.module.nero_eval(value_expr, unit_expr);
         return embindResultToEvalResult(raw);
     }
 
@@ -155,7 +155,7 @@ export class DimensionalEvaluator {
             conversion_unit_exprs.push_back(expr.conversion_unit_expr ?? "");
         }
 
-        const raw_results = this.module.dv_eval_batch(value_exprs, unit_exprs, conversion_unit_exprs);
+        const raw_results = this.module.nero_eval_batch(value_exprs, unit_exprs, conversion_unit_exprs);
         value_exprs.delete();
         unit_exprs.delete();
         conversion_unit_exprs.delete();
@@ -181,7 +181,7 @@ export class DimensionalEvaluator {
             vec.push_back(target_unit[i] ?? 0);
         }
 
-        const raw = this.module.dv_get_available_formulas(vec);
+        const raw = this.module.nero_get_available_formulas(vec);
         vec.delete();
 
         const formulas: FormulaResult[] = [];
@@ -196,7 +196,7 @@ export class DimensionalEvaluator {
     get_last_formula_results(): FormulaResult[] {
         this._check_initialized();
 
-        const raw = this.module.dv_get_last_formula_results();
+        const raw = this.module.nero_get_last_formula_results();
         const formulas: FormulaResult[] = [];
         for (let i = 0; i < raw.size(); i++) {
             formulas.push(embindFormulaToResult(raw.get(i)!));
@@ -212,18 +212,18 @@ export class DimensionalEvaluator {
 
     get_variable(name: string): number | null {
         this._check_initialized();
-        const val = this.module.dv_get_variable(name);
+        const val = this.module.nero_get_variable(name);
         return val ?? null;
     }
 
     clear_variables(): void {
         this._check_initialized();
-        this.module.dv_clear_variables();
+        this.module.nero_clear_variables();
     }
 
     get_variable_count(): number {
         this._check_initialized();
-        return this.module.dv_get_variable_count();
+        return this.module.nero_get_variable_count();
     }
 
     // ========================================================================
@@ -232,7 +232,7 @@ export class DimensionalEvaluator {
 
     unit_latex_to_unit(unit_latex: string): number[] {
         this._check_initialized();
-        const vec = this.module.dv_unit_latex_to_unit(unit_latex);
+        const vec = this.module.nero_unit_latex_to_unit(unit_latex);
         return vectorToArray(vec);
     }
 
@@ -242,17 +242,17 @@ export class DimensionalEvaluator {
         for (let i = 0; i < 7; i++) {
             vec.push_back(unit[i] ?? 0);
         }
-        const result = this.module.dv_unit_to_latex(vec);
+        const result = this.module.nero_unit_to_latex(vec);
         vec.delete();
         return result;
     }
 
     value_to_scientific(value: number, sig_figs: number = 0): string {
-        return this.module.dv_value_to_scientific(value, sig_figs);
+        return this.module.nero_value_to_scientific(value, sig_figs);
     }
 
     get_version(): string {
-        return this.module.dv_version();
+        return this.module.nero_version();
     }
 
     reset(): void {
@@ -268,7 +268,7 @@ export class DimensionalEvaluator {
         if (this.is_destroyed) {
             throw new Error('Evaluator has been destroyed');
         }
-        if (!this.module.dv_is_initialized()) {
+        if (!this.module.nero_is_initialized()) {
             throw new Error('Evaluator is not initialized');
         }
     }

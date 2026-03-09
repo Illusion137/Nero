@@ -7,14 +7,14 @@
 #include <string>
 #include <vector>
 
-dv::UnitVector dv::unit_latex_to_unit(const std::string &unit_latex){
+nero::UnitVector nero::unit_latex_to_unit(const std::string &unit_latex){
     Expression expr = {"1", unit_latex};
     Evaluator eval;
     auto value = eval.evaluate_expression(expr);
-    if(!value) return dv::UnitVector{DIMENSIONLESS_VEC};
-    if(const auto* uv = std::get_if<dv::UnitValue>(&value.value()))
+    if(!value) return nero::UnitVector{DIMENSIONLESS_VEC};
+    if(const auto* uv = std::get_if<nero::UnitValue>(&value.value()))
         return uv->unit;
-    return dv::UnitVector{DIMENSIONLESS_VEC};
+    return nero::UnitVector{DIMENSIONLESS_VEC};
 }
 
 namespace {
@@ -29,7 +29,7 @@ double calculate_complexity(std::size_t num_count, std::size_t den_count) {
     return static_cast<double>(num_count + den_count);
 }
 
-UnitParts build_from_base(const dv::UnitVec& dims,
+UnitParts build_from_base(const nero::UnitVec& dims,
                           const std::array<std::string, 7>& base_units) {
     std::vector<std::string> numerator;
     std::vector<std::string> denominator;
@@ -62,7 +62,7 @@ std::string join_cdot(const std::vector<std::string>& parts) {
 
 } // anonymous namespace
 
-std::string dv::unit_to_latex(const UnitVector& unit) {
+std::string nero::unit_to_latex(const UnitVector& unit) {
     const std::array<std::string, 7> BASE_UNITS = {"m", "s", "kg", "A", "K", "mol", "cd"};
 
     struct DerivedUnit {
@@ -160,7 +160,7 @@ std::string dv::unit_to_latex(const UnitVector& unit) {
     return std::format("\\frac{{{}}}{{{}}}", join_cdot(best.num), join_cdot(best.den));
 }
 
-std::string dv::value_to_scientific(long double value, int sig_figs, long double imag) {
+std::string nero::value_to_scientific(long double value, int sig_figs, long double imag) {
     // sig_figs == 0: unlimited precision (original behavior)
     // sig_figs >  0: round to that many significant figures
 

@@ -5,11 +5,11 @@
 #include <expected>
 #include <vector>
 
-namespace dv {
+namespace nero {
     class Lexer {
     public:
         Lexer(const std::string_view view) noexcept;
-        using MaybeTokens = std::expected<std::vector<dv::Token>, std::string>;
+        using MaybeTokens = std::expected<std::vector<nero::Token>, std::string>;
         MaybeTokens extract_all_tokens() noexcept;
     private:
         std::uint32_t length;

@@ -16,7 +16,7 @@
 #include "print.hpp"
 #endif
 
-std::string dv::Expression::get_single_expression() const {
+std::string nero::Expression::get_single_expression() const {
     // Solve-for and solve-system expressions must not have units wrapped
     if (value_expr.find(":=") != std::string::npos) return value_expr;
     if (!value_expr.empty() && value_expr[0] == '@') return value_expr;
@@ -31,10 +31,10 @@ std::string dv::Expression::get_single_expression() const {
     return std::format("\\left({}\\right)\\cdot{}", value_expr, unit);
 }
 
-dv::Evaluator::~Evaluator() = default;
+nero::Evaluator::~Evaluator() = default;
 
-dv::Evaluator::Evaluator(){
-    std::vector<dv::AssignExpression> const_expressions = {
+nero::Evaluator::Evaluator(){
+    std::vector<nero::AssignExpression> const_expressions = {
         {"e", "2.718281828459", "1"},
         {"e_c", "1.602*10^{-19}", "\\C"},
         {"e_0", "8.854187817*10^{-12}", "\\frac{\\F}{\\m}"},
@@ -56,20 +56,20 @@ dv::Evaluator::Evaluator(){
     }
 }
 
-// dv::Evaluator::Evaluator(const std::span<const dv::AssignExpression> const_expressions){
+// nero::Evaluator::Evaluator(const std::span<const nero::AssignExpression> const_expressions){
 //     for(const auto &expression : const_expressions){
 //         insert_constant(expression.identifier, expression);
 //     }
 // }
 
-dv::Evaluator::MaybeEvaluated dv::Evaluator::evaluate_expression(const Expression &expression){
+nero::Evaluator::MaybeEvaluated nero::Evaluator::evaluate_expression(const Expression &expression){
     auto parsed = parse_expression(expression);
     if(!parsed) return std::unexpected{parsed.error()};
     return parsed.value().ast->evaluate(*this);
 }
 
 
-std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_list(const std::span<const dv::Expression> expression_list){
+std::vector<nero::Evaluator::MaybeEvaluated> nero::Evaluator::evaluate_expression_list(const std::span<const nero::Expression> expression_list){
     last_formula_results.clear();
     evaluated_variables.clear();
     consumed_variables.clear();
@@ -77,7 +77,7 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
     variable_source_expressions.clear();
     formula_cache_valid_ = false;
     // Variables, functions, and sources persist across batches (REPL semantics).
-    std::vector<dv::MaybeASTDependencies> parsed_expressions;
+    std::vector<nero::MaybeASTDependencies> parsed_expressions;
     parsed_expressions.reserve(expression_list.size());
     for(const auto &expression : expression_list){
         parsed_expressions.emplace_back(parse_expression(expression));
@@ -95,7 +95,7 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
         if (!parsed_expressions[i]) continue;
         const auto* root = parsed_expressions[i].value().ast.get();
         if (root->token.type == TokenType::EQUAL) {
-            const auto* expr_data = std::get_if<dv::AST::ASTExpression>(&root->data);
+            const auto* expr_data = std::get_if<nero::AST::ASTExpression>(&root->data);
             if (expr_data && expr_data->lhs) {
                 auto t = expr_data->lhs->token.type;
                 if (t == TokenType::IDENTIFIER || t == TokenType::FUNC_CALL)
@@ -165,16 +165,16 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
             };
 
             // Build constraint body: the expression whose root we seek (f(var) = 0)
-            std::unique_ptr<dv::AST> owned_body;
-            dv::AST* body_ptr = nullptr;
+            std::unique_ptr<nero::AST> owned_body;
+            nero::AST* body_ptr = nullptr;
 
             if(parsed_expressions[evaluation_index - 1]) {
                 const auto& prev_ast = parsed_expressions[evaluation_index - 1].value().ast;
                 if(prev_ast->token.type == TokenType::EQUAL) {
                     // lhs = rhs form — solve as lhs - rhs = 0
-                    const auto& ed = std::get<dv::AST::ASTExpression>(prev_ast->data);
+                    const auto& ed = std::get<nero::AST::ASTExpression>(prev_ast->data);
                     Token minus_tok{TokenType::MINUS, "-"};
-                    owned_body = std::make_unique<dv::AST>(minus_tok, ed.lhs->clone(), ed.rhs->clone());
+                    owned_body = std::make_unique<nero::AST>(minus_tok, ed.lhs->clone(), ed.rhs->clone());
                     body_ptr = owned_body.get();
                 } else {
                     body_ptr = prev_ast.get();
@@ -293,7 +293,7 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
 
         // ── SOLVE_SYSTEM (@) ────────────────────────────────────────────────
         if(root_token_type == TokenType::SOLVE_SYSTEM) {
-            const auto& call = std::get<dv::AST::ASTCall>(parsed_expressions[evaluation_index].value().ast->data);
+            const auto& call = std::get<nero::AST::ASTCall>(parsed_expressions[evaluation_index].value().ast->data);
             std::vector<std::string> vars;
             for(const auto& arg : call.args) vars.push_back(std::string(arg->token.text));
             const int n = (int)vars.size();
@@ -310,15 +310,15 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
             // Equations: each has a source index and a constraint body (AST for f(vars)=0)
             struct Equation {
                 std::size_t source_idx;
-                std::unique_ptr<dv::AST> owned_ast; // non-null when we synthesized the body
-                dv::AST* body_ptr;                  // always valid
+                std::unique_ptr<nero::AST> owned_ast; // non-null when we synthesized the body
+                nero::AST* body_ptr;                  // always valid
                 bool parse_failed;                  // true if source had a parse error
             };
             std::vector<Equation> equations;
 
             for(std::size_t j = 0; j < evaluation_index; j++) {
-                std::unique_ptr<dv::AST> owned;
-                dv::AST* body = nullptr;
+                std::unique_ptr<nero::AST> owned;
+                nero::AST* body = nullptr;
                 bool pfailed = false;
 
                 if(parsed_expressions[j]) {
@@ -331,9 +331,9 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
 
                     if(jast->token.type == TokenType::EQUAL && !evaluated[j]) {
                         // lhs = rhs form that failed (undefined var) — use lhs - rhs
-                        const auto& ed = std::get<dv::AST::ASTExpression>(jast->data);
+                        const auto& ed = std::get<nero::AST::ASTExpression>(jast->data);
                         Token minus_tok{TokenType::MINUS, "-"};
-                        owned = std::make_unique<dv::AST>(minus_tok, ed.lhs->clone(), ed.rhs->clone());
+                        owned = std::make_unique<nero::AST>(minus_tok, ed.lhs->clone(), ed.rhs->clone());
                         body = owned.get();
                     } else if(jast->token.type != TokenType::EQUAL && !evaluated[j]) {
                         // Normal expression that failed to evaluate
@@ -375,7 +375,7 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
             bool coeff_error = false;
 
             for(int j = 0; j < n; j++) {
-                dv::AST* eq_body = equations[j].body_ptr;
+                nero::AST* eq_body = equations[j].body_ptr;
                 for(const auto& v : vars) evaluated_variables[v] = UnitValue{0.0L};
                 auto f0 = eq_body->evaluate(*this);
                 if(!f0) { coeff_error = true; break; }
@@ -490,7 +490,7 @@ std::vector<dv::Evaluator::MaybeEvaluated> dv::Evaluator::evaluate_expression_li
     return evaluated;
 }
 
-void dv::Evaluator::insert_constant(const std::string name, const Expression &expression){
+void nero::Evaluator::insert_constant(const std::string name, const Expression &expression){
     auto parsed_expression = parse_expression(expression.value_expr);
     auto parsed_unit_expression = parse_expression(expression.unit_expr);
     if(!parsed_expression || !parsed_unit_expression) return;
@@ -504,8 +504,8 @@ void dv::Evaluator::insert_constant(const std::string name, const Expression &ex
     fixed_constants.insert_or_assign(name, std::move(value));
 }
 
-std::vector<Physics::Formula> dv::Evaluator::get_available_formulas(const dv::UnitVector &target, bool filter_dependencies) const noexcept {
-    std::vector<dv::UnitVector> available_units;
+std::vector<Physics::Formula> nero::Evaluator::get_available_formulas(const nero::UnitVector &target, bool filter_dependencies) const noexcept {
+    std::vector<nero::UnitVector> available_units;
     for(const auto &[key, value]: this->evaluated_variables) {
         if (filter_dependencies && consumed_variables.contains(key)) continue;
         if(const auto* uv = std::get_if<UnitValue>(&value)) {
@@ -543,7 +543,7 @@ std::vector<Physics::Formula> dv::Evaluator::get_available_formulas(const dv::Un
     return result;
 }
 
-dv::MaybeASTDependencies dv::Evaluator::parse_expression(const Expression expression){
+nero::MaybeASTDependencies nero::Evaluator::parse_expression(const Expression expression){
     auto single_expr = expression.get_single_expression();
     Lexer lexer{single_expr};
     const auto &tokens = lexer.extract_all_tokens();
@@ -560,7 +560,7 @@ dv::MaybeASTDependencies dv::Evaluator::parse_expression(const Expression expres
 #endif
 }
 
-dv::MaybeASTDependencies dv::Evaluator::parse_expression(const std::string expression){
+nero::MaybeASTDependencies nero::Evaluator::parse_expression(const std::string expression){
     Lexer lexer{expression};
     const auto &tokens = lexer.extract_all_tokens();
     if(!tokens) {

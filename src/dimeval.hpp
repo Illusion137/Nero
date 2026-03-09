@@ -30,7 +30,7 @@
 #define DIM_HENRY    { 2, -2, 1, -2, 0, 0, 0 }
 #define DIM_LITER    { 3, 0, 0, 0, 0, 0, 0 }
 
-namespace dv {
+namespace nero {
     struct AST; // forward declaration for Function::body
 
     // m  s  kg  A  K  mol  cd

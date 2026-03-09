@@ -7,7 +7,7 @@
 #include <emscripten/bind.h>
 
 using namespace emscripten;
-using namespace dv;
+using namespace nero;
 
 static Evaluator* g_eval = nullptr;
 
@@ -61,21 +61,21 @@ static JsResult evalue_to_js_result(const EValue& ev) {
 
     std::visit([&r](const auto& v) {
         using T = std::decay_t<decltype(v)>;
-        if constexpr (std::is_same_v<T, dv::UnitValue>) {
+        if constexpr (std::is_same_v<T, nero::UnitValue>) {
             r.value = (double)v.value;
             r.imag  = (double)v.imag;
             r.sig_figs = (int)v.sig_figs;
             for (int i = 0; i < 7; i++) r.unit[i] = v.unit.vec[i];
-            r.unit_latex = (v.unit == dv::UnitVector{dv::DIMENSIONLESS_VEC})
+            r.unit_latex = (v.unit == nero::UnitVector{nero::DIMENSIONLESS_VEC})
                 ? "" : unit_to_latex(v.unit);
             r.value_scientific = value_to_scientific(v.value, (int)v.sig_figs, v.imag);
-        } else if constexpr (std::is_same_v<T, dv::UnitValueList>) {
+        } else if constexpr (std::is_same_v<T, nero::UnitValueList>) {
             if (!v.elements.empty()) {
                 r.value = (double)v.elements[0].value;
                 r.imag  = (double)v.elements[0].imag;
                 r.sig_figs = (int)v.elements[0].sig_figs;
                 for (int i = 0; i < 7; i++) r.unit[i] = v.elements[0].unit.vec[i];
-                r.unit_latex = (v.elements[0].unit == dv::UnitVector{dv::DIMENSIONLESS_VEC})
+                r.unit_latex = (v.elements[0].unit == nero::UnitVector{nero::DIMENSIONLESS_VEC})
                     ? "" : unit_to_latex(v.elements[0].unit);
                 std::string sci;
                 for(std::size_t i = 0; i < v.elements.size(); i++) {
@@ -86,25 +86,25 @@ static JsResult evalue_to_js_result(const EValue& ev) {
             }
             r.extra_values.reserve(v.elements.size());
             for (const auto& e : v.elements) r.extra_values.push_back((double)e.value);
-        } else if constexpr (std::is_same_v<T, dv::BooleanValue>) {
+        } else if constexpr (std::is_same_v<T, nero::BooleanValue>) {
             r.value = v.value ? 1.0 : 0.0;
             r.value_scientific = std::to_string((int)r.value);
-        } else if constexpr (std::is_same_v<T, dv::Function>) {
+        } else if constexpr (std::is_same_v<T, nero::Function>) {
             // Function — stored successfully; report as success with a display hint
             r.success = true;
             r.error = "function";
             r.value_scientific = v.to_result_string();
-        } else if constexpr (std::is_same_v<T, dv::VectorValue>) {
+        } else if constexpr (std::is_same_v<T, nero::VectorValue>) {
             r.value = (double)v.x.value;
             r.imag  = (double)v.x.imag;
             for (int i = 0; i < 7; i++) r.unit[i] = v.x.unit.vec[i];
-            r.unit_latex = (v.x.unit == dv::UnitVector{dv::DIMENSIONLESS_VEC})
+            r.unit_latex = (v.x.unit == nero::UnitVector{nero::DIMENSIONLESS_VEC})
                 ? "" : unit_to_latex(v.x.unit);
             // Build value_scientific using per-component sig_figs
             {
                 std::string sci;
                 bool first = true;
-                auto add_comp = [&](const dv::UnitValue& c, const char* hat) {
+                auto add_comp = [&](const nero::UnitValue& c, const char* hat) {
                     long double abs_v = c.value < 0.0L ? -c.value : c.value;
                     if (abs_v < 1e-300L && (c.imag < 0.0L ? -c.imag : c.imag) < 1e-300L) return;
                     if (!first) sci += c.value >= 0.0L ? " + " : " - ";
@@ -152,18 +152,18 @@ static JsFormula physics_formula_to_js(const Physics::Formula& f) {
 // Lifecycle
 // ============================================================================
 
-bool dv_init() {
+bool nero_init() {
     if (g_eval) return false;
     g_eval = new Evaluator();
     return true;
 }
 
-void dv_destroy() {
+void nero_destroy() {
     delete g_eval;
     g_eval = nullptr;
 }
 
-bool dv_is_initialized() {
+bool nero_is_initialized() {
     return g_eval != nullptr;
 }
 
@@ -171,22 +171,22 @@ bool dv_is_initialized() {
 // Constants
 // ============================================================================
 
-bool dv_set_constant(const std::string& name, const std::string& value_expr, const std::string& unit_expr) {
+bool nero_set_constant(const std::string& name, const std::string& value_expr, const std::string& unit_expr) {
     if (!g_eval) return false;
     g_eval->insert_constant(name, Expression{value_expr, unit_expr});
     return true;
 }
 
-bool dv_remove_constant(const std::string& name) {
+bool nero_remove_constant(const std::string& name) {
     if (!g_eval) return false;
     return g_eval->fixed_constants.erase(name) > 0;
 }
 
-void dv_clear_constants() {
+void nero_clear_constants() {
     if (g_eval) g_eval->fixed_constants.clear();
 }
 
-int dv_get_constant_count() {
+int nero_get_constant_count() {
     return g_eval ? static_cast<int>(g_eval->fixed_constants.size()) : 0;
 }
 
@@ -194,7 +194,7 @@ int dv_get_constant_count() {
 // Evaluation
 // ============================================================================
 
-JsResult dv_eval(const std::string& value_expr, const std::string& unit_expr) {
+JsResult nero_eval(const std::string& value_expr, const std::string& unit_expr) {
     if (!g_eval) return make_error_result("Evaluator not initialized");
 
     auto results = g_eval->evaluate_expression(
@@ -206,7 +206,7 @@ JsResult dv_eval(const std::string& value_expr, const std::string& unit_expr) {
     return make_error_result(results.error());
 }
 
-std::vector<JsResult> dv_eval_batch(const std::vector<std::string>& value_exprs,
+std::vector<JsResult> nero_eval_batch(const std::vector<std::string>& value_exprs,
                                      const std::vector<std::string>& unit_exprs,
                                      const std::vector<std::string>& conversion_unit_exprs) {
     if (!g_eval) return {};
@@ -243,7 +243,7 @@ std::vector<JsResult> dv_eval_batch(const std::vector<std::string>& value_exprs,
 // Formula Search
 // ============================================================================
 
-std::vector<JsFormula> dv_get_available_formulas(const std::vector<int>& target_unit_vec) {
+std::vector<JsFormula> nero_get_available_formulas(const std::vector<int>& target_unit_vec) {
     if (!g_eval || target_unit_vec.size() != 7) return {};
 
     UnitVector target;
@@ -258,7 +258,7 @@ std::vector<JsFormula> dv_get_available_formulas(const std::vector<int>& target_
     return out;
 }
 
-std::vector<JsFormula> dv_get_available_formulas_filtered(const std::vector<int>& target_unit_vec) {
+std::vector<JsFormula> nero_get_available_formulas_filtered(const std::vector<int>& target_unit_vec) {
     if (!g_eval || target_unit_vec.size() != 7) return {};
 
     UnitVector target;
@@ -273,7 +273,7 @@ std::vector<JsFormula> dv_get_available_formulas_filtered(const std::vector<int>
     return out;
 }
 
-std::vector<JsFormula> dv_get_last_formula_results() {
+std::vector<JsFormula> nero_get_last_formula_results() {
     if (!g_eval) return {};
 
     std::vector<JsFormula> out;
@@ -287,20 +287,20 @@ std::vector<JsFormula> dv_get_last_formula_results() {
 // Variables
 // ============================================================================
 
-val dv_get_variable(const std::string& name) {
+val nero_get_variable(const std::string& name) {
     if (!g_eval) return val::null();
     auto it = g_eval->evaluated_variables.find(name);
     if (it == g_eval->evaluated_variables.end()) return val::null();
-    if (const auto* uv = std::get_if<dv::UnitValue>(&it->second))
+    if (const auto* uv = std::get_if<nero::UnitValue>(&it->second))
         return val((double)uv->value);
     return val::null();
 }
 
-void dv_clear_variables() {
+void nero_clear_variables() {
     if (g_eval) g_eval->evaluated_variables.clear();
 }
 
-int dv_get_variable_count() {
+int nero_get_variable_count() {
     return g_eval ? static_cast<int>(g_eval->evaluated_variables.size()) : 0;
 }
 
@@ -308,7 +308,7 @@ int dv_get_variable_count() {
 // Unit Utilities
 // ============================================================================
 
-std::vector<int> dv_unit_latex_to_unit(const std::string& unit_latex) {
+std::vector<int> nero_unit_latex_to_unit(const std::string& unit_latex) {
     auto unit = unit_latex_to_unit(unit_latex);
     std::vector<int> out(7);
     for (int i = 0; i < 7; i++)
@@ -316,7 +316,7 @@ std::vector<int> dv_unit_latex_to_unit(const std::string& unit_latex) {
     return out;
 }
 
-std::string dv_unit_to_latex(const std::vector<int>& unit_vec) {
+std::string nero_unit_to_latex(const std::vector<int>& unit_vec) {
     if (unit_vec.size() != 7) return "";
     UnitVector uv;
     for (int i = 0; i < 7; i++)
@@ -324,11 +324,11 @@ std::string dv_unit_to_latex(const std::vector<int>& unit_vec) {
     return unit_to_latex(uv);
 }
 
-std::string dv_value_to_scientific(double value, int sig_figs) {
+std::string nero_value_to_scientific(double value, int sig_figs) {
     return value_to_scientific((long double)value, sig_figs);
 }
 
-std::string dv_version() {
+std::string nero_version() {
     return "2.0.0";
 }
 
@@ -374,38 +374,38 @@ EMSCRIPTEN_BINDINGS(UnitEval) {
 
     // --- Lifecycle ---
 
-    function("dv_init",           &dv_init);
-    function("dv_destroy",        &dv_destroy);
-    function("dv_is_initialized", &dv_is_initialized);
+    function("nero_init",           &nero_init);
+    function("nero_destroy",        &nero_destroy);
+    function("nero_is_initialized", &nero_is_initialized);
 
     // --- Constants ---
 
-    function("dv_set_constant",      &dv_set_constant);
-    function("dv_remove_constant",   &dv_remove_constant);
-    function("dv_clear_constants",   &dv_clear_constants);
-    function("dv_get_constant_count",&dv_get_constant_count);
+    function("nero_set_constant",      &nero_set_constant);
+    function("nero_remove_constant",   &nero_remove_constant);
+    function("nero_clear_constants",   &nero_clear_constants);
+    function("nero_get_constant_count",&nero_get_constant_count);
 
     // --- Evaluation ---
 
-    function("dv_eval",       &dv_eval);
-    function("dv_eval_batch", &dv_eval_batch);
+    function("nero_eval",       &nero_eval);
+    function("nero_eval_batch", &nero_eval_batch);
 
     // --- Formulas ---
 
-    function("dv_get_available_formulas",          &dv_get_available_formulas);
-    function("dv_get_available_formulas_filtered", &dv_get_available_formulas_filtered);
-    function("dv_get_last_formula_results",        &dv_get_last_formula_results);
+    function("nero_get_available_formulas",          &nero_get_available_formulas);
+    function("nero_get_available_formulas_filtered", &nero_get_available_formulas_filtered);
+    function("nero_get_last_formula_results",        &nero_get_last_formula_results);
 
     // --- Variables ---
 
-    function("dv_get_variable",      &dv_get_variable);
-    function("dv_clear_variables",   &dv_clear_variables);
-    function("dv_get_variable_count",&dv_get_variable_count);
+    function("nero_get_variable",      &nero_get_variable);
+    function("nero_clear_variables",   &nero_clear_variables);
+    function("nero_get_variable_count",&nero_get_variable_count);
 
     // --- Utilities ---
 
-    function("dv_unit_latex_to_unit",  &dv_unit_latex_to_unit);
-    function("dv_unit_to_latex",       &dv_unit_to_latex);
-    function("dv_value_to_scientific", &dv_value_to_scientific);
-    function("dv_version",             &dv_version);
+    function("nero_unit_latex_to_unit",  &nero_unit_latex_to_unit);
+    function("nero_unit_to_latex",       &nero_unit_to_latex);
+    function("nero_value_to_scientific", &nero_value_to_scientific);
+    function("nero_version",             &nero_version);
 }

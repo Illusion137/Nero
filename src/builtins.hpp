@@ -2,7 +2,7 @@
 
 #include "dimeval.hpp"
 
-namespace dv {
+namespace nero {
     namespace builtins {
         // Scalar trig/log — UnitValue input for complex support
         UnitValue ln(UnitValue val);
@@ -18,7 +18,7 @@ namespace dv {
         EValue nPr(double n, double r);
         EValue nthsqrt(EValue value, double n);
         EValue ceil(EValue value);
-        EValue factorial(dv::EValue value);
+        EValue factorial(nero::EValue value);
         EValue floor(EValue value);
         EValue round(EValue value, double place);
         EValue arcsin(double value);

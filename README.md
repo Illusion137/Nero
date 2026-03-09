@@ -70,13 +70,13 @@ Built-in physical constants: `c`, `h`, `e_c`, `e_0`, `k_e`, `m_e`, `m_p`, `m_n`,
 ```cpp
 #include "evaluator.hpp"
 
-dv::Evaluator eval;
+nero::Evaluator eval;
 
 // Single expression
 auto result = eval.evaluate_expression({"x^2 + 1", ""});
 
 // Batch — expressions share variable state
-std::vector<dv::Expression> exprs = {
+std::vector<nero::Expression> exprs = {
     {"r = 5.0", "\\m"},
     {"T = 2.0", "\\s"},
     {"v = r / T", ""},

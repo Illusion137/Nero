@@ -15,30 +15,30 @@
 // ============================================================================
 namespace {
     // Real (scalar) part
-    long double get_real(const dv::EValue &e) {
-        if (auto p = std::get_if<dv::UnitValue>(&e)) return p->value;
-        if (auto p = std::get_if<dv::UnitValueList>(&e)) return p->elements.empty() ? 0.0L : p->elements[0].value;
-        if (auto p = std::get_if<dv::BooleanValue>(&e)) return p->value ? 1.0L : 0.0L;
+    long double get_real(const nero::EValue &e) {
+        if (auto p = std::get_if<nero::UnitValue>(&e)) return p->value;
+        if (auto p = std::get_if<nero::UnitValueList>(&e)) return p->elements.empty() ? 0.0L : p->elements[0].value;
+        if (auto p = std::get_if<nero::BooleanValue>(&e)) return p->value ? 1.0L : 0.0L;
         return 0.0L;
     }
     // Imaginary part
-    long double get_imag(const dv::EValue &e) {
-        if (auto p = std::get_if<dv::UnitValue>(&e)) return p->imag;
+    long double get_imag(const nero::EValue &e) {
+        if (auto p = std::get_if<nero::UnitValue>(&e)) return p->imag;
         return 0.0L;
     }
     // Unit vector
-    dv::UnitVector get_unit(const dv::EValue &e) {
-        if (auto p = std::get_if<dv::UnitValue>(&e)) return p->unit;
-        if (auto p = std::get_if<dv::UnitValueList>(&e))
-            return p->elements.empty() ? dv::UnitVector{dv::DIMENSIONLESS_VEC} : p->elements[0].unit;
-        return dv::UnitVector{dv::DIMENSIONLESS_VEC};
+    nero::UnitVector get_unit(const nero::EValue &e) {
+        if (auto p = std::get_if<nero::UnitValue>(&e)) return p->unit;
+        if (auto p = std::get_if<nero::UnitValueList>(&e))
+            return p->elements.empty() ? nero::UnitVector{nero::DIMENSIONLESS_VEC} : p->elements[0].unit;
+        return nero::UnitVector{nero::DIMENSIONLESS_VEC};
     }
     // Extract as UnitValue (first element for lists)
-    dv::UnitValue as_uv(const dv::EValue &e) {
-        if (auto p = std::get_if<dv::UnitValue>(&e)) return *p;
-        if (auto p = std::get_if<dv::UnitValueList>(&e)) return p->elements.empty() ? dv::UnitValue{} : p->elements[0];
-        if (auto p = std::get_if<dv::BooleanValue>(&e)) return dv::UnitValue{p->value ? 1.0L : 0.0L};
-        return dv::UnitValue{};
+    nero::UnitValue as_uv(const nero::EValue &e) {
+        if (auto p = std::get_if<nero::UnitValue>(&e)) return *p;
+        if (auto p = std::get_if<nero::UnitValueList>(&e)) return p->elements.empty() ? nero::UnitValue{} : p->elements[0];
+        if (auto p = std::get_if<nero::BooleanValue>(&e)) return nero::UnitValue{p->value ? 1.0L : 0.0L};
+        return nero::UnitValue{};
     }
 
 }
@@ -47,7 +47,7 @@ namespace {
 // clone
 // ============================================================================
 
-std::unique_ptr<dv::AST> dv::AST::clone() const {
+std::unique_ptr<nero::AST> nero::AST::clone() const {
     auto result = std::make_unique<AST>();
     result->token = this->token;
     if(this->data.index() == 0) {
@@ -73,13 +73,13 @@ std::unique_ptr<dv::AST> dv::AST::clone() const {
 // evaluate dispatch
 // ============================================================================
 
-dv::MaybeEValue dv::AST::evaluate(dv::Evaluator &evalulator) {
+nero::MaybeEValue nero::AST::evaluate(nero::Evaluator &evalulator) {
     return evaluate(this, evalulator);
 }
-dv::MaybeEValue dv::AST::evaluate(const std::unique_ptr<AST> &ast, dv::Evaluator &evalulator) {
+nero::MaybeEValue nero::AST::evaluate(const std::unique_ptr<AST> &ast, nero::Evaluator &evalulator) {
     return evaluate(ast.get(), evalulator);
 }
-dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
+nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulator) {
     switch (ast->token.type) {
         case TokenType::EQUAL: {
             const auto &expr = std::get<ASTExpression>(ast->data);
@@ -100,7 +100,7 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
                     }
                     param_names.emplace_back(arg->token.text);
                 }
-                dv::Function f;
+                nero::Function f;
                 f.name = func_name;
                 f.param_names = std::move(param_names);
                 f.body = std::shared_ptr<AST>(expr.rhs->clone().release());
@@ -209,7 +209,7 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
         case TokenType::FACTORIAL: {
             auto lhs = std::get<ASTExpression>(ast->data).lhs->evaluate(evalulator);
             if(!lhs) return lhs;
-            return dv::evalue_fact(*lhs);
+            return nero::evalue_fact(*lhs);
         }
         case TokenType::PERCENT: {
             auto lhs = std::get<ASTExpression>(ast->data).lhs->evaluate(evalulator);
@@ -315,52 +315,52 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
         case TokenType::BUILTIN_FUNC_LN: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::ln(as_uv(*arg));
+            return nero::builtins::ln(as_uv(*arg));
         }
         case TokenType::BUILTIN_FUNC_SIN: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::sin(as_uv(*arg));
+            return nero::builtins::sin(as_uv(*arg));
         }
         case TokenType::BUILTIN_FUNC_COS: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::cos(as_uv(*arg));
+            return nero::builtins::cos(as_uv(*arg));
         }
         case TokenType::BUILTIN_FUNC_TAN: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::tan(as_uv(*arg));
+            return nero::builtins::tan(as_uv(*arg));
         }
         case TokenType::BUILTIN_FUNC_SEC: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::sec(as_uv(*arg).value);
+            return nero::builtins::sec(as_uv(*arg).value);
         }
         case TokenType::BUILTIN_FUNC_CSC: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::csc(as_uv(*arg).value);
+            return nero::builtins::csc(as_uv(*arg).value);
         }
         case TokenType::BUILTIN_FUNC_COT: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::cot(as_uv(*arg).value);
+            return nero::builtins::cot(as_uv(*arg).value);
         }
         case TokenType::BUILTIN_FUNC_LOG: {
             const auto &call = std::get<ASTCall>(ast->data);
             auto arg = call.args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            if(!call.special_value) return dv::builtins::log(get_real(*arg));
+            if(!call.special_value) return nero::builtins::log(get_real(*arg));
             auto base = call.special_value->evaluate(evalulator);
             if(!base) return base;
-            return dv::builtins::log(get_real(*arg), (std::int32_t)get_real(*base));
+            return nero::builtins::log(get_real(*arg), (std::int32_t)get_real(*base));
         }
         case TokenType::ABSOLUTE_BAR:
         case TokenType::BUILTIN_FUNC_ABS: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::abs(*arg);
+            return nero::builtins::abs(*arg);
         }
         case TokenType::BUILTIN_FUNC_NCR: {
             const auto &args = std::get<ASTCall>(ast->data).args;
@@ -368,7 +368,7 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
             if(!a) return a;
             auto b = args[1]->evaluate(evalulator);
             if(!b) return b;
-            return dv::builtins::nCr(get_real(*a), get_real(*b));
+            return nero::builtins::nCr(get_real(*a), get_real(*b));
         }
         case TokenType::BUILTIN_FUNC_NPR: {
             const auto &args = std::get<ASTCall>(ast->data).args;
@@ -376,7 +376,7 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
             if(!a) return a;
             auto b = args[1]->evaluate(evalulator);
             if(!b) return b;
-            return dv::builtins::nPr(get_real(*a), get_real(*b));
+            return nero::builtins::nPr(get_real(*a), get_real(*b));
         }
         case TokenType::BUILTIN_FUNC_SQRT: {
             const auto &call = std::get<ASTCall>(ast->data);
@@ -388,25 +388,25 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
                     return UnitValue{0.0L, (long double)std::sqrt((double)(-uv->value)), uv->unit};
                 }
             }
-            if(!call.special_value) return dv::builtins::nthsqrt(*arg, 2.0);
+            if(!call.special_value) return nero::builtins::nthsqrt(*arg, 2.0);
             auto n = call.special_value->evaluate(evalulator);
             if(!n) return n;
-            return dv::builtins::nthsqrt(*arg, (double)get_real(*n));
+            return nero::builtins::nthsqrt(*arg, (double)get_real(*n));
         }
         case TokenType::BUILTIN_FUNC_CEIL: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::ceil(*arg);
+            return nero::builtins::ceil(*arg);
         }
         case TokenType::BUILTIN_FUNC_FACT: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::factorial(*arg);
+            return nero::builtins::factorial(*arg);
         }
         case TokenType::BUILTIN_FUNC_FLOOR: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::floor(*arg);
+            return nero::builtins::floor(*arg);
         }
         case TokenType::BUILTIN_FUNC_ROUND: {
             const auto &args = std::get<ASTCall>(ast->data).args;
@@ -414,37 +414,37 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
             if(!a) return a;
             auto b = args[1]->evaluate(evalulator);
             if(!b) return b;
-            return dv::builtins::round(*a, (double)get_real(*b));
+            return nero::builtins::round(*a, (double)get_real(*b));
         }
         case TokenType::BUILTIN_FUNC_ARCSIN: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::arcsin(get_real(*arg));
+            return nero::builtins::arcsin(get_real(*arg));
         }
         case TokenType::BUILTIN_FUNC_ARCCOS: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::arccos(get_real(*arg));
+            return nero::builtins::arccos(get_real(*arg));
         }
         case TokenType::BUILTIN_FUNC_ARCTAN: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::arctan(get_real(*arg));
+            return nero::builtins::arctan(get_real(*arg));
         }
         case TokenType::BUILTIN_FUNC_ARCSEC: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::arcsec(get_real(*arg));
+            return nero::builtins::arcsec(get_real(*arg));
         }
         case TokenType::BUILTIN_FUNC_ARCCSC: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::arccsc(get_real(*arg));
+            return nero::builtins::arccsc(get_real(*arg));
         }
         case TokenType::BUILTIN_FUNC_ARCCOT: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
             if(!arg) return arg;
-            return dv::builtins::arccot(get_real(*arg));
+            return nero::builtins::arccot(get_real(*arg));
         }
         case TokenType::BUILTIN_FUNC_VALUE: {
             auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
@@ -559,7 +559,7 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
                 return UnitValue{result};
             } else {
                 // Return a Function that, when called, computes the derivative
-                dv::Function f;
+                nero::Function f;
                 f.name = "\\frac{d}{d" + var_name + "}";
                 f.param_names = {var_name};
                 f.body = std::shared_ptr<AST>(ast->clone().release());
@@ -590,7 +590,7 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
                                 !evalulator.fixed_constants.contains(cf.param_names[0]));
 
             if(is_symbolic) {
-                dv::Function df;
+                nero::Function df;
                 df.name = func_name + "'";
                 df.param_names = cf.param_names;
                 df.body = cf.body;
@@ -859,7 +859,7 @@ dv::MaybeEValue dv::AST::evaluate(const AST *ast, dv::Evaluator &evalulator) {
     return std::unexpected{std::format("Unsupported expression (token: '{}')", ast->token.text)};
 }
 
-std::string dv::AST::to_string(const std::uint16_t depth) const noexcept{
+std::string nero::AST::to_string(const std::uint16_t depth) const noexcept{
     constexpr std::uint32_t tab_size = 4;
     std::string tabs = std::format("{:>{}}", "", depth * tab_size);
     std::string content = std::format("{}{}\n", tabs, token);

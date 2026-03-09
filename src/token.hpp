@@ -5,7 +5,7 @@
 #include <format>
 #include <vector>
 
-namespace dv {
+namespace nero {
     enum class TokenType {
         BAD_IDENTIFIER = -3,
         BAD_NUMERIC = -2,
@@ -138,25 +138,25 @@ namespace dv {
     };
 };
 template <>
-struct std::formatter<dv::Token> : std::formatter<std::string> {
+struct std::formatter<nero::Token> : std::formatter<std::string> {
     constexpr auto parse(std::format_parse_context& ctx) {
         return std::formatter<std::string>::parse(ctx);
     }
 
-    auto format(const dv::Token& token, std::format_context& ctx) const {
-        if(token.value.value != 0 || token.type == dv::TokenType::NUMERIC_LITERAL){
+    auto format(const nero::Token& token, std::format_context& ctx) const {
+        if(token.value.value != 0 || token.type == nero::TokenType::NUMERIC_LITERAL){
             return std::format_to(ctx.out(), "[{}]: \"{}\" = {}", static_cast<std::int32_t>(token.type), token.text, token.value.value);
         }
         return std::format_to(ctx.out(), "[{}]: \"{}\"", static_cast<std::int32_t>(token.type), token.text);
     }
 };
 template <>
-struct std::formatter<std::vector<dv::Token>> : std::formatter<std::string> {
+struct std::formatter<std::vector<nero::Token>> : std::formatter<std::string> {
     constexpr auto parse(std::format_parse_context& ctx) {
         return ctx.begin(); // ignore format spec
     }
 
-    auto format(const std::vector<dv::Token>& vec,
+    auto format(const std::vector<nero::Token>& vec,
                 std::format_context& ctx) const {
         auto out = ctx.out();
         out = std::format_to(out, "[");

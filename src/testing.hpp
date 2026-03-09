@@ -16,15 +16,15 @@ struct LatexMultiTest {
     double expected_result; // expected result of last expression
 };
 
-static inline long double get_scalar_val(const dv::EValue &ev) {
-    if (auto p = std::get_if<dv::UnitValue>(&ev)) return p->value;
-    if (auto p = std::get_if<dv::UnitValueList>(&ev)) return p->elements.empty() ? 0.0L : p->elements[0].value;
-    if (auto p = std::get_if<dv::BooleanValue>(&ev)) return p->value ? 1.0L : 0.0L;
+static inline long double get_scalar_val(const nero::EValue &ev) {
+    if (auto p = std::get_if<nero::UnitValue>(&ev)) return p->value;
+    if (auto p = std::get_if<nero::UnitValueList>(&ev)) return p->elements.empty() ? 0.0L : p->elements[0].value;
+    if (auto p = std::get_if<nero::BooleanValue>(&ev)) return p->value ? 1.0L : 0.0L;
     return 0.0L;
 }
 
 static inline void print_tokens_red(const std::string view){
-    dv::Lexer lexer{view};
+    nero::Lexer lexer{view};
     const auto &tokens = lexer.extract_all_tokens();
     if(!tokens) return;
     nero_print("\033[31m");
@@ -33,10 +33,10 @@ static inline void print_tokens_red(const std::string view){
 }
 
 static inline void print_ast_red(const std::string view){
-    dv::Lexer lexer{view};
+    nero::Lexer lexer{view};
     const auto &tokens = lexer.extract_all_tokens();
     if(!tokens) return;
-    dv::Parser parser{tokens.value()};
+    nero::Parser parser{tokens.value()};
     const auto &ast = parser.parse();
     if(!ast) return;
     nero_print("\033[31m");
@@ -49,10 +49,10 @@ static inline bool run_non_related_tests(const std::span<const LatexTest> tests)
     std::int32_t passed = 0;
     bool success = true;
     for(const auto &test: tests){
-        std::array<dv::Expression, 1> single_expression_list = {
-            dv::Expression{.value_expr = test.expression}
+        std::array<nero::Expression, 1> single_expression_list = {
+            nero::Expression{.value_expr = test.expression}
         };
-        dv::Evaluator evaluator{};
+        nero::Evaluator evaluator{};
         const auto &eval = evaluator.evaluate_expression_list(single_expression_list);
         const auto &value = eval[0];
         if(!value){
@@ -89,11 +89,11 @@ static inline bool run_multi_tests(const std::span<const LatexMultiTest> tests){
     std::int32_t passed = 0;
     bool success = true;
     for(const auto &test: tests){
-        std::vector<dv::Expression> exprs;
+        std::vector<nero::Expression> exprs;
         for(const auto &e: test.expressions) {
-            exprs.push_back(dv::Expression{.value_expr = e});
+            exprs.push_back(nero::Expression{.value_expr = e});
         }
-        dv::Evaluator evaluator{};
+        nero::Evaluator evaluator{};
         const auto &eval = evaluator.evaluate_expression_list(exprs);
         const auto &value = eval.back();
         std::string desc;
