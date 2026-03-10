@@ -19,11 +19,27 @@ git clone https://github.com/Illusion137/Nero.git
 # Native
 cmake -S . -B build
 cmake --build build
-./build/Nero        # runs tests
+./build/NeroTest        # runs tests
+./build/NeroBenchmark   # runs benchmarks
 
 # WASM (requires Emscripten)
 emcmake cmake -S . -B build-wasm
 cmake --build build-wasm
+# Outputs: build-wasm/Nero.js, build-wasm/Nero.wasm, build-wasm/Nero.d.ts
+```
+
+### Installation as a CMake dependency
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+    Nero
+    GIT_REPOSITORY https://github.com/Illusion137/Nero.git
+    GIT_TAG        main
+)
+FetchContent_MakeAvailable(Nero)
+
+target_link_libraries(your_target PRIVATE NeroLib)
 ```
 
 ## Usage
@@ -36,7 +52,7 @@ nero::Evaluator evaluator{};
 const auto &result = evaluator.evaluate_expression(single_expression);
 if(!result) { // Bad result
     // handle bad result
-    std::string err = value.error();
+    std::string err = result.error();
     return -1.0;
 }
 // Single value
@@ -154,6 +170,48 @@ Supported:
 
 ## Benchmarks
 
+<!-- BENCH_START -->
+![Nero Benchmarks](public/benchmarks.png)
+
+| Benchmark      | µs / op    | ops / sec    | op unit |
+| -------------- | ---------- | ------------ | ------- |
+| Scalar         | 0.35 µs    | 2.86 M/s     | op      |
+| Trig           | 0.77 µs    | 1.31 M/s     | op      |
+| Derivative     | 1.55 µs    | 646.8 k/s    | op      |
+| Integral       | 1.23 µs    | 811.7 k/s    | op      |
+| Summation      | 4.29 µs    | 232.9 k/s    | op      |
+| Batch          | 0.81 µs    | 1.23 M/s     | expr    |
+| Formula search | 473.19 µs  | 2.1 k/s      | op      |
+| Solve-for      | 4.19 µs    | 238.5 k/s    | op      |
+| System solver  | 3.35 µs    | 298.1 k/s    | op      |
+| Random pool    | 0.34 µs    | 2.95 M/s     | expr    |
+| Lex            | 0.02 µs    | 40.22 M/s    | token   |
+
+<details>
+<summary>Raw numbers</summary>
+
+```
+=== Nero Benchmarks ===
+
+Scalar: 1 + 2 * 3                                           34.92 ms       2863774/s
+Trig: sin(pi/6) + cos(pi/3)                                 38.31 ms       1305110/s
+Derivative: d/dx(x^3) at x=2                                15.46 ms        646773/s
+Integral: int_0^1 x^2 dx                                     6.16 ms        811041/s
+Summation: sum_{i=1}^{100}(i)                               21.47 ms        232876/s
+Batch (5 unit-carrying exprs)                               40.51 ms        246865/s
+Formula search (acceleration target)                       473.19 ms          2113/s
+Solve-for: x^2 - 4 ; x :=                                   12.58 ms        238468/s
+System solver: x+y=5, x-y=1 ; @=x,y                          6.71 ms        298188/s
+Random pool (30 exprs, 1000 rounds)                         10.18 ms         98201/s
+
+--- Lex Throughput ---
+Lex: 50k-token string (all token types)                    621.57 ms           804/s
+  Tokens/sec: 40.22M   Throughput: 184.8 MB/s
+```
+
+</details>
+<!-- BENCH_END -->
+
 ## C++ usage
 
 ```cpp
@@ -180,9 +238,54 @@ auto results = eval.evaluate_expression_list(exprs);
 
 ## WASM / TypeScript usage
 
-See `dimension_wasm_interface.ts`. The main entry points are:
+### Building
+
+```bash
+emcmake cmake -S . -B build-wasm
+cmake --build build-wasm
+# Outputs: build-wasm/Nero.js  build-wasm/Nero.wasm  build-wasm/Nero.d.ts
+```
+
+Precompiled WASM artifacts are also available on the [GitHub Releases](https://github.com/Illusion137/Nero/releases) page.
+
+### TypeScript interface
+
+Copy `dimension_wasm_interface.ts` into your project alongside the generated `Nero.js`/`Nero.wasm` files, then:
 
 ```typescript
-const results = eval_batch(value_exprs, unit_exprs, conversion_unit_exprs);
-// Each result: { value, imag, unit, success, error, unit_latex, value_scientific, sig_figs }
+import createModule from './Nero.js';
+import { DimensionalEvaluator } from './dimension_wasm_interface';
+
+const Module = await createModule();
+const evaluator = new DimensionalEvaluator(Module);
+
+// Single expression
+const [result] = evaluator.eval_batch(['x^2 + 1'], [''], ['']);
+if (result.success) {
+    console.log(result.value);           // numeric value
+    console.log(result.unit_latex);      // LaTeX unit string, e.g. "\\mathrm{m}"
+    console.log(result.value_scientific); // formatted string with sig figs
+}
+
+// Batch — expressions share variable context
+const results = evaluator.eval_batch(
+    ['r = 5.0', 'T = 2.0', 'v = r / T'],
+    ['\\m',     '\\s',      ''],
+    ['',        '',         '\\frac{\\km}{\\hour}']  // optional conversion units
+);
+// results[2] → { value: 2.5, unit_latex: "\\mathrm{\\frac{m}{s}}", success: true, ... }
+```
+
+Each result object has the shape:
+```typescript
+{
+    value: number;           // real part of the numeric result
+    imag: number;            // imaginary part (0 when real)
+    unit: number[];          // SI unit vector [m, s, kg, A, K, mol, cd]
+    success: boolean;
+    error: string;           // non-empty when success=false; "function" when result is a Function
+    unit_latex: string;      // LaTeX string for the unit
+    value_scientific: string; // formatted value (respects sig figs when applicable)
+    sig_figs: number;        // significant figures count (0 = unlimited/exact)
+}
 ```

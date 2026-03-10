@@ -1,31 +1,33 @@
 {
-    "name": "nero",
-    "version": "1.0.0",
-    "description": "Unit Latex Math Evaluation",
-    "keywords": [
-        "math",
-        "latex",
-        "unit",
-        "evaluation",
-        "evaluator",
-        "parser"
-    ],
-    "homepage": "https://github.com/Illusion137/Nero#readme",
-    "bugs": {
-        "url": "https://github.com/Illusion137/Nero/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/Illusion137/Nero.git"
-    },
-    "license": "ISC",
-    "author": "Sumi!",
-    "type": "commonjs",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "devDependencies": {
-        "@types/node": "^25.2.3"
-    }
+  "name": "nero",
+  "version": "1.0.0",
+  "description": "Unit Latex Math Evaluation",
+  "keywords": [
+    "math",
+    "latex",
+    "unit",
+    "evaluation",
+    "evaluator",
+    "parser"
+  ],
+  "homepage": "https://github.com/Illusion137/Nero#readme",
+  "bugs": {
+    "url": "https://github.com/Illusion137/Nero/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Illusion137/Nero.git"
+  },
+  "license": "ISC",
+  "author": "Sumi!",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "husky",
+    "test": "cmake -S . -B build && cmake --build build && ./build/NeroTest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "husky": "^9.0.0"
+  }
 }

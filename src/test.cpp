@@ -1,4 +1,4 @@
-#define _USE_MATH_DEFINES 
+#define _USE_MATH_DEFINES
 #include "print.hpp"
 #include "evaluator.hpp"
 #include "testing.hpp"
@@ -199,18 +199,6 @@ int main(){
         {"\\gcd(12,8)", 4}, {"\\gcd(12,8,6)", 2},
         {"\\lcm(4,6)", 12}, {"\\lcm(3,4,5)", 60},
 
-        // Derivative: \frac{d}{dx}(x^2) at x=3 => 2*3=6
-        // (requires x to be defined, so this goes in multi-tests)
-
-        // Integral: \int_{0}^{1} x dx = 0.5
-        // (also multi-test for variable binding)
-
-        // Complex numbers
-        // i^2 = -1 (tested with real part)
-
-        // Array literal
-        // [1,2,3] - tested for first element
-
         // Temperature and angle conversion builtins
         {"\\operatorname{rad}(180)", M_PI},
         {"\\deg(\\pi)", 180.0},
@@ -218,6 +206,59 @@ int main(){
         {"\\operatorname{CelF}(32)", 0.0},          // 32°F → 0°C
         {"\\operatorname{FahrC}(100)", 212.0},      // 100°C → 212°F
         {"\\operatorname{FahrK}(373.15)", 212.0},   // 373.15 K → 212°F
+
+        // === ADDITIONAL TESTS ===
+
+        // Inverse trig
+        {"\\arcsin(1)", M_PI / 2.0},
+        {"\\arccos(0)", M_PI / 2.0},
+        {"\\arctan(1)", M_PI / 4.0},
+
+        // Log identities
+        {"\\ln(e)", 1.0},
+        {"\\log_{10}(1000)", 3.0},
+
+        // Rounding
+        {"\\round(3.5,0)", 4.0},
+
+        // Multi-arg min/max
+        {"\\min(3,1,4,1,5)", 1.0},
+        {"\\max(-1,-5,-2)", -1.0},
+
+        // Power edge cases
+        {"5^0", 1.0},
+        {"0^0", 1.0},
+        {"(-1)^2", 1.0},
+
+        // Nth root
+        {"\\sqrt[3]{8}", 2.0},
+
+        // GCD / LCM additional
+        {"\\gcd(100,75)", 25.0},
+        {"\\lcm(6,10)", 30.0},
+
+        // Summation / product additional
+        {"\\prod_{i=1}^{4}(i^2)", 576.0},   // 1*4*9*16
+        {"\\sum_{i=0}^{3}(2^i)", 15.0},     // 1+2+4+8
+
+        // Comparison additional
+        {"3\\leq4", 1.0}, {"4\\leq4", 1.0}, {"5\\leq4", 0.0},
+
+        // Double negation
+        {"\\lnot\\lnot1", 1.0},
+
+        // Modulo additional
+        {"13\\mod5", 3.0},
+
+        // Mixed hex + binary
+        {"0xFF+0b1", 256.0},
+
+        // Temperature: 0°C → -273.15 K  (CelK(0) = 0 - 273.15)
+        {"\\operatorname{CelK}(0)", -273.15},
+
+        // Temperature: 0°C in Fahrenheit = 32°F  — FahrC(0) = 32
+        // (already covered above; add FahrC(0) = 32)
+        {"\\operatorname{FahrC}(0)", 32.0},
     };
 
     static const std::vector<LatexMultiTest> MULTI_TESTS = {
@@ -269,6 +310,28 @@ int main(){
         {{"x + y = 5", "x - y = 1", "@ = x, y", "x"}, 3},
         {{"x + y = 5", "x - y = 1", "@ = x, y", "y"}, 2},
 
+        // === ADDITIONAL MULTI TESTS ===
+
+        // Derivative of x^3 - x at x=2: 3*(2^2) - 1 = 11
+        {{"g(x) = x^3 - x", "g'(2)"}, 11.0},
+
+        // Two-argument custom function
+        {{"h(x,y) = x^2 + y^2", "h(3,4)"}, 25.0},
+
+        // Array last element
+        {{"x = [1,2,3,4,5]", "x[4]"}, 5.0},
+
+        // Sig figs of a 2-sf literal
+        {{"a = 2.5", "b = 4.0", "\\sig(a)"}, 2.0},
+
+        // Definite integral of x^2 from 0 to 2 = 8/3 ≈ 2.6667
+        {{"\\int_{0}^{2} x^2 \\, dx", "ans"}, 8.0 / 3.0},
+
+        // sqrt then square
+        {{"x = 4", "\\sqrt{x}^2"}, 4.0},
+
+        // Product using variable upper bound
+        {{"n = 5", "\\prod_{i=1}^{n}(i)"}, 120.0},
     };
 
     nero_println("=== Single Expression Tests ===");
@@ -546,11 +609,7 @@ int main(){
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
     }
 
-    // 7. @ with equality-form equations: 2a+3b=14 ; 4a-b=1 ; @=a,b → [a, b]
-    //    2a+3b=14, 4a-b=1 → multiply 2nd by 3: 12a-3b=3 → add: 14a=17 → a=17/14, b=(14-2*17/14)/3
-    //    Actually: a = 17/14 ≈ 1.214, b = (14 - 2*(17/14))/3 = (14 - 34/14)/3 = (196/14 - 34/14)/3 = (162/14)/3 = 162/42 = 27/7 ≈ 3.857
-    //    Check: 2*(17/14)+3*(27/7) = 34/14+81/7 = 34/14+162/14 = 196/14 = 14 ✓
-    //           4*(17/14)-27/7 = 68/14-54/14 = 14/14 = 1 ✓
+    // 7. @ with equality-form equations: 2a+3b=14 ; 4a-b=1 ; @=a,b
     {
         std::vector<nero::Expression> eq_sys_exprs = {
             nero::Expression{.value_expr = "2a + 3b = 14"},
@@ -566,7 +625,6 @@ int main(){
                 if(uvl->elements.size() == 2) {
                     double a = (double)uvl->elements[0].value;
                     double b = (double)uvl->elements[1].value;
-                    // Verify solution satisfies both equations
                     ok = std::fabs(2*a + 3*b - 14.0) < 0.001
                       && std::fabs(4*a -   b -  1.0) < 0.001;
                 }
@@ -600,7 +658,6 @@ int main(){
         nero_println("{} x+y=10 ; x-y=2 ; @=x,y → [6,4] {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
-        // Verify source equations are blank (VoidValue), not errors
         bool eq0_blank = eq_reeval_results[0] && std::get_if<nero::VoidValue>(&eq_reeval_results[0].value());
         bool eq1_blank = eq_reeval_results[1] && std::get_if<nero::VoidValue>(&eq_reeval_results[1].value());
         nero_println("{} @=x,y leaves source equations blank {}",
@@ -644,7 +701,6 @@ int main(){
             ok ? "✓\033[0m" : "✗\033[0m");
     };
 
-    // Dot product of same unit vectors → 1
     vec_test("\\hat{i} \\cdot \\hat{i}", "\\hat{i} \\cdot \\hat{i}",
         [](const nero::EValue& v, std::string& d) {
             if (auto* uv = std::get_if<nero::UnitValue>(&v))
@@ -652,7 +708,6 @@ int main(){
             d = "not UnitValue"; return false;
         });
 
-    // Dot product of orthogonal unit vectors → 0
     vec_test("\\hat{i} \\cdot \\hat{j}", "\\hat{i} \\cdot \\hat{j}",
         [](const nero::EValue& v, std::string& d) {
             if (auto* uv = std::get_if<nero::UnitValue>(&v))
@@ -660,7 +715,6 @@ int main(){
             d = "not UnitValue"; return false;
         });
 
-    // Vector addition
     vec_test("3\\hat{i} + 4\\hat{j}", "3\\hat{i} + 4\\hat{j}",
         [](const nero::EValue& v, std::string& d) {
             if (auto* vv = std::get_if<nero::VectorValue>(&v))
@@ -670,7 +724,6 @@ int main(){
             d = "not VectorValue"; return false;
         });
 
-    // Dot product of general vectors → 3*1 + 4*2 = 11
     vec_test("(3\\hat{i}+4\\hat{j}) \\cdot (1\\hat{i}+2\\hat{j})", "(3\\hat{i}+4\\hat{j}) \\cdot (1\\hat{i}+2\\hat{j})",
         [](const nero::EValue& v, std::string& d) {
             if (auto* uv = std::get_if<nero::UnitValue>(&v))
@@ -678,7 +731,6 @@ int main(){
             d = "not UnitValue"; return false;
         });
 
-    // Cross product: i × j = k
     vec_test("\\hat{i} \\times \\hat{j}", "\\hat{i} \\times \\hat{j}",
         [](const nero::EValue& v, std::string& d) {
             if (auto* vv = std::get_if<nero::VectorValue>(&v))
@@ -688,7 +740,6 @@ int main(){
             d = "not VectorValue"; return false;
         });
 
-    // Cross product: j × k = i
     vec_test("\\hat{j} \\times \\hat{k}", "\\hat{j} \\times \\hat{k}",
         [](const nero::EValue& v, std::string& d) {
             if (auto* vv = std::get_if<nero::VectorValue>(&v))
@@ -698,7 +749,6 @@ int main(){
             d = "not VectorValue"; return false;
         });
 
-    // Magnitude: |3i + 4j| = 5
     vec_test("|3\\hat{i} + 4\\hat{j}|", "\\left|3\\hat{i} + 4\\hat{j}\\right|",
         [](const nero::EValue& v, std::string& d) {
             if (auto* uv = std::get_if<nero::UnitValue>(&v))
@@ -706,7 +756,6 @@ int main(){
             d = "not UnitValue"; return false;
         });
 
-    // Scalar multiplication: 2(3i + 4j) = (6i + 8j)
     vec_test("2(3\\hat{i} + 4\\hat{j})", "2(3\\hat{i} + 4\\hat{j})",
         [](const nero::EValue& v, std::string& d) {
             if (auto* vv = std::get_if<nero::VectorValue>(&v))

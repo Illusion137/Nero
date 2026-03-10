@@ -471,7 +471,12 @@ nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulato
             bool had_var = evalulator.evaluated_variables.contains(loop_var);
             if(had_var) saved = evalulator.evaluated_variables.at(loop_var);
 
-            EValue accumulator{UnitValue{0.0L}};
+            long double sum = 0.0L;
+            nero::UnitVec unit{};
+            bool unit_set = false, unit_consistent = true;
+            EValue fallback{UnitValue{0.0L}};
+            bool use_fallback = false;
+
             for(int i = start; i <= end; i++) {
                 evalulator.evaluated_variables.insert_or_assign(loop_var, EValue{UnitValue{(long double)i}});
                 auto body_val = call.args[2]->evaluate(evalulator);
@@ -480,12 +485,26 @@ nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulato
                     else evalulator.evaluated_variables.erase(loop_var);
                     return body_val;
                 }
-                accumulator = accumulator + *body_val;
+                if(!use_fallback) {
+                    if(const auto* uv = std::get_if<UnitValue>(&*body_val)) {
+                        if(!unit_set) { unit = uv->unit.vec; unit_set = true; }
+                        else if(uv->unit.vec != unit) unit_consistent = false;
+                        sum += uv->value;
+                        continue;
+                    }
+                    // Non-scalar type: switch to full EValue accumulation
+                    use_fallback = true;
+                }
+                fallback = fallback + *body_val;
             }
 
             if(had_var) evalulator.evaluated_variables.insert_or_assign(loop_var, saved);
             else evalulator.evaluated_variables.erase(loop_var);
-            return accumulator;
+
+            if(use_fallback) return fallback;
+            nero::UnitVector result_unit;
+            result_unit.vec = unit_consistent ? unit : nero::UnitVec{};
+            return UnitValue{sum, 0.0L, result_unit};
         }
         // Product
         case TokenType::BUILTIN_FUNC_PROD: {
@@ -633,7 +652,7 @@ nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulato
             }
             return UnitValue{result};
         }
-        // Integral: Simpson's 1/3 rule
+        // Integral: Romberg integration (Richardson extrapolation over trapezoid rule)
         case TokenType::BUILTIN_FUNC_INT: {
             const auto &call = std::get<ASTCall>(ast->data);
             auto lower = call.args[0]->evaluate(evalulator);
@@ -643,8 +662,6 @@ nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulato
             std::string int_var = std::string(call.special_value->token.text);
 
             long double a = get_real(*lower), b = get_real(*upper);
-            int n = 1000;
-            long double h_step = (b - a) / n;
 
             EValue saved{UnitValue{0.0L}};
             bool had_var = evalulator.evaluated_variables.contains(int_var);
@@ -656,17 +673,32 @@ nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulato
                 return result ? get_real(*result) : 0.0L;
             };
 
-            long double sum = eval_at(a) + eval_at(b);
-            for(int j = 1; j < n; j++) {
-                long double x = a + j * h_step;
-                sum += (j % 2 == 0) ? 2 * eval_at(x) : 4 * eval_at(x);
+            constexpr int MAX_LEVEL = 12;
+            constexpr long double TOL = 1e-10L;
+            long double R[MAX_LEVEL + 1][MAX_LEVEL + 1] = {};
+
+            R[0][0] = (b - a) / 2.0L * (eval_at(a) + eval_at(b));
+            long double result = R[0][0];
+
+            for (int k = 1; k <= MAX_LEVEL; ++k) {
+                long double h_k = (b - a) / static_cast<long double>(1LL << k);
+                long double sum = 0.0L;
+                for (long long i = 1; i <= (1LL << (k-1)); ++i)
+                    sum += eval_at(a + static_cast<long double>(2*i - 1) * h_k);
+                R[k][0] = R[k-1][0] / 2.0L + h_k * sum;
+                for (int j = 1; j <= k; ++j) {
+                    long double factor = static_cast<long double>((1LL << (2*j)) - 1);
+                    R[k][j] = R[k][j-1] + (R[k][j-1] - R[k-1][j-1]) / factor;
+                }
+                result = R[k][k];
+                if (k >= 1 && std::abs(R[k][k] - R[k-1][k-1]) < TOL * (1.0L + std::abs(R[k][k])))
+                    break;
             }
-            sum *= h_step / 3.0;
 
             if(had_var) evalulator.evaluated_variables.insert_or_assign(int_var, saved);
             else evalulator.evaluated_variables.erase(int_var);
 
-            return UnitValue{sum};
+            return UnitValue{result};
         }
         // Custom function call
         case TokenType::FUNC_CALL: {

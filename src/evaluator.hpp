@@ -24,6 +24,21 @@ namespace nero {
         AssignExpression(std::string _identifier, std::string _value_expr, std::string _unit_expr): Expression{_value_expr, _unit_expr}, identifier{_identifier} {}
     };
 
+    struct FormulaCacheKey {
+        std::vector<nero::UnitVec> available;
+        nero::UnitVec              target;
+        bool                       filter;
+        bool operator==(const FormulaCacheKey& o) const = default;
+    };
+    struct FormulaCacheKeyHash {
+        std::size_t operator()(const FormulaCacheKey& k) const noexcept {
+            UnitVecHash uvh;
+            std::size_t h = uvh(k.target) ^ std::hash<bool>{}(k.filter);
+            for (const auto& u : k.available) h ^= uvh(u) + 0x9e3779b9 + (h << 6) + (h >> 2);
+            return h;
+        }
+    };
+
     class Evaluator {
         public:
         using MaybeEvaluated = std::expected<EValue, std::string>;
@@ -50,10 +65,9 @@ namespace nero {
         FormulaSearcher searcher;
         MaybeASTDependencies parse_expression(const Expression expression);
         MaybeASTDependencies parse_expression(const std::string expression);
-        mutable std::vector<nero::UnitVector> formula_cache_units_;
-        mutable nero::UnitVector formula_cache_target_;
-        mutable std::vector<Physics::Formula> formula_cache_results_;
-        mutable bool formula_cache_valid_ = false;
-        mutable bool formula_cache_filter_ = false;
+        static constexpr int FORMULA_CACHE_CAP = 64;
+        mutable std::unordered_map<FormulaCacheKey,
+                                   std::vector<Physics::Formula>,
+                                   FormulaCacheKeyHash> formula_cache_;
     };
 }

@@ -3,16 +3,64 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 const auto formula_database = Physics::FormulaDatabase{};
 
+struct UnitVecHash {
+    std::size_t operator()(const nero::UnitVec& v) const noexcept {
+        std::size_t h = 14695981039346656037ULL;
+        for (int8_t b : v) { h ^= static_cast<uint8_t>(b); h *= 1099511628211ULL; }
+        return h;
+    }
+};
+
+struct FormulaMeta {
+    nero::UnitVec output_vec;
+    bool has_output = false;
+    std::vector<std::pair<nero::UnitVec, int>> req_counts;
+};
+
+using UnitVecIndex = std::unordered_map<nero::UnitVec, std::vector<int>, UnitVecHash>;
+
 class FormulaSearcher {
 private:
     const Physics::FormulaDatabase& db;
+
+    // Indices are built once and shared across all FormulaSearcher instances
+    inline static std::vector<Physics::Formula> s_all_formulas_;
+    inline static std::vector<FormulaMeta>      s_meta_;
+    inline static UnitVecIndex                  s_output_index_;
+    inline static bool                          s_built_ = false;
+
+    void ensure_built() {
+        if (s_built_) return;
+        s_all_formulas_ = db.get_formulas();
+        s_meta_.resize(s_all_formulas_.size());
+        for (int i = 0; i < (int)s_all_formulas_.size(); ++i) {
+            const auto& f = s_all_formulas_[i];
+            for (const auto& v : f.variables) {
+                if (v.name == f.solve_for) {
+                    s_meta_[i].output_vec = v.units.vec;
+                    s_meta_[i].has_output = true;
+                    s_output_index_[s_meta_[i].output_vec].push_back(i);
+                } else if (!v.is_constant) {
+                    bool found = false;
+                    for (auto& [u, c] : s_meta_[i].req_counts) {
+                        if (u == v.units.vec) { c++; found = true; break; }
+                    }
+                    if (!found) s_meta_[i].req_counts.push_back({v.units.vec, 1});
+                }
+            }
+        }
+        s_built_ = true;
+    }
+
 public:
-    FormulaSearcher() : db(formula_database) {}
-    FormulaSearcher(const Physics::FormulaDatabase& database) : db(database) {}
+    FormulaSearcher() : db(formula_database) { ensure_built(); }
+    FormulaSearcher(const Physics::FormulaDatabase& database) : db(database) { ensure_built(); }
     
     // Search by unit signature (find what you can calculate)
     // Returns exact matches first, then close matches (missing 1 unit) at the end.
@@ -22,8 +70,7 @@ std::vector<Physics::Formula> find_by_units(
     const nero::UnitVector& targetUnit
 ) const {
 
-    const std::vector<Physics::Formula> all_formulas = db.get_formulas();
-    const int N = static_cast<int>(all_formulas.size());
+    const auto& all_formulas = s_all_formulas_;
 
     // -------------------------------------------------------------------------
     // POOL HELPERS — everything is nero::UnitVec internally
@@ -48,28 +95,15 @@ std::vector<Physics::Formula> find_by_units(
 
     // Output unit of formula[idx], or nullopt if solve_for var not found
     auto output_of = [&](int idx) -> std::optional<nero::UnitVec> {
-        for (const auto& v : all_formulas[idx].variables)
-            if (v.name == all_formulas[idx].solve_for)
-                return v.units.vec;
+        if (s_meta_[idx].has_output) return s_meta_[idx].output_vec;
         return std::nullopt;
     };
 
-    // Build a {unit → required_count} map for all non-constant non-output inputs
+    // Precomputed {unit → required_count} for all non-constant non-output inputs
     auto required_counts = [&](int idx)
-        -> std::vector<std::pair<nero::UnitVec, int>>
+        -> const std::vector<std::pair<nero::UnitVec, int>>&
     {
-        const auto& f = all_formulas[idx];
-        std::vector<std::pair<nero::UnitVec, int>> req;
-        for (const auto& v : f.variables) {
-            if (v.is_constant)         continue;
-            if (v.name == f.solve_for) continue;
-            bool found = false;
-            for (auto& [u, c] : req) {
-                if (u == v.units.vec) { c++; found = true; break; }
-            }
-            if (!found) req.push_back({ v.units.vec, 1 });
-        }
-        return req;
+        return s_meta_[idx].req_counts;
     };
 
     // Is formula[idx] fully satisfied by pool (respecting multiplicity)?
@@ -141,9 +175,9 @@ std::vector<Physics::Formula> find_by_units(
         int    best_subsub = -1;
         double best_score  = -1e9;
 
-        for (int i = 0; i < N; ++i) {
-            auto out = output_of(i);
-            if (!out || out.value() != target) continue;
+        auto sub_it = s_output_index_.find(target);
+        if (sub_it == s_output_index_.end()) return { -1, -1 };
+        for (int i : sub_it->second) {
 
             auto mt = missing_types(i, available_pool);
 
@@ -165,10 +199,9 @@ std::vector<Physics::Formula> find_by_units(
                 // exactly from available_pool
                 const nero::UnitVec& sub_missing = mt[0];
 
-                for (int j = 0; j < N; ++j) {
-                    auto out2 = output_of(j);
-                    if (!out2 || out2.value() != sub_missing) continue;
-
+                auto subsub_it = s_output_index_.find(sub_missing);
+                if (subsub_it == s_output_index_.end()) continue;
+                for (int j : subsub_it->second) {
                     // Subsub must be fully satisfied by available_pool
                     if (!satisfied_by(j, available_pool)) continue;
 
@@ -212,10 +245,9 @@ std::vector<Physics::Formula> find_by_units(
 
     std::vector<Candidate> candidates;
 
-    for (int i = 0; i < N; ++i) {
-        auto out = output_of(i);
-        if (!out || out.value() != targetUnit.vec) continue;
-
+    auto step1_it = s_output_index_.find(targetUnit.vec);
+    if (step1_it == s_output_index_.end()) return {};
+    for (int i : step1_it->second) {
         auto mt = missing_types(i, available_pool);
 
         // Hard limit: at most 3 unique missing unit types
@@ -376,22 +408,22 @@ std::vector<Physics::Formula> find_by_units(
     // -------------------------------------------------------------------------
 
     std::vector<Physics::Formula> result;
-    std::vector<std::string>      emitted;
+    std::unordered_set<std::string> emitted;
 
     auto is_emitted = [&](const std::string& name) {
-        return std::find(emitted.begin(), emitted.end(), name) != emitted.end();
+        return emitted.contains(name);
     };
 
     for (const auto& cand : candidates) {
         const auto& f = all_formulas[cand.idx];
         if (is_emitted(f.name)) continue;
-        emitted.push_back(f.name);
+        emitted.insert(f.name);
         result.push_back(f);
 
         for (const auto& sub : cand.subs) {
             const auto& sf = all_formulas[sub.idx];
             if (is_emitted(sf.name)) continue;
-            emitted.push_back(sf.name);
+            emitted.insert(sf.name);
             Physics::Formula tagged = sf;
             tagged.category = "---";
             result.push_back(std::move(tagged));
@@ -399,7 +431,7 @@ std::vector<Physics::Formula> find_by_units(
             for (const auto& ss : sub.subsubs) {
                 const auto& ssf = all_formulas[ss.idx];
                 if (is_emitted(ssf.name)) continue;
-                emitted.push_back(ssf.name);
+                emitted.insert(ssf.name);
                 Physics::Formula tagged2 = ssf;
                 tagged2.category = "------";
                 result.push_back(std::move(tagged2));

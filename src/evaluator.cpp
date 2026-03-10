@@ -75,7 +75,7 @@ std::vector<nero::Evaluator::MaybeEvaluated> nero::Evaluator::evaluate_expressio
     consumed_variables.clear();
     custom_functions.clear();
     variable_source_expressions.clear();
-    formula_cache_valid_ = false;
+    formula_cache_.clear();
     // Variables, functions, and sources persist across batches (REPL semantics).
     std::vector<nero::MaybeASTDependencies> parsed_expressions;
     parsed_expressions.reserve(expression_list.size());
@@ -212,51 +212,62 @@ std::vector<nero::Evaluator::MaybeEvaluated> nero::Evaluator::evaluate_expressio
             };
 
             std::vector<double> roots;
-            constexpr int N = 2000;
-            constexpr double LO = -500.0, HI = 500.0;
-            const double step = (HI - LO) / N;  // 0.5
-            double prev_x = LO;
-            auto prev_fv = eval_f(LO);
-            double prev_f = prev_fv ? *prev_fv : std::numeric_limits<double>::quiet_NaN();
 
-            // Check if LO itself is a root
-            if(prev_fv && *prev_fv == 0.0) roots.push_back(LO);
+            // Two-pass scan: fast narrow pass first (covers most practical roots),
+            // then full-range fallback only if the narrow pass found nothing.
+            // Both passes use step=0.5 to preserve resolution for closely-spaced roots.
+            struct ScanPass { double lo, hi; int n; };
+            constexpr ScanPass SCAN_PASSES[] = {
+                {-10.0,   10.0,   40},   // fast: ~28 evals for x^2-4=0
+                {-500.0, 500.0, 2000},   // fallback: full range
+            };
 
-            for(int k = 1; k <= N && roots.size() < 5; k++) {
-                double x = LO + k * step;
-                auto fv_opt = eval_f(x);
-                if(!fv_opt) { prev_x = x; prev_f = std::numeric_limits<double>::quiet_NaN(); continue; }
-                double fx = *fv_opt;
+            auto run_scan = [&](double lo, double hi, int n) {
+                const double step = (hi - lo) / n;
+                double prev_x = lo;
+                auto prev_fv = eval_f(lo);
+                double prev_f = prev_fv ? *prev_fv : std::numeric_limits<double>::quiet_NaN();
 
-                // Exact zero at a grid point — add as root directly
-                if(fx == 0.0) {
-                    bool dup = false;
-                    for(double r : roots) if(std::abs(r - x) < 1e-9) { dup = true; break; }
-                    if(!dup) roots.push_back(x);
-                    prev_x = x; prev_f = fx;
-                    continue;
-                }
+                if(prev_fv && *prev_fv == 0.0) roots.push_back(lo);
 
-                // Strict sign change between two non-zero points — bisect to refine
-                // Using strict < (not <=) prevents the prev_f=0 case from triggering
-                // bisection that would converge back to the already-found root.
-                if(!std::isnan(prev_f) && prev_f != 0.0 && prev_f * fx < 0.0) {
-                    double a = prev_x, b = x, fa = prev_f;
-                    for(int iter = 0; iter < 60; iter++) {
-                        double m = (a + b) / 2.0;
-                        auto fm_opt = eval_f(m);
-                        if(!fm_opt) break;
-                        double fm = *fm_opt;
-                        if(fa * fm <= 0.0) { b = m; }
-                        else { a = m; fa = fm; }
-                        if(std::abs(b - a) < 1e-12) break;
+                for(int k = 1; k <= n && (int)roots.size() < 5; k++) {
+                    double x = lo + k * step;
+                    auto fv_opt = eval_f(x);
+                    if(!fv_opt) { prev_x = x; prev_f = std::numeric_limits<double>::quiet_NaN(); continue; }
+                    double fx = *fv_opt;
+
+                    if(fx == 0.0) {
+                        bool dup = false;
+                        for(double r : roots) if(std::abs(r - x) < 1e-9) { dup = true; break; }
+                        if(!dup) roots.push_back(x);
+                        prev_x = x; prev_f = fx;
+                        continue;
                     }
-                    double root = (a + b) / 2.0;
-                    bool dup = false;
-                    for(double r : roots) if(std::abs(r - root) < 1e-9) { dup = true; break; }
-                    if(!dup) roots.push_back(root);
+
+                    // Strict sign change — bisect to refine
+                    if(!std::isnan(prev_f) && prev_f != 0.0 && prev_f * fx < 0.0) {
+                        double a = prev_x, b = x, fa = prev_f;
+                        for(int iter = 0; iter < 60; iter++) {
+                            double m = (a + b) / 2.0;
+                            auto fm_opt = eval_f(m);
+                            if(!fm_opt) break;
+                            double fm = *fm_opt;
+                            if(fa * fm <= 0.0) { b = m; }
+                            else { a = m; fa = fm; }
+                            if(std::abs(b - a) < 1e-12) break;
+                        }
+                        double root = (a + b) / 2.0;
+                        bool dup = false;
+                        for(double r : roots) if(std::abs(r - root) < 1e-9) { dup = true; break; }
+                        if(!dup) roots.push_back(root);
+                    }
+                    prev_x = x; prev_f = fx;
                 }
-                prev_x = x; prev_f = fx;
+            };
+
+            for(const auto& pass : SCAN_PASSES) {
+                if(!roots.empty()) break;
+                run_scan(pass.lo, pass.hi, pass.n);
             }
 
             // Restore var
@@ -527,19 +538,19 @@ std::vector<Physics::Formula> nero::Evaluator::get_available_formulas(const nero
             [](const auto& a, const auto& b){ return a.vec == b.vec; }),
         available_units.end());
 
-    // Cache check (includes filter flag)
-    if (formula_cache_valid_ && formula_cache_filter_ == filter_dependencies &&
-        formula_cache_target_.vec == target.vec &&
-        formula_cache_units_ == available_units) {
-        return formula_cache_results_;
-    }
+    // Multi-entry cache keyed by (available units, target, filter flag)
+    FormulaCacheKey key;
+    key.target = target.vec;
+    key.filter = filter_dependencies;
+    for (const auto& uv : available_units) key.available.push_back(uv.vec);
+
+    if (auto it = formula_cache_.find(key); it != formula_cache_.end())
+        return it->second;
 
     auto result = searcher.find_by_units(available_units, target);
-    formula_cache_units_ = available_units;
-    formula_cache_target_ = target;
-    formula_cache_filter_ = filter_dependencies;
-    formula_cache_results_ = result;
-    formula_cache_valid_ = true;
+    if ((int)formula_cache_.size() >= FORMULA_CACHE_CAP)
+        formula_cache_.erase(formula_cache_.begin());
+    formula_cache_.emplace(std::move(key), result);
     return result;
 }
 
