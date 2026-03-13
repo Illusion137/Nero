@@ -33,6 +33,15 @@ static std::string simplify_sub(const std::string& a, const std::string& b) {
     return a + " - " + wrap(b);
 }
 
+// Wrap for exponentiation: also wraps products (containing spaces) that wrap() misses,
+// because "2 \cdot x^{2}" parses as 2·(x²) but "(2 \cdot x)^{2}" parses as (2x)².
+static std::string wrap_pow(const std::string& s) {
+    if (s.empty() || s == "0" || s == "1") return s;
+    for (char c : s)
+        if (c == ' ') return "\\left(" + s + "\\right)";
+    return s;
+}
+
 static std::string simplify_mul(const std::string& a, const std::string& b) {
     if (a == "0" || b == "0") return "0";
     if (a == "1") return b;
@@ -108,6 +117,47 @@ std::string nero::ast_to_latex(const AST* ast) {
         case TT::BUILTIN_FUNC_SQRT: {
             const auto& call = std::get<nero::AST::ASTCall>(ast->data);
             return "\\sqrt{" + ast_to_latex(call.args[0].get()) + "}";
+        }
+        case TT::BUILTIN_FUNC_LOG: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string base = call.special_value ? ast_to_latex(call.special_value.get()) : "10";
+            return "\\log_{" + base + "}\\left(" + ast_to_latex(call.args[0].get()) + "\\right)";
+        }
+        case TT::BUILTIN_FUNC_SEC: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            return "\\sec\\left(" + ast_to_latex(call.args[0].get()) + "\\right)";
+        }
+        case TT::BUILTIN_FUNC_CSC: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            return "\\csc\\left(" + ast_to_latex(call.args[0].get()) + "\\right)";
+        }
+        case TT::BUILTIN_FUNC_COT: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            return "\\cot\\left(" + ast_to_latex(call.args[0].get()) + "\\right)";
+        }
+        case TT::BUILTIN_FUNC_ARCSIN: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            return "\\arcsin\\left(" + ast_to_latex(call.args[0].get()) + "\\right)";
+        }
+        case TT::BUILTIN_FUNC_ARCCOS: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            return "\\arccos\\left(" + ast_to_latex(call.args[0].get()) + "\\right)";
+        }
+        case TT::BUILTIN_FUNC_ARCTAN: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            return "\\arctan\\left(" + ast_to_latex(call.args[0].get()) + "\\right)";
+        }
+        case TT::BUILTIN_FUNC_ARCSEC: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            return "\\text{arcsec}\\left(" + ast_to_latex(call.args[0].get()) + "\\right)";
+        }
+        case TT::BUILTIN_FUNC_ARCCSC: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            return "\\text{arccsc}\\left(" + ast_to_latex(call.args[0].get()) + "\\right)";
+        }
+        case TT::BUILTIN_FUNC_ARCCOT: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            return "\\text{arccot}\\left(" + ast_to_latex(call.args[0].get()) + "\\right)";
         }
         default:
             return ast->token.text.empty() ? "?" : std::string(ast->token.text);
@@ -223,13 +273,89 @@ std::string nero::symbolic_diff_latex(const AST* ast, const std::string& var) {
             if (df == "0") return "0";
             return "\\frac{" + df + "}{" + f_str + "}";
         }
+        case TT::BUILTIN_FUNC_LOG: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string f_str = ast_to_latex(call.args[0].get());
+            std::string df = symbolic_diff_latex(call.args[0].get(), var);
+            if (df == "0") return "0";
+            std::string base_str = call.special_value ? ast_to_latex(call.special_value.get()) : "10";
+            return "\\frac{" + df + "}{" + f_str + " \\cdot \\ln\\left(" + base_str + "\\right)}";
+        }
         case TT::BUILTIN_FUNC_SQRT: {
             const auto& call = std::get<nero::AST::ASTCall>(ast->data);
             std::string f_str = ast_to_latex(call.args[0].get());
             std::string df = symbolic_diff_latex(call.args[0].get(), var);
-            return simplify_mul("\\frac{1}{2\\sqrt{" + f_str + "}}", df);
+            if (df == "0") return "0";
+            if (!call.special_value) {
+                return simplify_mul("\\frac{1}{2\\sqrt{" + f_str + "}}", df);
+            }
+            std::string n_str = ast_to_latex(call.special_value.get());
+            std::string frac_exp = "\\frac{" + n_str + "-1}{" + n_str + "}";
+            return simplify_mul("\\frac{1}{" + n_str + " \\cdot " + wrap(f_str) + "^{" + frac_exp + "}}", df);
         }
-        default:
-            return "??";
+        case TT::BUILTIN_FUNC_SEC: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string f_str = ast_to_latex(call.args[0].get());
+            std::string df = symbolic_diff_latex(call.args[0].get(), var);
+            if (df == "0") return "0";
+            return simplify_mul("\\sec\\left(" + f_str + "\\right) \\cdot \\tan\\left(" + f_str + "\\right)", df);
+        }
+        case TT::BUILTIN_FUNC_CSC: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string f_str = ast_to_latex(call.args[0].get());
+            std::string df = symbolic_diff_latex(call.args[0].get(), var);
+            if (df == "0") return "0";
+            return simplify_mul("-\\csc\\left(" + f_str + "\\right) \\cdot \\cot\\left(" + f_str + "\\right)", df);
+        }
+        case TT::BUILTIN_FUNC_COT: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string f_str = ast_to_latex(call.args[0].get());
+            std::string df = symbolic_diff_latex(call.args[0].get(), var);
+            if (df == "0") return "0";
+            return simplify_mul("-\\csc^{2}\\left(" + f_str + "\\right)", df);
+        }
+        case TT::BUILTIN_FUNC_ARCSIN: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string f_str = ast_to_latex(call.args[0].get());
+            std::string df = symbolic_diff_latex(call.args[0].get(), var);
+            if (df == "0") return "0";
+            return "\\frac{" + df + "}{\\sqrt{1 - " + wrap_pow(f_str) + "^{2}}}";
+        }
+        case TT::BUILTIN_FUNC_ARCCOS: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string f_str = ast_to_latex(call.args[0].get());
+            std::string df = symbolic_diff_latex(call.args[0].get(), var);
+            if (df == "0") return "0";
+            return "\\frac{-" + wrap(df) + "}{\\sqrt{1 - " + wrap_pow(f_str) + "^{2}}}";
+        }
+        case TT::BUILTIN_FUNC_ARCTAN: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string f_str = ast_to_latex(call.args[0].get());
+            std::string df = symbolic_diff_latex(call.args[0].get(), var);
+            if (df == "0") return "0";
+            return "\\frac{" + df + "}{1 + " + wrap_pow(f_str) + "^{2}}";
+        }
+        case TT::BUILTIN_FUNC_ARCSEC: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string f_str = ast_to_latex(call.args[0].get());
+            std::string df = symbolic_diff_latex(call.args[0].get(), var);
+            if (df == "0") return "0";
+            return "\\frac{" + df + "}{\\left|" + f_str + "\\right| \\cdot \\sqrt{" + wrap_pow(f_str) + "^{2} - 1}}";
+        }
+        case TT::BUILTIN_FUNC_ARCCSC: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string f_str = ast_to_latex(call.args[0].get());
+            std::string df = symbolic_diff_latex(call.args[0].get(), var);
+            if (df == "0") return "0";
+            return "\\frac{-" + wrap(df) + "}{\\left|" + f_str + "\\right| \\cdot \\sqrt{" + wrap_pow(f_str) + "^{2} - 1}}";
+        }
+        case TT::BUILTIN_FUNC_ARCCOT: {
+            const auto& call = std::get<nero::AST::ASTCall>(ast->data);
+            std::string f_str = ast_to_latex(call.args[0].get());
+            std::string df = symbolic_diff_latex(call.args[0].get(), var);
+            if (df == "0") return "0";
+            return "\\frac{-" + wrap(df) + "}{1 + " + wrap_pow(f_str) + "^{2}}";
+        }
+        default: return "??";
     }
 }
