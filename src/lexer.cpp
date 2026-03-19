@@ -229,9 +229,6 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
             case strint<"arcsin">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSIN, 6);
             case strint<"arccos">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOS, 6);
             case strint<"arctan">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCTAN, 6);
-            case strint<"arcsec">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSEC, 6);
-            case strint<"arccsc">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCSC, 6);
-            case strint<"arccot">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOT, 6);
             case strint<"right)">(): return advance_with_token(TokenType::RIGHT_PAREN, 6);
             case strint<"right|">(): return advance_with_token(TokenType::RIGHT_ABSOLUTE_BAR, 6);
             case strint<"right]">(): return advance_with_token(TokenType::RIGHT_BRACKET, 6);
@@ -378,6 +375,13 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
             buffer.fill(0);
             auto result = collect_curly_brackets(buffer.data(), buffer.size(), write);
             if(!result) return {TokenType::UNKNOWN, "Bad Operator name result"};
+            if(write >= 6) {
+                switch(strint_fn(buffer.data(), 6)){
+                    case strint<"arcsec">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSEC, 0);
+                    case strint<"arccsc">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCSC, 0);
+                    case strint<"arccot">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOT, 0);
+                }
+            }
             if(write >= 5) {
                 switch(strint_fn(buffer.data(), 5)) {
                     case strint<"floor">(): return advance_with_token(TokenType::BUILTIN_FUNC_FLOOR, 0);

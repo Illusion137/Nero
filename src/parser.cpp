@@ -510,6 +510,14 @@ nero::MaybeAST nero::Parser::match_log(const nero::Token &token){
 
 // Parse \sum_{i=a}^{b} expr or \prod_{i=a}^{b} expr
 nero::MaybeAST nero::Parser::match_sum_prod(const nero::Token &token) {
+    // Array-sum form: \sum(expr) — no loop variable, sums array/list
+    if (peek().type == TokenType::LEFT_PAREN) {
+        auto arg = match_parentheses();
+        if (!arg) return arg;
+        std::vector<std::unique_ptr<AST>> args;
+        args.emplace_back(std::move(arg.value()));
+        return std::make_unique<AST>(token, std::move(args), nullptr);
+    }
     // Parse subscript _{i=start}
     if(!match(TokenType::SUBSCRIPT)) {
         return std::unexpected{std::format("'{}' requires subscript _{{}}", token.text)};

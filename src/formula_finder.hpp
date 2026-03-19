@@ -21,6 +21,7 @@ struct FormulaMeta {
     nero::UnitVec output_vec;
     bool has_output = false;
     std::vector<std::pair<nero::UnitVec, int>> req_counts;
+    int constant_count = 0;
 };
 
 using UnitVecIndex = std::unordered_map<nero::UnitVec, std::vector<int>, UnitVecHash>;
@@ -46,7 +47,9 @@ private:
                     s_meta_[i].output_vec = v.units.vec;
                     s_meta_[i].has_output = true;
                     s_output_index_[s_meta_[i].output_vec].push_back(i);
-                } else if (!v.is_constant) {
+                } else if (v.is_constant) {
+                    s_meta_[i].constant_count++;
+                } else {
                     bool found = false;
                     for (auto& [u, c] : s_meta_[i].req_counts) {
                         if (u == v.units.vec) { c++; found = true; break; }
@@ -132,7 +135,7 @@ std::vector<Physics::Formula> find_by_units(
             total += req;
             matched += std::min(count_in_pool(unit, pool), req);
         }
-        const double coverage    = total > 0 ? (double)matched / total : 1.0;
+        const double coverage    = total > 0 ? (double)matched / total : 0.0;
         const double utilization = !available_pool.empty()
                                      ? (double)matched / available_pool.size() : 1.0;
         const double simplicity  = 1.0 / (total + 1);
@@ -373,6 +376,25 @@ std::vector<Physics::Formula> find_by_units(
         return score;
     };
 
+    // Penalize constant-heavy formulas (main: 8pts/constant, sub: 4pts/constant)
+    auto constant_penalty = [&](const Candidate& cand) -> double {
+        int main_cc = s_meta_[cand.idx].constant_count;
+        int sub_cc = 0;
+        for (const auto& sub : cand.subs) sub_cc += s_meta_[sub.idx].constant_count;
+        return (double)main_cc * 8.0 + (double)sub_cc * 4.0;
+    };
+
+    // Reward formulas directly matching high-complexity pool units (Tesla > seconds)
+    auto pool_specificity_score = [&](const Candidate& cand) -> double {
+        double score = 0.0;
+        for (const auto& [u, req] : required_counts(cand.idx)) {
+            int in_pool = count_in_pool(u, available_pool);
+            if (in_pool > 0)
+                score += (double)(std::min(in_pool, req) * unit_complexity(u));
+        }
+        return score * 0.5;
+    };
+
     {
         const double pool_size = available_pool.empty() ? 1.0 : (double)available_pool.size();
         for (auto& cand : candidates) {
@@ -385,7 +407,9 @@ std::vector<Physics::Formula> find_by_units(
             cand.score = chain_util * 100.0
                        + name_match_bonus(cand)
                        + sub_complexity_score(cand)
+                       + pool_specificity_score(cand)
                        - (double)pool_overlap_count(cand) * 10.0
+                       - constant_penalty(cand)
                        + simplicity * 10.0
                        - (double)cand.subs.size() * 5.0
                        - (double)total_subsubs * 3.0;

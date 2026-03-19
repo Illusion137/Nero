@@ -3,6 +3,9 @@
 #include "evaluator.hpp"
 #include "testing.hpp"
 #include "value_utils.hpp"
+#include "symbolic_diff.hpp"
+#include "lexer.hpp"
+#include "parser.hpp"
 #include <cstdlib>
 #include <span>
 #include <cmath>
@@ -241,6 +244,13 @@ int main(){
         {"\\prod_{i=1}^{4}(i^2)", 576.0},   // 1*4*9*16
         {"\\sum_{i=0}^{3}(2^i)", 15.0},     // 1+2+4+8
 
+        // Array SUM — inline array form
+        {"\\sum([1, 2, 3, 4, 5])", 15.0},
+        {"\\sum([10, 20, 30])", 60.0},
+        {"\\sum([0])", 0.0},
+        {"\\sum([7])", 7.0},
+        {"\\sum([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])", 10.0},
+
         // Comparison additional
         {"3\\leq4", 1.0}, {"4\\leq4", 1.0}, {"5\\leq4", 0.0},
 
@@ -332,6 +342,36 @@ int main(){
 
         // Product using variable upper bound
         {{"n = 5", "\\prod_{i=1}^{n}(i)"}, 120.0},
+
+        // Array SUM — variable array
+        {{"a = [1, 2, 3]", "\\sum(a)"}, 6.0},
+        {{"a = [1, 2, 3, 4]", "\\sum(a)"}, 10.0},
+        {{"a = [5, 10, 15, 20]", "\\sum(a)"}, 50.0},
+        {{"a = [100]", "\\sum(a)"}, 100.0},
+        // Array SUM then use result
+        {{"a = [2, 4, 6]", "\\sum(a) * 2"}, 24.0},
+
+        // Numeric derivative checks for new symbolic_diff cases
+        // d/dx[log_2(x)] at x=1 → 1/(1·ln(2)) = 1/ln(2)
+        {{"x = 1", "\\frac{d}{dx}(\\log_{2}(x))"}, 1.0 / std::log(2.0)},
+        // d/dx[log_10(x)] at x=1 → 1/ln(10)
+        {{"x = 1", "\\frac{d}{dx}(\\log(x))"}, 1.0 / std::log(10.0)},
+        // d/dx[sqrt(x)] at x=4 → 1/(2·sqrt(4)) = 1/4
+        {{"x = 4", "\\frac{d}{dx}(\\sqrt{x})"}, 0.25},
+        // d/dx[arctan(x)] at x=0 → 1/(1+0) = 1
+        {{"x = 0", "\\frac{d}{dx}(\\arctan(x))"}, 1.0},
+        // d/dx[arctan(x)] at x=1 → 1/(1+1) = 0.5
+        {{"x = 1", "\\frac{d}{dx}(\\arctan(x))"}, 0.5},
+        // d/dx[arcsin(x)] at x=0 → 1/sqrt(1-0) = 1
+        {{"x = 0", "\\frac{d}{dx}(\\arcsin(x))"}, 1.0},
+        // d/dx[arccos(x)] at x=0 → -1/sqrt(1-0) = -1
+        {{"x = 0", "\\frac{d}{dx}(\\arccos(x))"}, -1.0},
+        // d/dx[sec(x)] at x=0 → sec(0)·tan(0) = 1·0 = 0
+        {{"x = 0", "\\frac{d}{dx}(\\sec(x))"}, 0.0},
+        // d/dx[cot(x)] at x=pi/4 → -csc^2(pi/4) = -2
+        {{"x = \\pi/4", "\\frac{d}{dx}(\\cot(x))"}, -2.0},
+        // d/dx[csc(x)] at x=pi/2 → -csc(pi/2)·cot(pi/2) = -1·0 = 0
+        {{"x = \\pi/2", "\\frac{d}{dx}(\\csc(x))"}, 0.0},
     };
 
     nero_println("=== Single Expression Tests ===");
@@ -764,6 +804,78 @@ int main(){
                     && std::fabs((double)vv->z.value) < 0.001;
             d = "not VectorValue"; return false;
         });
+
+    // === Symbolic Diff String Tests ===
+    nero_println("\n=== Symbolic Diff String Tests ===");
+    {
+        // Helper: parse expr, return symbolic derivative w.r.t. var as a LaTeX string
+        auto symdiff = [](const char* expr, const char* var) -> std::string {
+            nero::Lexer lexer{expr};
+            auto tokens = lexer.extract_all_tokens();
+            if (!tokens) return "LEX_ERR";
+            nero::Parser parser{tokens.value()};
+            auto parsed = parser.parse();
+            if (!parsed) return "PARSE_ERR";
+            return nero::symbolic_diff_latex(parsed.value().ast.get(), var);
+        };
+
+        struct SymDiffCase { const char* expr; const char* var; const char* expected; };
+        static const SymDiffCase cases[] = {
+            // LOG
+            {"\\log_{2}(x)",  "x",  "\\frac{1}{x \\cdot \\ln\\left(2\\right)}"},
+            {"\\log(x)",       "x",  "\\frac{1}{x \\cdot \\ln\\left(10\\right)}"},
+            // log with chain rule: log_2(x^2) → 2x / (x^2 · ln(2))
+            {"\\log_{2}(x^2)", "x", "\\frac{2 \\cdot x}{x^{2} \\cdot \\ln\\left(2\\right)}"},
+            // log of constant → 0
+            {"\\log(5)", "x", "0"},
+            // SQRT (no index → plain sqrt)
+            {"\\sqrt{x}",  "x",  "\\frac{1}{2\\sqrt{x}}"},
+            // SQRT with index n=3
+            {"\\sqrt[3]{x}", "x", "\\frac{1}{3 \\cdot x^{\\frac{3-1}{3}}}"},
+            // sqrt of constant → 0
+            {"\\sqrt{4}", "x", "0"},
+            // SEC
+            {"\\sec(x)",  "x",  "\\sec\\left(x\\right) \\cdot \\tan\\left(x\\right)"},
+            // CSC
+            {"\\csc(x)",  "x",  "-\\csc\\left(x\\right) \\cdot \\cot\\left(x\\right)"},
+            // COT
+            {"\\cot(x)",  "x",  "-\\csc^{2}\\left(x\\right)"},
+            // ARCSIN
+            {"\\arcsin(x)", "x", "\\frac{1}{\\sqrt{1 - x^{2}}}"},
+            // ARCCOS
+            {"\\arccos(x)", "x", "\\frac{-1}{\\sqrt{1 - x^{2}}}"},
+            // ARCTAN
+            {"\\arctan(x)", "x", "\\frac{1}{1 + x^{2}}"},
+            // ARCSEC
+            {"\\operatorname{arcsec}(x)", "x", "\\frac{1}{\\left|x\\right| \\cdot \\sqrt{x^{2} - 1}}"},
+            // ARCCSC
+            {"\\operatorname{arccsc}(x)", "x", "\\frac{-1}{\\left|x\\right| \\cdot \\sqrt{x^{2} - 1}}"},
+            // ARCCOT
+            {"\\operatorname{arccot}(x)", "x", "\\frac{-1}{1 + x^{2}}"},
+            // Chain rule: arctan(2x) → 2 / (1 + (2x)^2)
+            {"\\arctan(2x)", "x", "\\frac{2}{1 + \\left(2 \\cdot x\\right)^{2}}"},
+            // sec of constant → 0
+            {"\\sec(5)", "x", "0"},
+            // cot of constant → 0
+            {"\\cot(3)", "x", "0"},
+        };
+
+        int sym_passed = 0, sym_total = (int)(sizeof(cases) / sizeof(cases[0]));
+        for (const auto& c : cases) {
+            std::string got = symdiff(c.expr, c.var);
+            bool ok = (got == c.expected);
+            sym_passed += ok ? 1 : 0;
+            nero_println("{} d/d{} [{}] = {} {}",
+                ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
+                c.var, c.expr, got,
+                ok ? "✓\033[0m" : std::format("(expected: {}) ✗\033[0m", c.expected));
+        }
+        if (sym_passed == sym_total)
+            nero_println("\033[0;32m[PASSED] {}\033[0m", sym_passed);
+        else
+            nero_println("\033[31m[FAILED] {}\033[0m: \033[0;32m[PASSED] {}\033[0m",
+                sym_total - sym_passed, sym_passed);
+    }
 
     // Quick formula chain check
     {

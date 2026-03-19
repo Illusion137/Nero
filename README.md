@@ -26,6 +26,9 @@ cmake --build build
 emcmake cmake -S . -B build-wasm
 cmake --build build-wasm
 # Outputs: build-wasm/Nero.js, build-wasm/Nero.wasm, build-wasm/Nero.d.ts
+
+# If your using msys2 on windows use
+C:\msys64\usr\bin\bash.exe -lc "cd '$(pwd)' && cmake --build build"
 ```
 
 ### Installation as a CMake dependency

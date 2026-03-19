@@ -459,6 +459,25 @@ nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulato
         // Summation
         case TokenType::BUILTIN_FUNC_SUM: {
             const auto &call = std::get<ASTCall>(ast->data);
+            // 1-arg form: \sum(array_expr)
+            if (call.args.size() == 1) {
+                auto arr_val = call.args[0]->evaluate(evalulator);
+                if (!arr_val) return arr_val;
+                if (auto* list = std::get_if<UnitValueList>(&*arr_val)) {
+                    long double sum = 0.0L;
+                    nero::UnitVec unit{};
+                    bool unit_set = false, unit_consistent = true;
+                    for (const auto& elem : list->elements) {
+                        sum += elem.value;
+                        if (!unit_set) { unit = elem.unit.vec; unit_set = true; }
+                        else if (elem.unit.vec != unit) unit_consistent = false;
+                    }
+                    nero::UnitVector result_unit;
+                    result_unit.vec = unit_consistent ? unit : nero::UnitVec{};
+                    return EValue{UnitValue{sum, 0.0L, result_unit}};
+                }
+                return std::unexpected<std::string>{"\\sum: argument must be an array"};
+            }
             auto start_val = call.args[0]->evaluate(evalulator);
             if(!start_val) return start_val;
             auto end_val = call.args[1]->evaluate(evalulator);
