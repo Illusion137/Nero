@@ -1,6 +1,8 @@
 #pragma once
 
-#if defined(__MINGW32__) && __GNUC__ >= 15
+// <print> requires GCC 14+ / MSVC 2022 17.7+ / libc++ 18+.
+// Fall back to std::cout + std::format on older toolchains.
+#if defined(__GNUC__) && __GNUC__ < 14 && !defined(__clang__)
 #include <iostream>
 #include <format>
 template<typename... Args>
