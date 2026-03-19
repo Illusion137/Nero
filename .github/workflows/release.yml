@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install codegen dependencies
+        run: npm install
+
+      - name: Run code generation
+        run: |
+          npx ts-node unit_gen/unit_gen.ts
+          npx ts-node -T formula_gen/formula_extractor.ts
+          npx ts-node -T formula_gen/formulas_to_cpp.ts
+
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+
+      - name: Build native + run tests
+        run: |
+          cmake -S . -B build
+          cmake --build build --parallel
+          ./build/NeroTest
+
+      - name: Build WASM
+        run: |
+          emcmake cmake -S . -B build-wasm
+          cmake --build build-wasm --parallel
+
+      - name: Generate version tag
+        id: tag
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          TAG="v$(date -u +%Y%m%d%H%M%S)-${SHORT_SHA}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Release ${{ steps.tag.outputs.tag }}
+          prerelease: false
+          files: |
+            build-wasm/Nero.js
+            build-wasm/Nero.wasm
+            build-wasm/Nero.d.ts
+            nero_wasm_interface.ts
+
+      - name: Dispatch Everett deploy
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.EVERETT_PAT }}
+          repository: Illusion137/Everett
+          event-type: nero-release
+          client-payload: '{"tag": "${{ steps.tag.outputs.tag }}"}'

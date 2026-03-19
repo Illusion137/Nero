@@ -10,4 +10,4 @@ echo "==> Running tests..."
 
 echo "==> Updating README benchmarks..."
 python3 scripts/update_bench_readme.py
-git add README.md
+git add README.md public/benchmarks.png

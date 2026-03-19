@@ -1,4 +1,4 @@
-import type { MainModule, Result, Formula } from './build-wasm/Nero';
+import type { MainModule, Result, Formula } from './Nero';
 
 // ============================================================================
 // Public types (native JS arrays, not Embind vector proxies)
