@@ -302,7 +302,7 @@ std::string nero::VectorValue::to_result_string() const noexcept {
     auto append = [&](const UnitValue& v, const char* hat) {
         // Use epsilon-aware check via value_to_scientific's cleanup
         long double abs_val = v.value < 0.0L ? -v.value : v.value;
-        if (abs_val < 1e-300L && std::fabsl(v.imag) < 1e-300L) return;
+        if (abs_val < 1e-300L && std::fabs(v.imag) < 1e-300L) return;
         if (!first) s += v.value >= 0.0L ? " + " : " - ";
         else if (v.value < 0.0L) s += "-";
         if (abs_val != 1.0L || v.imag != 0.0L)

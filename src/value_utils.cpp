@@ -167,33 +167,33 @@ std::string nero::value_to_scientific(long double value, int sig_figs, long doub
     // Suppress floating-point noise: treat imag/value as zero if negligible
     {
         constexpr long double EPS = 1e-10L;
-        long double ref = std::fabsl(value);
+        long double ref = std::fabs(value);
         if (ref < 1e-300L) ref = 1.0L;
-        if (std::fabsl(imag) < EPS * ref) imag = 0.0L;
-        long double iref = std::fabsl(imag);
-        if (iref > 1e-300L && std::fabsl(value) < EPS * iref) value = 0.0L;
+        if (std::fabs(imag) < EPS * ref) imag = 0.0L;
+        long double iref = std::fabs(imag);
+        if (iref > 1e-300L && std::fabs(value) < EPS * iref) value = 0.0L;
     }
 
-    const auto abs_value = std::fabsl(value);
+    const auto abs_value = std::fabs(value);
     std::string result;
 
     if (sig_figs > 0 && abs_value > 0.0L) {
         // Round to sig_figs significant digits using the original exponent
-        const int exp_orig = static_cast<int>(std::floorl(std::log10l(abs_value)));
-        const long double scale = std::powl(10.0L, (long double)(sig_figs - 1 - exp_orig));
-        const long double rounded = std::roundl(value * scale) / scale;
-        const long double rounded_abs = std::fabsl(rounded);
+        const int exp_orig = static_cast<int>(std::floor(std::log10(abs_value)));
+        const long double scale = std::pow(10.0L, (long double)(sig_figs - 1 - exp_orig));
+        const long double rounded = std::round(value * scale) / scale;
+        const long double rounded_abs = std::fabs(rounded);
 
         // Re-compute exponent of the rounded value (rounding can bump the order of magnitude)
         const int exp_r = (rounded_abs > 0.0L)
-            ? static_cast<int>(std::floorl(std::log10l(rounded_abs)))
+            ? static_cast<int>(std::floor(std::log10(rounded_abs)))
             : exp_orig;
 
         // Choose display format: scientific for very large/small, decimal otherwise
         const bool use_sci = (exp_r >= 5) || (exp_r <= -3);
 
         if (use_sci) {
-            const double coeff = static_cast<double>(rounded / std::powl(10.0L, (long double)exp_r));
+            const double coeff = static_cast<double>(rounded / std::pow(10.0L, (long double)exp_r));
             const int decimals = sig_figs - 1;
             if (decimals <= 0)
                 result = std::format("{:.0f}\\times10^{{{}}}", coeff, exp_r);
@@ -203,15 +203,15 @@ std::string nero::value_to_scientific(long double value, int sig_figs, long doub
             // Decimal display: enough decimal places to show all sig figs
             const int dp = sig_figs - 1 - exp_r;
             if (dp <= 0)
-                result = std::format("{}", static_cast<long long>(std::roundl(rounded)));
+                result = std::format("{}", static_cast<long long>(std::round(rounded)));
             else
                 result = std::format("{:.{}f}", static_cast<double>(rounded), dp);
         }
     } else if (value == 0.0L) {
         result = "0";
     } else if ((abs_value >= 5e9L) || (abs_value < 5e-4L && abs_value > 0.0L)) {
-        const int exponent = static_cast<int>(std::floorl(std::log10l(abs_value)));
-        const double coefficient = static_cast<double>(value / std::powl(10.0L, exponent));
+        const int exponent = static_cast<int>(std::floor(std::log10(abs_value)));
+        const double coefficient = static_cast<double>(value / std::pow(10.0L, exponent));
         result = std::format("{:.10g}\\times10^{{{}}}", coefficient, exponent);
     } else {
         const double dval = static_cast<double>(value);
@@ -223,7 +223,7 @@ std::string nero::value_to_scientific(long double value, int sig_figs, long doub
 
     // Append imaginary part if present
     if (imag != 0.0L) {
-        std::string imag_str = value_to_scientific(std::fabsl(imag), sig_figs);
+        std::string imag_str = value_to_scientific(std::fabs(imag), sig_figs);
         if (imag < 0.0L)
             result += " - " + imag_str + "i";
         else
