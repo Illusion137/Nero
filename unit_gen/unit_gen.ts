@@ -58,7 +58,8 @@ const units_map: Record<string, BASE_UNIT> = {
     "Wb": "DIM_WEBER",
     "T": "DIM_TESLA",
     "H": "DIM_HENRY",
-    "L": "DIM_LITER"
+    "L": "DIM_LITER",
+    "eV": "DIM_JOULE"
 } as const;
 
 const units_prefixes: Record<string, number> = {
@@ -92,7 +93,9 @@ const get_unit_case = (unit_name: string, exponent_str: string|number, unit_valu
 for(const [suffix, unit_value] of Object.entries(units_map)){
     for(let [prefix, prefix_exponent] of Object.entries(units_prefixes)) {
         if(suffix === 'g' || suffix === 'L') prefix_exponent -= 3;
-        const exponent_str = prefix_exponent === 0 ? '1' : prefix_exponent > 0 ? `1e+${prefix_exponent}` : `1e${prefix_exponent}`;
+        if(suffix === "eV") prefix_exponent -= 19;
+        const exponent_str = suffix === "eV" ? (prefix_exponent === 0 ? '1.60218e-19' : prefix_exponent > 0 ? `1.60218e+${prefix_exponent}` : `1.60218e${prefix_exponent}`)
+            : (prefix_exponent === 0 ? '1' : prefix_exponent > 0 ? `1e+${prefix_exponent}` : `1e${prefix_exponent}`);
         const unit_name = prefix + suffix;
         const unit_case = get_unit_case(unit_name, exponent_str, unit_value);
         unit_case_map.push([unit_name, unit_case]);
@@ -118,6 +121,7 @@ unit_case_map.push(["day", get_unit_case("day", 60 * 60 * 24, "DIM_SECOND")]);
 unit_case_map.push(["month", get_unit_case("month", 60 * 60 * 24 * 30, "DIM_SECOND")]);
 unit_case_map.push(["year", get_unit_case("year", 60 * 60 * 364, "DIM_SECOND")]);
 unit_case_map.push(["ATM", get_unit_case("ATM", 101325, "DIM_PASCAL")]);
+unit_case_map.push(["guass", get_unit_case("guass", 1e-4, "DIM_TESLA")]);
 
 let file_str = auto_generated_header;
 file_str += `

@@ -9,5 +9,5 @@ echo "==> Running tests..."
 ./build/NeroTest
 
 echo "==> Updating README benchmarks..."
-# python3 scripts/update_bench_readme.py
+python3 scripts/update_bench_readme.py
 git add README.md
