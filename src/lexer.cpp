@@ -72,7 +72,23 @@ nero::Token nero::Lexer::advance_with_token(const TokenType token_type, const st
 }
 nero::Token nero::Lexer::advance_with_token(const UnitValue token_value, const std::uint32_t count) noexcept {
     it += count;
-    return {token_value, {it - count, count}};
+    UnitValue uv = token_value;
+    std::string_view consumed{it - count, count};
+    // Non-SI raw unit overrides: keep SI dimensional type, store value in native unit
+    if (consumed == "L") {
+        uv.value = 1.0L; uv.display_unit = "L"; uv.display_scale = 1.0L;
+    } else if (consumed == "mL") {
+        uv.value = 1e-3L; uv.display_unit = "mL"; uv.display_scale = 1e-3L;
+    } else if (consumed == "kL") {
+        uv.value = 1e3L; uv.display_unit = "kL"; uv.display_scale = 1e3L;
+    } else if (consumed == "mu L") {
+        uv.value = 1e-6L; uv.display_unit = "\\mu L"; uv.display_scale = 1e-6L;
+    } else if (consumed == "ATM") {
+        uv.value = 1.0L; uv.display_unit = "atm"; uv.display_scale = 1.0L;
+    } else if (consumed == "PSI") {
+        uv.value = 1.0L; uv.display_unit = "psi"; uv.display_scale = 1.0L;
+    }
+    return {uv, {it - count, count}};
 }
 
 static int8_t count_sig_figs(std::string_view num_str) {
@@ -269,6 +285,16 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
                 return {TokenType::IDENTIFIER, text_content};
             }
             case strint<"conj">(): return advance_with_token(TokenType::BUILTIN_FUNC_CONJ, 4);
+            case strint<"Torr">(): {
+                UnitValue uv{1.0L, UnitVector{DIM_PASCAL}};
+                uv.display_unit = "Torr"; uv.display_scale = 1.0L;
+                return advance_with_token(uv, 4);
+            }
+            case strint<"mbar">(): {
+                UnitValue uv{1e-3L, UnitVector{DIM_PASCAL}};
+                uv.display_unit = "mbar"; uv.display_scale = 1e-3L;
+                return advance_with_token(uv, 4);
+            }
             default: break;
         }
     }
@@ -312,6 +338,11 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
             case strint<"mod">(): return advance_with_token(TokenType::MODULO, 3);
             case strint<"div">(): return advance_with_token(TokenType::DIVIDE, 3);
             case strint<"deg">(): return advance_with_token(TokenType::BUILTIN_FUNC_DEG, 3);
+            case strint<"bar">(): {
+                UnitValue uv{1.0L, UnitVector{DIM_PASCAL}};
+                uv.display_unit = "bar"; uv.display_scale = 1.0L;
+                return advance_with_token(uv, 3);
+            }
             case strint<"end">(): {
                 advance(3);
                 std::array<char, 32> buffer;
@@ -330,6 +361,11 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
             case strint<"pi">(): return advance_with_token(M_PI, 2);
             case strint<"ln">(): return advance_with_token(TokenType::BUILTIN_FUNC_LN, 2);
             case strint<"pm">(): return advance_with_token(TokenType::PLUS_MINUS, 2);
+            case strint<"pH">(): {
+                UnitValue uv{1.0L, UnitVector{DIMENSIONLESS_VEC}};
+                uv.display_unit = "pH"; uv.display_scale = 1.0L;
+                return advance_with_token(uv, 2);
+            }
             default: break;
         }
     }

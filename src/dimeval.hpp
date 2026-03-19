@@ -57,6 +57,8 @@ namespace nero {
         long double imag = 0.0;
         UnitVector unit;
         int8_t sig_figs = 0;  // 0 = unlimited/exact; >0 = significant figures count
+        std::string display_unit = "";     // e.g. "L", "atm" — empty = use unit_to_latex
+        long double display_scale = 1.0L;  // displayed_value = value / display_scale
 
         UnitValue() : value{0.0}, unit{DIMENSIONLESS_VEC} {}
         UnitValue(const long double val) : value{val}, unit{DIMENSIONLESS_VEC} {}

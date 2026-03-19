@@ -22,6 +22,9 @@ namespace nero {
         inline MaybeASTDependencies parse() {
             auto maybe_ast = parse_expression(0);
             if(!maybe_ast) return std::unexpected{maybe_ast.error()};
+            // Ensure all tokens were consumed (catches e.g. "5[V]" where [V] is stranded)
+            if(peek().type != TokenType::TEOF)
+                return std::unexpected{std::format("Unexpected '{}' after expression", peek().text)};
             return ASTDependencies{
                 std::move(maybe_ast.value()),
                 this->identifier_dependencies  // copied by value into the struct

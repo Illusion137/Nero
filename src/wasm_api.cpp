@@ -66,21 +66,38 @@ static JsResult evalue_to_js_result(const EValue& ev) {
             r.imag  = (double)v.imag;
             r.sig_figs = (int)v.sig_figs;
             for (int i = 0; i < 7; i++) r.unit[i] = v.unit.vec[i];
-            r.unit_latex = (v.unit == nero::UnitVector{nero::DIMENSIONLESS_VEC})
-                ? "" : unit_to_latex(v.unit);
-            r.value_scientific = value_to_scientific(v.value, (int)v.sig_figs, v.imag);
+            if (!v.display_unit.empty()) {
+                long double dv_val = v.value / v.display_scale;
+                long double di_val = v.imag  / v.display_scale;
+                r.value_scientific = value_to_scientific(dv_val, (int)v.sig_figs, di_val);
+                r.unit_latex = "\\mathrm{" + v.display_unit + "}";
+            } else {
+                r.unit_latex = (v.unit == nero::UnitVector{nero::DIMENSIONLESS_VEC})
+                    ? "" : unit_to_latex(v.unit);
+                r.value_scientific = value_to_scientific(v.value, (int)v.sig_figs, v.imag);
+            }
         } else if constexpr (std::is_same_v<T, nero::UnitValueList>) {
             if (!v.elements.empty()) {
-                r.value = (double)v.elements[0].value;
-                r.imag  = (double)v.elements[0].imag;
-                r.sig_figs = (int)v.elements[0].sig_figs;
-                for (int i = 0; i < 7; i++) r.unit[i] = v.elements[0].unit.vec[i];
-                r.unit_latex = (v.elements[0].unit == nero::UnitVector{nero::DIMENSIONLESS_VEC})
-                    ? "" : unit_to_latex(v.elements[0].unit);
+                const auto& e0 = v.elements[0];
+                r.value = (double)e0.value;
+                r.imag  = (double)e0.imag;
+                r.sig_figs = (int)e0.sig_figs;
+                for (int i = 0; i < 7; i++) r.unit[i] = e0.unit.vec[i];
+                if (!e0.display_unit.empty()) {
+                    r.unit_latex = "\\mathrm{" + e0.display_unit + "}";
+                } else {
+                    r.unit_latex = (e0.unit == nero::UnitVector{nero::DIMENSIONLESS_VEC})
+                        ? "" : unit_to_latex(e0.unit);
+                }
                 std::string sci;
                 for(std::size_t i = 0; i < v.elements.size(); i++) {
                     if(i > 0) sci += ", ";
-                    sci += value_to_scientific(v.elements[i].value, (int)v.elements[i].sig_figs, v.elements[i].imag);
+                    const auto& ei = v.elements[i];
+                    if (!ei.display_unit.empty()) {
+                        sci += value_to_scientific(ei.value / ei.display_scale, (int)ei.sig_figs, ei.imag / ei.display_scale);
+                    } else {
+                        sci += value_to_scientific(ei.value, (int)ei.sig_figs, ei.imag);
+                    }
                 }
                 r.value_scientific = sci;
             }

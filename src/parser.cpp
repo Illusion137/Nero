@@ -900,8 +900,10 @@ nero::MaybeAST nero::Parser::match_lhs(const nero::Token &token){
     if(is_atom(token.type)){
         auto lhs = match_atom(token);
         if(!lhs) return lhs;
-        // Check for array indexing: expr[index]
-        while(peek().type == TokenType::LEFT_BRACKET) {
+        // Check for array indexing: expr[index] — only valid on identifiers/index results
+        while(peek().type == TokenType::LEFT_BRACKET &&
+              (lhs.value()->token.type == TokenType::IDENTIFIER ||
+               lhs.value()->token.type == TokenType::INDEX_ACCESS)) {
             next(); // consume [
             auto index = parse_expression(0);
             if(!index) return index;
@@ -925,6 +927,27 @@ nero::MaybeAST nero::Parser::match_lhs(const nero::Token &token){
         return lhs;
     }
     if(token.type == TokenType::LEFT_BRACKET) {
+        // [A] notation: single identifier in brackets → dereference variable directly
+        if (peek().type == TokenType::IDENTIFIER &&
+            position + 1 < tokens.size() &&
+            tokens[position + 1].type == TokenType::RIGHT_BRACKET) {
+            auto tok = next(); // consume identifier
+            next();            // consume ']'
+            identifier_dependencies.insert(std::string{tok.text});
+            return std::make_unique<AST>(tok);
+        }
+        // [unit] notation: single non-dimensionless unit → raw mode (value=1, keep dims)
+        if (peek().type == TokenType::NUMERIC_LITERAL &&
+            peek().value.unit.vec != nero::DIMENSIONLESS_VEC &&
+            position + 1 < tokens.size() &&
+            tokens[position + 1].type == TokenType::RIGHT_BRACKET) {
+            UnitValue raw = peek().value;
+            std::string disp = raw.display_unit.empty() ? std::string(peek().text) : raw.display_unit;
+            raw.value = 1.0L; raw.imag = 0.0L;
+            raw.display_unit = disp; raw.display_scale = 1.0L;
+            next(); next(); // consume unit token + ']'
+            return std::make_unique<AST>(Token{raw, disp});
+        }
         // Array literal: [expr, expr, ...]
         std::vector<std::unique_ptr<AST>> elements;
         if(peek().type != TokenType::RIGHT_BRACKET) {
@@ -1025,6 +1048,7 @@ nero::MaybeAST nero::Parser::parse_expression(std::int32_t min_binding_power) {
         else if(op.type == TokenType::TEXT_OTHERWISE) break;
         else if(op.type == TokenType::SOLVE_FOR) break;
         else if(op.type == TokenType::SOLVE_SYSTEM) break;
+        else if(op.type == TokenType::LEFT_BRACKET) break;
 
         const bool is_implicit_multiplication = !is_binop(op.type);
         if(is_implicit_multiplication) op = {TokenType::TIMES, "*"};

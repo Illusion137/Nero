@@ -70,11 +70,17 @@ nero::UnitValue nero::UnitValue::operator+(const UnitValue &rhs) const noexcept 
         result = {this->value + rhs.value, unit_result};
     }
     result.sig_figs = combine_sig_figs(this->sig_figs, rhs.sig_figs);
+    if (!this->display_unit.empty() && this->display_unit == rhs.display_unit) {
+        result.display_unit = this->display_unit;
+        result.display_scale = this->display_scale;
+    }
     return result;
 }
 nero::UnitValue nero::UnitValue::operator-() const noexcept {
     UnitValue result{-this->value, -this->imag, this->unit};
     result.sig_figs = this->sig_figs;
+    result.display_unit = this->display_unit;
+    result.display_scale = this->display_scale;
     return result;
 }
 nero::UnitValue nero::UnitValue::operator-(const UnitValue &rhs) const noexcept {
@@ -86,6 +92,10 @@ nero::UnitValue nero::UnitValue::operator-(const UnitValue &rhs) const noexcept 
         result = {this->value - rhs.value, unit_result};
     }
     result.sig_figs = combine_sig_figs(this->sig_figs, rhs.sig_figs);
+    if (!this->display_unit.empty() && this->display_unit == rhs.display_unit) {
+        result.display_unit = this->display_unit;
+        result.display_scale = this->display_scale;
+    }
     return result;
 }
 nero::UnitValue nero::UnitValue::operator*(const UnitValue &rhs) const noexcept {
@@ -99,6 +109,14 @@ nero::UnitValue nero::UnitValue::operator*(const UnitValue &rhs) const noexcept 
         result = {this->value * rhs.value, unit_result};
     }
     result.sig_figs = combine_sig_figs(this->sig_figs, rhs.sig_figs);
+    // Propagate display_unit when one operand is dimensionless (pure scalar)
+    if (rhs.unit == DIMENSIONLESS_VEC && !this->display_unit.empty()) {
+        result.display_unit = this->display_unit;
+        result.display_scale = this->display_scale;
+    } else if (this->unit == DIMENSIONLESS_VEC && !rhs.display_unit.empty()) {
+        result.display_unit = rhs.display_unit;
+        result.display_scale = rhs.display_scale;
+    }
     return result;
 }
 nero::UnitValue nero::UnitValue::operator/(const UnitValue &rhs) const noexcept {
@@ -113,6 +131,11 @@ nero::UnitValue nero::UnitValue::operator/(const UnitValue &rhs) const noexcept 
         result = {this->value / rhs.value, unit_result};
     }
     result.sig_figs = combine_sig_figs(this->sig_figs, rhs.sig_figs);
+    // Propagate display_unit when denominator is dimensionless (scalar division)
+    if (rhs.unit == DIMENSIONLESS_VEC && !this->display_unit.empty()) {
+        result.display_unit = this->display_unit;
+        result.display_scale = this->display_scale;
+    }
     return result;
 }
 nero::UnitValue nero::UnitValue::operator^(const UnitValue &rhs) const noexcept {

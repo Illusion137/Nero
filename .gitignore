@@ -4,3 +4,4 @@ build-wasm
 CLAUDE.md
 .claude
 node_modules
+.env
