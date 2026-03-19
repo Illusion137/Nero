@@ -392,7 +392,7 @@ int main(){
             std::visit([](const auto& v) {
                 using T = std::decay_t<decltype(v)>;
                 if constexpr (std::is_same_v<T, nero::UnitValue>)
-                    nero_println("[VALUE]: {} {}", (double)v.value, v.unit.vec);
+                    nero_println("[VALUE]: {}", v.to_result_string());
                 else if constexpr (std::is_same_v<T, nero::UnitValueList>)
                     nero_println("[LIST]: {}", v.to_result_string());
                 else if constexpr (std::is_same_v<T, nero::BooleanValue>)
