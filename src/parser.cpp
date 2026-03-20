@@ -32,6 +32,7 @@ static std::string describe_token(const nero::Token& token) {
         case nero::TokenType::COMMA: return "','";
         case nero::TokenType::SUBSCRIPT: return "'_'";
         case nero::TokenType::PLUS_MINUS: return "'\\pm'";
+        case nero::TokenType::MINUS_PLUS: return "'\\mp'";
         case nero::TokenType::LESS_THAN: return "'<'";
         case nero::TokenType::GREATER_THAN: return "'>'";
         case nero::TokenType::LESS_EQUAL: return "'\\leq'";
@@ -115,6 +116,7 @@ std::pair<std::int32_t, std::int32_t> nero::Parser::precedence(nero::TokenType t
         case nero::TokenType::PLUS:
         case nero::TokenType::MINUS:
         case nero::TokenType::PLUS_MINUS:
+        case nero::TokenType::MINUS_PLUS:
             return { 10, 11 };
         case nero::TokenType::TIMES:
         case nero::TokenType::DIVIDE:
@@ -154,6 +156,7 @@ bool nero::Parser::is_binop(nero::TokenType type) {
         case nero::TokenType::EXPONENT:
         case nero::TokenType::EQUAL:
         case nero::TokenType::PLUS_MINUS:
+        case nero::TokenType::MINUS_PLUS:
         case nero::TokenType::LESS_THAN:
         case nero::TokenType::GREATER_THAN:
         case nero::TokenType::LESS_EQUAL:
@@ -985,7 +988,7 @@ nero::MaybeAST nero::Parser::match_lhs(const nero::Token &token){
         Token abs_token{TokenType::BUILTIN_FUNC_ABS, "abs"};
         return std::make_unique<AST>(abs_token, std::move(args));
     }
-    if(token.type == TokenType::PLUS_MINUS) {
+    if(token.type == TokenType::PLUS_MINUS || token.type == TokenType::MINUS_PLUS) {
         // Prefix \pm expr → [0+expr, 0-expr] = [expr, -expr]
         auto rhs = parse_expression(11); // right BP of PLUS_MINUS
         if(!rhs) return rhs;

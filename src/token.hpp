@@ -58,6 +58,7 @@ namespace nero {
         BUILTIN_FUNC_VALUE,
         FORMULA_QUERY,
         PLUS_MINUS,
+        MINUS_PLUS,
         ARRAY_LITERAL,
         INDEX_ACCESS,
         FUNC_CALL,

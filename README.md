@@ -226,17 +226,17 @@ Supported:
 
 | Benchmark      | µs / op    | ops / sec    | op unit |
 | -------------- | ---------- | ------------ | ------- |
-| Scalar         | 0.42 µs    | 2.35 M/s     | op      |
-| Trig           | 0.91 µs    | 1.10 M/s     | op      |
-| Derivative     | 1.75 µs    | 573.1 k/s    | op      |
-| Integral       | 1.41 µs    | 710.2 k/s    | op      |
-| Summation      | 4.54 µs    | 220.4 k/s    | op      |
-| Batch          | 0.94 µs    | 1.07 M/s     | expr    |
-| Formula search | 463.24 µs  | 2.2 k/s      | op      |
-| Solve-for      | 4.90 µs    | 204.1 k/s    | op      |
+| Scalar         | 0.67 µs    | 1.50 M/s     | op      |
+| Trig           | 0.96 µs    | 1.04 M/s     | op      |
+| Derivative     | 1.79 µs    | 559.9 k/s    | op      |
+| Integral       | 1.41 µs    | 707.2 k/s    | op      |
+| Summation      | 4.68 µs    | 213.9 k/s    | op      |
+| Batch          | 1.06 µs    | 944.1 k/s    | expr    |
+| Formula search | 468.58 µs  | 2.1 k/s      | op      |
+| Solve-for      | 5.00 µs    | 200.0 k/s    | op      |
 | System solver  | 3.73 µs    | 267.7 k/s    | op      |
-| Random pool    | 0.41 µs    | 2.46 M/s     | expr    |
-| Lex            | 0.03 µs    | 36.65 M/s    | token   |
+| Random pool    | 0.40 µs    | 2.52 M/s     | expr    |
+| Lex            | 0.03 µs    | 36.54 M/s    | token   |
 
 <details>
 <summary>Raw numbers</summary>
@@ -244,20 +244,20 @@ Supported:
 ```
 === Nero Benchmarks ===
 
-Scalar: 1 + 2 * 3                                           42.49 ms       2353546/s
-Trig: sin(pi/6) + cos(pi/3)                                 45.46 ms       1099951/s
-Derivative: d/dx(x^3) at x=2                                17.45 ms        573080/s
-Integral: int_0^1 x^2 dx                                     7.04 ms        710122/s
-Summation: sum_{i=1}^{100}(i)                               22.69 ms        220316/s
-Batch (5 unit-carrying exprs)                               46.78 ms        213781/s
-Formula search (acceleration target)                       463.24 ms          2159/s
-Solve-for: x^2 - 4 ; x :=                                   14.70 ms        204109/s
-System solver: x+y=5, x-y=1 ; @=x,y                          7.47 ms        267818/s
-Random pool (30 exprs, 1000 rounds)                         12.21 ms         81875/s
+Scalar: 1 + 2 * 3                                           66.64 ms       1500490/s
+Trig: sin(pi/6) + cos(pi/3)                                 48.24 ms       1036527/s
+Derivative: d/dx(x^3) at x=2                                17.86 ms        559873/s
+Integral: int_0^1 x^2 dx                                     7.07 ms        707539/s
+Summation: sum_{i=1}^{100}(i)                               23.38 ms        213818/s
+Batch (5 unit-carrying exprs)                               52.96 ms        188831/s
+Formula search (acceleration target)                       468.58 ms          2134/s
+Solve-for: x^2 - 4 ; x :=                                   15.00 ms        199993/s
+System solver: x+y=5, x-y=1 ; @=x,y                          7.47 ms        267814/s
+Random pool (30 exprs, 1000 rounds)                         11.91 ms         83966/s
 
 --- Lex Throughput ---
-Lex: 50k-token string (all token types)                    682.21 ms           733/s
-  Tokens/sec: 36.65M   Throughput: 168.4 MB/s
+Lex: 50k-token string (all token types)                    684.22 ms           731/s
+  Tokens/sec: 36.54M   Throughput: 167.9 MB/s
 ```
 
 </details>

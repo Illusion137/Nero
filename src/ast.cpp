@@ -166,6 +166,18 @@ nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulato
             result.elements = {l + r, l - r};
             return result;
         }
+        case TokenType::MINUS_PLUS: {
+            const auto &expr = std::get<ASTExpression>(ast->data);
+            auto lhs = expr.lhs->evaluate(evalulator);
+            if(!lhs) return lhs;
+            auto rhs = expr.rhs->evaluate(evalulator);
+            if(!rhs) return rhs;
+            // Returns UnitValueList {lhs+rhs, lhs-rhs}
+            UnitValue l = as_uv(*lhs), r = as_uv(*rhs);
+            UnitValueList result;
+            result.elements = {l - r, l + r};
+            return result;
+        }
         case TokenType::TIMES: {
             const auto &expr = std::get<ASTExpression>(ast->data);
             auto lhs = expr.lhs->evaluate(evalulator);

@@ -358,6 +358,9 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
             case strint<"pi">(): return advance_with_token(M_PI, 2);
             case strint<"ln">(): return advance_with_token(TokenType::BUILTIN_FUNC_LN, 2);
             case strint<"pm">(): return advance_with_token(TokenType::PLUS_MINUS, 2);
+            case strint<"mp">(): return advance_with_token(TokenType::MINUS_PLUS, 2);
+            case strint<"Re">(): return advance_with_token(TokenType::BUILTIN_FUNC_RE, 2);
+            case strint<"Im">(): return advance_with_token(TokenType::BUILTIN_FUNC_IM, 2);
             case strint<"pH">(): {
                 UnitValue uv{1.0L, UnitVector{DIMENSIONLESS_VEC}};
                 uv.display_unit = "pH"; uv.display_scale = 1.0L;
@@ -422,8 +425,6 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
             }
             if(write >= 2) {
                 switch(*(std::uint16_t*)buffer.data()) {
-                    case strint<"Re">(): return advance_with_token(TokenType::BUILTIN_FUNC_RE, 0);
-                    case strint<"Im">(): return advance_with_token(TokenType::BUILTIN_FUNC_IM, 0);
                     case strint<"tr">(): return advance_with_token(TokenType::BUILTIN_FUNC_TRACE, 0);
                     default: break;
                 }
