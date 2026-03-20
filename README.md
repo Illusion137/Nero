@@ -31,6 +31,50 @@ cmake --build build-wasm
 C:\msys64\usr\bin\bash.exe -lc "cd '$(pwd)' && cmake --build build"
 ```
 
+### Add built WASM library to HMTL
+```html
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/webp" href="/nero.webp" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- [ADD THIS LINE BELOW] -->
+        <script src="/wasm/Nero.js"></script>
+		<title>Everett</title>
+	</head>
+	<body class="vscode-dark">
+		<div id="root"></div>
+		<script type="module" src="/src/main.tsx"></script>
+	</body>
+</html>
+
+```
+### Example File Structure
+```
+.
+├── index.html
+├── package.json
+├── public
+│   └── wasm
+│       ├── Nero.js
+│       └── Nero.wasm
+├── src
+│   ├── App.css
+│   ├── App.tsx
+│   ├── Nero.d.ts
+│   ├── index.css
+│   ├── main.tsx
+│   ├── nero_wasm_interface.ts
+│   ├── utils.ts
+│   └── vite-env.d.ts
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+└── yarn.lock
+```
+
 ### Installation as a CMake dependency
 
 ```cmake
@@ -178,17 +222,17 @@ Supported:
 
 | Benchmark      | µs / op    | ops / sec    | op unit |
 | -------------- | ---------- | ------------ | ------- |
-| Scalar         | 0.59 µs    | 1.71 M/s     | op      |
+| Scalar         | 0.43 µs    | 2.33 M/s     | op      |
 | Trig           | 0.91 µs    | 1.10 M/s     | op      |
-| Derivative     | 1.71 µs    | 585.5 k/s    | op      |
-| Integral       | 1.41 µs    | 710.2 k/s    | op      |
-| Summation      | 4.93 µs    | 202.7 k/s    | op      |
-| Batch          | 0.94 µs    | 1.06 M/s     | expr    |
-| Formula search | 467.49 µs  | 2.1 k/s      | op      |
-| Solve-for      | 4.90 µs    | 204.1 k/s    | op      |
-| System solver  | 3.69 µs    | 271.4 k/s    | op      |
-| Random pool    | 0.40 µs    | 2.49 M/s     | expr    |
-| Lex            | 0.03 µs    | 35.95 M/s    | token   |
+| Derivative     | 1.72 µs    | 582.4 k/s    | op      |
+| Integral       | 1.38 µs    | 725.7 k/s    | op      |
+| Summation      | 4.55 µs    | 220.0 k/s    | op      |
+| Batch          | 0.93 µs    | 1.07 M/s     | expr    |
+| Formula search | 461.21 µs  | 2.2 k/s      | op      |
+| Solve-for      | 4.89 µs    | 204.6 k/s    | op      |
+| System solver  | 3.69 µs    | 270.6 k/s    | op      |
+| Random pool    | 0.39 µs    | 2.54 M/s     | expr    |
+| Lex            | 0.03 µs    | 36.75 M/s    | token   |
 
 <details>
 <summary>Raw numbers</summary>
@@ -196,20 +240,20 @@ Supported:
 ```
 === Nero Benchmarks ===
 
-Scalar: 1 + 2 * 3                                           58.59 ms       1706897/s
-Trig: sin(pi/6) + cos(pi/3)                                 45.57 ms       1097267/s
-Derivative: d/dx(x^3) at x=2                                17.08 ms        585593/s
-Integral: int_0^1 x^2 dx                                     7.04 ms        710101/s
-Summation: sum_{i=1}^{100}(i)                               24.67 ms        202639/s
-Batch (5 unit-carrying exprs)                               47.22 ms        211753/s
-Formula search (acceleration target)                       467.49 ms          2139/s
-Solve-for: x^2 - 4 ; x :=                                   14.70 ms        204030/s
-System solver: x+y=5, x-y=1 ; @=x,y                          7.37 ms        271463/s
-Random pool (30 exprs, 1000 rounds)                         12.03 ms         83124/s
+Scalar: 1 + 2 * 3                                           42.87 ms       2332643/s
+Trig: sin(pi/6) + cos(pi/3)                                 45.54 ms       1097972/s
+Derivative: d/dx(x^3) at x=2                                17.17 ms        582302/s
+Integral: int_0^1 x^2 dx                                     6.89 ms        725659/s
+Summation: sum_{i=1}^{100}(i)                               22.73 ms        220020/s
+Batch (5 unit-carrying exprs)                               46.58 ms        214693/s
+Formula search (acceleration target)                       461.21 ms          2168/s
+Solve-for: x^2 - 4 ; x :=                                   14.66 ms        204627/s
+System solver: x+y=5, x-y=1 ; @=x,y                          7.39 ms        270630/s
+Random pool (30 exprs, 1000 rounds)                         11.83 ms         84499/s
 
 --- Lex Throughput ---
-Lex: 50k-token string (all token types)                    695.49 ms           719/s
-  Tokens/sec: 35.95M   Throughput: 165.2 MB/s
+Lex: 50k-token string (all token types)                    680.31 ms           735/s
+  Tokens/sec: 36.75M   Throughput: 168.9 MB/s
 ```
 
 </details>
@@ -253,11 +297,11 @@ Precompiled WASM artifacts are also available on the [GitHub Releases](https://g
 
 ### TypeScript interface
 
-Copy `dimension_wasm_interface.ts` into your project alongside the generated `Nero.js`/`Nero.wasm` files, then:
+Copy `nero_wasm_interface.ts` into your project alongside the generated `Nero.js`/`Nero.wasm` files, then:
 
 ```typescript
 import createModule from './Nero.js';
-import { DimensionalEvaluator } from './dimension_wasm_interface';
+import { DimensionalEvaluator } from './nero_wasm_interface';
 
 const Module = await createModule();
 const evaluator = new DimensionalEvaluator(Module);
