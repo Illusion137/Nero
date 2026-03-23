@@ -102,6 +102,35 @@ for(const [suffix, unit_value] of Object.entries(units_map)){
     }
 }
 
+const greek_letters = [
+    "alpha", "Alpha",
+    "beta", "Beta",
+    "gamma", "Gamma",
+    "delta", "Delta",
+    "epsilon", "Epsilon",
+    "zeta", "Zeta",
+    "eta", "Eta",
+    "theta", "Theta",
+    "iota", "Iota",
+    "kappa", "Kappa",
+    "lambda", "Lambda",
+    "mu", "Mu",
+    "nu", "Nu",
+    "xi", "Xi",
+    "omicron", "Omicron",
+    "pi", "Pi",
+    "rho", "Rho",
+    "sigma", "Sigma",
+    "tau", "Tau",
+    "upsilon", "Upsilon",
+    "phi", "Phi",
+    "chi", "Chi",
+    "psi", "Psi",
+    "omega", "Omega",
+];
+
+greek_letters.forEach(letter => unit_case_map.push([letter, `GREEK_LETTER_CASE("${letter}");\n`]))
+
 unit_case_map.push(["nmi", get_unit_case("nmi", 1852, "DIM_METER")]);
 unit_case_map.push(["AU", get_unit_case("AU", 1.496e11, "DIM_METER")]);
 unit_case_map.push(["ly", get_unit_case("ly", 9.461e15, "DIM_METER")]);
@@ -125,6 +154,7 @@ unit_case_map.push(["guass", get_unit_case("guass", 1e-4, "DIM_TESLA")]);
 
 let file_str = auto_generated_header;
 file_str += `
+#define GREEK_LETTER_CASE(str) case strint<str>(): return get_indentifier_token();
 #define UNIT_CASE(str, value, unit) case strint<str>(): return advance_with_token(nero::UnitValue{value, unit}, sizeof(str) - 1)
 #define UNIT_CASE_LIST_BEGIN(size) if(remaining_length() >= size) { switch(strint_fn(it, size)) { default: break;
 #define UNIT_CASE_LIST_END(size) }}

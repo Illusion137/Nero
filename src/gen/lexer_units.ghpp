@@ -2,6 +2,7 @@
  *             Auto Generated DO NOT MODIFY                 *
  ***********************************************************/
 
+#define GREEK_LETTER_CASE(str) case strint<str>(): return get_indentifier_token();
 #define UNIT_CASE(str, value, unit) case strint<str>(): return advance_with_token(nero::UnitValue{value, unit}, sizeof(str) - 1)
 #define UNIT_CASE_LIST_BEGIN(size) if(remaining_length() >= size) { switch(strint_fn(it, size)) { default: break;
 #define UNIT_CASE_LIST_END(size) }}
@@ -33,10 +34,18 @@ UNIT_CASE_LIST_BEGIN(8) {
 } UNIT_CASE_LIST_END();
 UNIT_CASE_LIST_BEGIN(7) {
 	UNIT_CASE("\\Omega", 1, DIM_OHM);
+	GREEK_LETTER_CASE("epsilon");
+	GREEK_LETTER_CASE("Epsilon");
+	GREEK_LETTER_CASE("omicron");
+	GREEK_LETTER_CASE("Omicron");
+	GREEK_LETTER_CASE("upsilon");
+	GREEK_LETTER_CASE("Upsilon");
 } UNIT_CASE_LIST_END();
 UNIT_CASE_LIST_BEGIN(6) {
 	UNIT_CASE("mu mol", 1e-6, DIM_MOLE);
 	UNIT_CASE("mu Ohm", 1e-6, DIM_OHM);
+	GREEK_LETTER_CASE("lambda");
+	GREEK_LETTER_CASE("Lambda");
 } UNIT_CASE_LIST_END();
 UNIT_CASE_LIST_BEGIN(5) {
 	UNIT_CASE("damol", 1e+1, DIM_MOLE);
@@ -46,7 +55,22 @@ UNIT_CASE_LIST_BEGIN(5) {
 	UNIT_CASE("daOhm", 1e+1, DIM_OHM);
 	UNIT_CASE("mu Wb", 1e-6, DIM_WEBER);
 	UNIT_CASE("mu eV", 1.60218e-25, DIM_JOULE);
+	GREEK_LETTER_CASE("alpha");
+	GREEK_LETTER_CASE("Alpha");
+	GREEK_LETTER_CASE("gamma");
+	GREEK_LETTER_CASE("Gamma");
+	GREEK_LETTER_CASE("delta");
+	GREEK_LETTER_CASE("Delta");
+	GREEK_LETTER_CASE("theta");
+	GREEK_LETTER_CASE("Theta");
+	GREEK_LETTER_CASE("kappa");
+	GREEK_LETTER_CASE("Kappa");
+	GREEK_LETTER_CASE("sigma");
+	GREEK_LETTER_CASE("Sigma");
+	GREEK_LETTER_CASE("omega");
+	GREEK_LETTER_CASE("Omega");
 	UNIT_CASE("month", 2592000, DIM_SECOND);
+	UNIT_CASE("guass", 0.0001, DIM_TESLA);
 } UNIT_CASE_LIST_END();
 UNIT_CASE_LIST_BEGIN(4) {
 	UNIT_CASE("mu m", 1e-6, DIM_METER);
@@ -105,6 +129,12 @@ UNIT_CASE_LIST_BEGIN(4) {
 	UNIT_CASE("mu H", 1e-6, DIM_HENRY);
 	UNIT_CASE("mu L", 1e-9, DIM_LITER);
 	UNIT_CASE("daeV", 1.60218e-18, DIM_JOULE);
+	GREEK_LETTER_CASE("beta");
+	GREEK_LETTER_CASE("Beta");
+	GREEK_LETTER_CASE("zeta");
+	GREEK_LETTER_CASE("Zeta");
+	GREEK_LETTER_CASE("iota");
+	GREEK_LETTER_CASE("Iota");
 	UNIT_CASE("kcal", 4184, DIM_JOULE);
 	UNIT_CASE("hour", 3600, DIM_SECOND);
 	UNIT_CASE("year", 1310400, DIM_SECOND);
@@ -217,6 +247,18 @@ UNIT_CASE_LIST_BEGIN(3) {
 	UNIT_CASE("aeV", 1.60218e-37, DIM_JOULE);
 	UNIT_CASE("zeV", 1.60218e-40, DIM_JOULE);
 	UNIT_CASE("yeV", 1.60218e-43, DIM_JOULE);
+	GREEK_LETTER_CASE("eta");
+	GREEK_LETTER_CASE("Eta");
+	GREEK_LETTER_CASE("rho");
+	GREEK_LETTER_CASE("Rho");
+	GREEK_LETTER_CASE("tau");
+	GREEK_LETTER_CASE("Tau");
+	GREEK_LETTER_CASE("phi");
+	GREEK_LETTER_CASE("Phi");
+	GREEK_LETTER_CASE("chi");
+	GREEK_LETTER_CASE("Chi");
+	GREEK_LETTER_CASE("psi");
+	GREEK_LETTER_CASE("Psi");
 	UNIT_CASE("nmi", 1852, DIM_METER);
 	UNIT_CASE("cal", 4.184, DIM_JOULE);
 	UNIT_CASE("PSI", 6894.76, DIM_PASCAL);
@@ -500,6 +542,14 @@ UNIT_CASE_LIST_BEGIN(2) {
 	UNIT_CASE("zL", 1e-24, DIM_LITER);
 	UNIT_CASE("yL", 1e-27, DIM_LITER);
 	UNIT_CASE("eV", 1.60218e-19, DIM_JOULE);
+	GREEK_LETTER_CASE("mu");
+	GREEK_LETTER_CASE("Mu");
+	GREEK_LETTER_CASE("nu");
+	GREEK_LETTER_CASE("Nu");
+	GREEK_LETTER_CASE("xi");
+	GREEK_LETTER_CASE("Xi");
+	GREEK_LETTER_CASE("pi");
+	GREEK_LETTER_CASE("Pi");
 	UNIT_CASE("AU", 149600000000, DIM_METER);
 	UNIT_CASE("ly", 9461000000000000, DIM_METER);
 	UNIT_CASE("pc", 30860000000000000, DIM_METER);
