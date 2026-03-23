@@ -31,6 +31,50 @@ cmake --build build-wasm
 C:\msys64\usr\bin\bash.exe -lc "cd '$(pwd)' && cmake --build build"
 ```
 
+### Add built WASM library to HMTL
+```html
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/webp" href="/nero.webp" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- [ADD THIS LINE BELOW] -->
+        <script src="/wasm/Nero.js"></script>
+		<title>Everett</title>
+	</head>
+	<body class="vscode-dark">
+		<div id="root"></div>
+		<script type="module" src="/src/main.tsx"></script>
+	</body>
+</html>
+
+```
+### Example File Structure
+```
+.
+├── index.html
+├── package.json
+├── public
+│   └── wasm
+│       ├── Nero.js
+│       └── Nero.wasm
+├── src
+│   ├── App.css
+│   ├── App.tsx
+│   ├── Nero.d.ts
+│   ├── index.css
+│   ├── main.tsx
+│   ├── nero_wasm_interface.ts
+│   ├── utils.ts
+│   └── vite-env.d.ts
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+└── yarn.lock
+```
+
 ### Installation as a CMake dependency
 
 ```cmake
@@ -94,10 +138,11 @@ Supported:
 - Hex / binary literals: `0xFF`, `0b1010`
 - Significant figures: propagated through arithmetic; `\sig(x)` returns the count
 - Unit conversion via `conversion_unit_expr` on the `Expression` struct
-- `ans` holds the last evaluated result
+- `\operatorname{ans}` holds the last evaluated result
 
 ### Constants
 
+<!-- CONSTANTS_START -->
 | Constant                                                               | Name                     |
 | ---------------------------------------------------------------------- | ------------------------ |
 | $\pi = 3.14159265358979323846 \cdot \mathrm{1}$                        | Pi                       |
@@ -106,34 +151,53 @@ Supported:
 | $\mathrm{e_0} = 8.854187817 \cdot 10^{-12} \cdot \mathrm{\frac{F}{m}}$ | Electric Constant        |
 | $\mathrm{k_e} = 8.99 \cdot 10^9 \cdot \mathrm{\frac{Nm^2}{C^2}}$       | Coulomb constant         |
 | $\mathrm{c} = 2.99792458 \cdot 10^8 \cdot \mathrm{\frac{m}{s}}$        | Speed of light in vacuum |
-| $\mathrm{m_e} = 9.1938 \cdot 10^{-31} \cdot \mathrm{kg}$               | Electron mass            |
-| $\mathrm{m_p} = 1.67262 \cdot 10^{-27} \cdot \mathrm{kg}$              | Proton mass              |
+| $\mathrm{m_e} = 9.1093837 \cdot 10^{-31} \cdot \mathrm{kg}$            | Electron mass            |
+| $\mathrm{m_p} = 1.67262192 \cdot 10^{-27} \cdot \mathrm{kg}$           | Proton mass              |
 | $\mathrm{m_n} = 1.674927 \cdot 10^{-27} \cdot \mathrm{kg}$             | Neutron mass             |
 | $\mathrm{R_g} = 8.31446 \cdot \mathrm{JK^{-1}mol^{-1}}$                | Ideal gas constant       |
+| $\mathrm{R_a} = 0.0821 \cdot \mathrm{L\,atm\,K^{-1}\,mol^{-1}}$        | Ideal gas constant (atm) |
 | $\mathrm{C_K} = 273.15 \cdot \mathrm{K}$                               | Celsius–Kelvin offset    |
-| $\mathrm{h} = 6.620607015 \cdot 10^{-34} \cdot \mathrm{Js}$            | Planck constant          |
+| $\mathrm{h} = 6.62607015 \cdot 10^{-34} \cdot \mathrm{Js}$             | Planck constant          |
 | $\mathrm{a_0} = 5.291772 \cdot 10^{-11} \cdot \mathrm{m}$              | Bohr radius              |
 | $\mathrm{N_A} = 6.022 \cdot 10^{23} \cdot \mathrm{mol^{-1}}$           | Avogadro constant        |
+| $\epsilon_0 = 8.854187817 \cdot 10^{-12} \cdot \mathrm{F\,m^{-1}}$     | Vacuum permittivity      |
+| $\mu_0 = 4\pi \cdot 10^{-7} \cdot \mathrm{H\,m^{-1}}$                  | Vacuum permeability      |
+| $\alpha = 7.2973525693 \cdot 10^{-3}$                                  | Fine-structure constant  |
+<!-- CONSTANTS_END -->
 
 ### Functions
 
+<!-- FUNCTIONS_START -->
 #### Basic Math
 
 `sqrt` `ceil` `floor` `round` `abs`
 
 #### Trigonometric
 
-`sin` `cos` `tan`  
+`sin` `cos` `tan`
 `sec` `csc` `cot`
 
 #### Inverse Trigonometric
 
-`arcsin` `arccos` `arctan`  
+`arcsin` `arccos` `arctan`
 `arcsec` `arccsc` `arccot`
+
+#### Hyperbolic
+
+`sinh` `cosh` `tanh`
+`sech` `csch` `coth`
+
+#### Inverse Hyperbolic
+
+`arcsinh` `arccosh` `arctanh`
 
 #### Logarithmic
 
 `log` `ln`
+
+#### Statistical
+
+`mean` `std` `var` `median`
 
 #### Combinatorics
 
@@ -157,7 +221,7 @@ Supported:
 
 #### Utility
 
-`fact` `sig` `val` `unit`
+`fact` `sig` `val` `unit` `clamp` `lerp` `norm` `dot` `cross`
 
 #### Integration
 
@@ -170,6 +234,7 @@ Supported:
 #### Angle Conversion
 
 `rad` `deg`
+<!-- FUNCTIONS_END -->
 
 ## Benchmarks
 
@@ -178,17 +243,17 @@ Supported:
 
 | Benchmark      | µs / op    | ops / sec    | op unit |
 | -------------- | ---------- | ------------ | ------- |
-| Scalar         | 0.42 µs    | 2.40 M/s     | op      |
-| Trig           | 0.86 µs    | 1.16 M/s     | op      |
-| Derivative     | 1.62 µs    | 615.8 k/s    | op      |
-| Integral       | 1.31 µs    | 765.7 k/s    | op      |
-| Summation      | 4.51 µs    | 221.8 k/s    | op      |
-| Batch          | 0.85 µs    | 1.18 M/s     | expr    |
-| Formula search | 396.32 µs  | 2.5 k/s      | op      |
-| Solve-for      | 4.91 µs    | 203.7 k/s    | op      |
-| System solver  | 3.42 µs    | 292.0 k/s    | op      |
-| Random pool    | 0.38 µs    | 2.60 M/s     | expr    |
-| Lex            | 0.03 µs    | 29.75 M/s    | token   |
+| Scalar         | 0.74 µs    | 1.36 M/s     | op      |
+| Trig           | 0.93 µs    | 1.07 M/s     | op      |
+| Derivative     | 1.73 µs    | 577.7 k/s    | op      |
+| Integral       | 1.40 µs    | 712.3 k/s    | op      |
+| Summation      | 4.62 µs    | 216.3 k/s    | op      |
+| Batch          | 0.95 µs    | 1.05 M/s     | expr    |
+| Formula search | 464.54 µs  | 2.2 k/s      | op      |
+| Solve-for      | 4.93 µs    | 203.0 k/s    | op      |
+| System solver  | 3.69 µs    | 271.0 k/s    | op      |
+| Random pool    | 0.40 µs    | 2.51 M/s     | expr    |
+| Lex            | 0.03 µs    | 33.05 M/s    | token   |
 
 <details>
 <summary>Raw numbers</summary>
@@ -196,20 +261,20 @@ Supported:
 ```
 === Nero Benchmarks ===
 
-Scalar: 1 + 2 * 3                                           41.70 ms       2398168/s
-Trig: sin(pi/6) + cos(pi/3)                                 43.07 ms       1161018/s
-Derivative: d/dx(x^3) at x=2                                16.24 ms        615746/s
-Integral: int_0^1 x^2 dx                                     6.53 ms        766054/s
-Summation: sum_{i=1}^{100}(i)                               22.54 ms        221808/s
-Batch (5 unit-carrying exprs)                               42.50 ms        235271/s
-Formula search (acceleration target)                       396.32 ms          2523/s
-Solve-for: x^2 - 4 ; x :=                                   14.73 ms        203655/s
-System solver: x+y=5, x-y=1 ; @=x,y                          6.85 ms        291882/s
-Random pool (30 exprs, 1000 rounds)                         11.54 ms         86618/s
+Scalar: 1 + 2 * 3                                           73.69 ms       1357124/s
+Trig: sin(pi/6) + cos(pi/3)                                 46.65 ms       1071893/s
+Derivative: d/dx(x^3) at x=2                                17.31 ms        577698/s
+Integral: int_0^1 x^2 dx                                     7.02 ms        712382/s
+Summation: sum_{i=1}^{100}(i)                               23.12 ms        216235/s
+Batch (5 unit-carrying exprs)                               47.56 ms        210258/s
+Formula search (acceleration target)                       464.54 ms          2153/s
+Solve-for: x^2 - 4 ; x :=                                   14.78 ms        202915/s
+System solver: x+y=5, x-y=1 ; @=x,y                          7.38 ms        270842/s
+Random pool (30 exprs, 1000 rounds)                         11.93 ms         83792/s
 
 --- Lex Throughput ---
-Lex: 50k-token string (all token types)                    840.46 ms           595/s
-  Tokens/sec: 29.75M   Throughput: 136.7 MB/s
+Lex: 50k-token string (all token types)                    756.36 ms           661/s
+  Tokens/sec: 33.05M   Throughput: 151.9 MB/s
 ```
 
 </details>
@@ -253,11 +318,11 @@ Precompiled WASM artifacts are also available on the [GitHub Releases](https://g
 
 ### TypeScript interface
 
-Copy `dimension_wasm_interface.ts` into your project alongside the generated `Nero.js`/`Nero.wasm` files, then:
+Copy `nero_wasm_interface.ts` into your project alongside the generated `Nero.js`/`Nero.wasm` files, then:
 
 ```typescript
 import createModule from './Nero.js';
-import { DimensionalEvaluator } from './dimension_wasm_interface';
+import { DimensionalEvaluator } from './nero_wasm_interface';
 
 const Module = await createModule();
 const evaluator = new DimensionalEvaluator(Module);

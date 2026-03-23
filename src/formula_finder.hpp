@@ -70,7 +70,8 @@ public:
     // Deduplicates by formula name.
 std::vector<Physics::Formula> find_by_units(
     const std::vector<nero::UnitVector>& available_units,
-    const nero::UnitVector& targetUnit
+    const nero::UnitVector& targetUnit,
+    const std::vector<std::string>& pool_var_names = {}
 ) const {
 
     const auto& all_formulas = s_all_formulas_;
@@ -395,6 +396,25 @@ std::vector<Physics::Formula> find_by_units(
         return score * 0.5;
     };
 
+    // Bonus when pool variable names match formula variable names (after stripping LaTeX).
+    // e.g. pool has var "F" with force unit and formula needs "F" with force unit → +3 per match
+    auto pool_name_match_bonus = [&](const Candidate& cand) -> double {
+        if (pool_var_names.empty()) return 0.0;
+        const auto& f = all_formulas[cand.idx];
+        double bonus = 0.0;
+        for (const auto& v : f.variables) {
+            if (v.name == f.solve_for || v.is_constant) continue;
+            std::string vbase = basename(v.name);
+            for (std::size_t i = 0; i < pool_var_names.size() && i < available_units.size(); i++) {
+                if (available_units[i].vec == v.units.vec && basename(pool_var_names[i]) == vbase) {
+                    bonus += 3.0;
+                    break;
+                }
+            }
+        }
+        return bonus;
+    };
+
     {
         const double pool_size = available_pool.empty() ? 1.0 : (double)available_pool.size();
         for (auto& cand : candidates) {
@@ -403,9 +423,12 @@ std::vector<Physics::Formula> find_by_units(
             double simplicity   = 1.0 / ((double)required_counts(cand.idx).size() + 1.0);
             int total_subsubs   = 0;
             for (const auto& sub : cand.subs) total_subsubs += (int)sub.subsubs.size();
+            double exact_bonus  = missing_types(cand.idx, available_pool).empty() ? 50.0 : 0.0;
 
-            cand.score = chain_util * 100.0
+            cand.score = exact_bonus
+                       + chain_util * 100.0
                        + name_match_bonus(cand)
+                       + pool_name_match_bonus(cand)
                        + sub_complexity_score(cand)
                        + pool_specificity_score(cand)
                        - (double)pool_overlap_count(cand) * 10.0
@@ -418,6 +441,25 @@ std::vector<Physics::Formula> find_by_units(
 
     std::stable_sort(candidates.begin(), candidates.end(),
         [](const Candidate& a, const Candidate& b) { return a.score > b.score; });
+
+    // Domain coherence: give +5 to candidates in the dominant category of the top-3
+    if (candidates.size() > 3) {
+        std::unordered_map<std::string, int> cat_counts;
+        for (int i = 0; i < std::min(3, (int)candidates.size()); i++) {
+            const auto& cat = all_formulas[candidates[i].idx].category;
+            if (!cat.empty()) cat_counts[cat]++;
+        }
+        std::string dominant_cat;
+        int best_count = 0;
+        for (const auto& [cat, count] : cat_counts)
+            if (count > best_count) { best_count = count; dominant_cat = cat; }
+        if (best_count >= 2 && !dominant_cat.empty()) {
+            for (auto& cand : candidates)
+                if (all_formulas[cand.idx].category == dominant_cat) cand.score += 5.0;
+            std::stable_sort(candidates.begin(), candidates.end(),
+                [](const Candidate& a, const Candidate& b) { return a.score > b.score; });
+        }
+    }
 
     // -------------------------------------------------------------------------
     // STEP 3 — FLATTEN
@@ -442,7 +484,9 @@ std::vector<Physics::Formula> find_by_units(
         const auto& f = all_formulas[cand.idx];
         if (is_emitted(f.name)) continue;
         emitted.insert(f.name);
-        result.push_back(f);
+        Physics::Formula scored = f;
+        scored.score = cand.score;
+        result.push_back(std::move(scored));
 
         for (const auto& sub : cand.subs) {
             const auto& sf = all_formulas[sub.idx];

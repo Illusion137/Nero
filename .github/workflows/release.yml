@@ -29,6 +29,12 @@ jobs:
           npx ts-node -T formula_gen/formula_extractor.ts
           npx ts-node -T formula_gen/formulas_to_cpp.ts
 
+      - name: Generate interface constants
+        run: npx ts-node -T scripts/gen_interface_consts.ts
+
+      - name: Generate README tables
+        run: npx ts-node -T scripts/gen_readme_tables.ts
+
       - name: Set up Emscripten
         uses: mymindstorm/setup-emsdk@v14
 
@@ -61,6 +67,7 @@ jobs:
             build-wasm/Nero.wasm
             build-wasm/Nero.d.ts
             nero_wasm_interface.ts
+            README.md
 
       - name: Dispatch Everett deploy
         uses: peter-evans/repository-dispatch@v3

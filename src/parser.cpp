@@ -32,6 +32,7 @@ static std::string describe_token(const nero::Token& token) {
         case nero::TokenType::COMMA: return "','";
         case nero::TokenType::SUBSCRIPT: return "'_'";
         case nero::TokenType::PLUS_MINUS: return "'\\pm'";
+        case nero::TokenType::MINUS_PLUS: return "'\\mp'";
         case nero::TokenType::LESS_THAN: return "'<'";
         case nero::TokenType::GREATER_THAN: return "'>'";
         case nero::TokenType::LESS_EQUAL: return "'\\leq'";
@@ -91,6 +92,24 @@ std::int32_t nero::Parser::builtin_function_args(nero::TokenType type){
         case nero::TokenType::BUILTIN_FUNC_CELF: return 1;
         case nero::TokenType::BUILTIN_FUNC_FAHRC: return 1;
         case nero::TokenType::BUILTIN_FUNC_FAHRK: return 1;
+        case nero::TokenType::BUILTIN_FUNC_SINH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_COSH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_TANH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_SECH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_CSCH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_COTH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCSINH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCCOSH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCTANH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_MEAN: return 1;
+        case nero::TokenType::BUILTIN_FUNC_STD: return 1;
+        case nero::TokenType::BUILTIN_FUNC_VAR: return 1;
+        case nero::TokenType::BUILTIN_FUNC_MEDIAN: return 1;
+        case nero::TokenType::BUILTIN_FUNC_CLAMP: return 3;
+        case nero::TokenType::BUILTIN_FUNC_LERP: return 3;
+        case nero::TokenType::BUILTIN_FUNC_NORM: return 1;
+        case nero::TokenType::BUILTIN_FUNC_DOT_ARRAY: return 2;
+        case nero::TokenType::BUILTIN_FUNC_CROSS_ARRAY: return 2;
         case nero::TokenType::BUILTIN_FUNC_MIN: return -2; // variadic, at least 2
         case nero::TokenType::BUILTIN_FUNC_MAX: return -2;
         case nero::TokenType::BUILTIN_FUNC_GCD: return -2;
@@ -115,6 +134,7 @@ std::pair<std::int32_t, std::int32_t> nero::Parser::precedence(nero::TokenType t
         case nero::TokenType::PLUS:
         case nero::TokenType::MINUS:
         case nero::TokenType::PLUS_MINUS:
+        case nero::TokenType::MINUS_PLUS:
             return { 10, 11 };
         case nero::TokenType::TIMES:
         case nero::TokenType::DIVIDE:
@@ -154,6 +174,7 @@ bool nero::Parser::is_binop(nero::TokenType type) {
         case nero::TokenType::EXPONENT:
         case nero::TokenType::EQUAL:
         case nero::TokenType::PLUS_MINUS:
+        case nero::TokenType::MINUS_PLUS:
         case nero::TokenType::LESS_THAN:
         case nero::TokenType::GREATER_THAN:
         case nero::TokenType::LESS_EQUAL:
@@ -212,6 +233,24 @@ bool nero::Parser::is_builtin_function(nero::TokenType type){
         case nero::TokenType::BUILTIN_FUNC_CELF:
         case nero::TokenType::BUILTIN_FUNC_FAHRC:
         case nero::TokenType::BUILTIN_FUNC_FAHRK:
+        case nero::TokenType::BUILTIN_FUNC_SINH:
+        case nero::TokenType::BUILTIN_FUNC_COSH:
+        case nero::TokenType::BUILTIN_FUNC_TANH:
+        case nero::TokenType::BUILTIN_FUNC_SECH:
+        case nero::TokenType::BUILTIN_FUNC_CSCH:
+        case nero::TokenType::BUILTIN_FUNC_COTH:
+        case nero::TokenType::BUILTIN_FUNC_ARCSINH:
+        case nero::TokenType::BUILTIN_FUNC_ARCCOSH:
+        case nero::TokenType::BUILTIN_FUNC_ARCTANH:
+        case nero::TokenType::BUILTIN_FUNC_MEAN:
+        case nero::TokenType::BUILTIN_FUNC_STD:
+        case nero::TokenType::BUILTIN_FUNC_VAR:
+        case nero::TokenType::BUILTIN_FUNC_MEDIAN:
+        case nero::TokenType::BUILTIN_FUNC_CLAMP:
+        case nero::TokenType::BUILTIN_FUNC_LERP:
+        case nero::TokenType::BUILTIN_FUNC_NORM:
+        case nero::TokenType::BUILTIN_FUNC_DOT_ARRAY:
+        case nero::TokenType::BUILTIN_FUNC_CROSS_ARRAY:
             return true;
         default: return false;
     }
@@ -985,7 +1024,7 @@ nero::MaybeAST nero::Parser::match_lhs(const nero::Token &token){
         Token abs_token{TokenType::BUILTIN_FUNC_ABS, "abs"};
         return std::make_unique<AST>(abs_token, std::move(args));
     }
-    if(token.type == TokenType::PLUS_MINUS) {
+    if(token.type == TokenType::PLUS_MINUS || token.type == TokenType::MINUS_PLUS) {
         // Prefix \pm expr → [0+expr, 0-expr] = [expr, -expr]
         auto rhs = parse_expression(11); // right BP of PLUS_MINUS
         if(!rhs) return rhs;

@@ -20,6 +20,7 @@ struct Formula {
     std::vector<Variable> variables;     // All variables in the equation
     std::string solve_for;               // "F" (which variable this solves for)
     std::string category;
+    double score = 0.0;                  // Search relevance score (set by FormulaSearcher)
 };
 
 class FormulaDatabase {

@@ -166,6 +166,18 @@ nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulato
             result.elements = {l + r, l - r};
             return result;
         }
+        case TokenType::MINUS_PLUS: {
+            const auto &expr = std::get<ASTExpression>(ast->data);
+            auto lhs = expr.lhs->evaluate(evalulator);
+            if(!lhs) return lhs;
+            auto rhs = expr.rhs->evaluate(evalulator);
+            if(!rhs) return rhs;
+            // Returns UnitValueList {lhs+rhs, lhs-rhs}
+            UnitValue l = as_uv(*lhs), r = as_uv(*rhs);
+            UnitValueList result;
+            result.elements = {l - r, l + r};
+            return result;
+        }
         case TokenType::TIMES: {
             const auto &expr = std::get<ASTExpression>(ast->data);
             auto lhs = expr.lhs->evaluate(evalulator);
@@ -890,6 +902,185 @@ nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulato
             if(!arg) return arg;
             UnitValue v = as_uv(*arg);
             return UnitValue{(v.value - 273.15L) * 9.0L / 5.0L + 32.0L, v.unit};
+        }
+        // ----------------------------------------------------------------
+        // Hyperbolic trig
+        // ----------------------------------------------------------------
+        case TokenType::BUILTIN_FUNC_SINH: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            return nero::builtins::sinh((double)as_uv(*arg).value);
+        }
+        case TokenType::BUILTIN_FUNC_COSH: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            return nero::builtins::cosh((double)as_uv(*arg).value);
+        }
+        case TokenType::BUILTIN_FUNC_TANH: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            return nero::builtins::tanh((double)as_uv(*arg).value);
+        }
+        case TokenType::BUILTIN_FUNC_SECH: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            return nero::builtins::sech((double)as_uv(*arg).value);
+        }
+        case TokenType::BUILTIN_FUNC_CSCH: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            return nero::builtins::csch((double)as_uv(*arg).value);
+        }
+        case TokenType::BUILTIN_FUNC_COTH: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            return nero::builtins::coth((double)as_uv(*arg).value);
+        }
+        case TokenType::BUILTIN_FUNC_ARCSINH: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            return nero::builtins::arcsinh((double)as_uv(*arg).value);
+        }
+        case TokenType::BUILTIN_FUNC_ARCCOSH: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            return nero::builtins::arccosh((double)as_uv(*arg).value);
+        }
+        case TokenType::BUILTIN_FUNC_ARCTANH: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            return nero::builtins::arctanh((double)as_uv(*arg).value);
+        }
+        // ----------------------------------------------------------------
+        // Statistical aggregates
+        // ----------------------------------------------------------------
+        case TokenType::BUILTIN_FUNC_MEAN: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            if(const auto* list = std::get_if<UnitValueList>(&*arg)) {
+                if(list->elements.empty()) return std::unexpected<std::string>{"\\mean: empty array"};
+                long double sum = 0.0L;
+                for(const auto& e : list->elements) sum += e.value;
+                return UnitValue{sum / (long double)list->elements.size(), list->elements[0].unit};
+            }
+            return as_uv(*arg); // scalar passthrough
+        }
+        case TokenType::BUILTIN_FUNC_VAR: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            if(const auto* list = std::get_if<UnitValueList>(&*arg)) {
+                if(list->elements.empty()) return std::unexpected<std::string>{"\\var: empty array"};
+                long double sum = 0.0L;
+                for(const auto& e : list->elements) sum += e.value;
+                long double mean = sum / (long double)list->elements.size();
+                long double var_sum = 0.0L;
+                for(const auto& e : list->elements) { long double d = e.value - mean; var_sum += d * d; }
+                UnitVector sq_unit = list->elements[0].unit * list->elements[0].unit;
+                return UnitValue{var_sum / (long double)list->elements.size(), sq_unit};
+            }
+            auto uv = as_uv(*arg);
+            return UnitValue{0.0L, uv.unit * uv.unit};
+        }
+        case TokenType::BUILTIN_FUNC_STD: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            if(const auto* list = std::get_if<UnitValueList>(&*arg)) {
+                if(list->elements.empty()) return std::unexpected<std::string>{"\\std: empty array"};
+                long double sum = 0.0L;
+                for(const auto& e : list->elements) sum += e.value;
+                long double mean = sum / (long double)list->elements.size();
+                long double var_sum = 0.0L;
+                for(const auto& e : list->elements) { long double d = e.value - mean; var_sum += d * d; }
+                long double variance = var_sum / (long double)list->elements.size();
+                return UnitValue{(long double)std::sqrt((double)variance), list->elements[0].unit};
+            }
+            return UnitValue{0.0L, as_uv(*arg).unit};
+        }
+        case TokenType::BUILTIN_FUNC_MEDIAN: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            if(const auto* list = std::get_if<UnitValueList>(&*arg)) {
+                if(list->elements.empty()) return std::unexpected<std::string>{"\\median: empty array"};
+                std::vector<long double> vals;
+                vals.reserve(list->elements.size());
+                for(const auto& e : list->elements) vals.push_back(e.value);
+                std::sort(vals.begin(), vals.end());
+                std::size_t n = vals.size();
+                long double med = (n % 2 == 1) ? vals[n / 2] : (vals[n / 2 - 1] + vals[n / 2]) / 2.0L;
+                return UnitValue{med, list->elements[0].unit};
+            }
+            return as_uv(*arg); // scalar passthrough
+        }
+        // ----------------------------------------------------------------
+        // Utility functions
+        // ----------------------------------------------------------------
+        case TokenType::BUILTIN_FUNC_CLAMP: {
+            const auto& args = std::get<ASTCall>(ast->data).args;
+            auto x = args[0]->evaluate(evalulator); if(!x) return x;
+            auto lo = args[1]->evaluate(evalulator); if(!lo) return lo;
+            auto hi = args[2]->evaluate(evalulator); if(!hi) return hi;
+            UnitValue xv = as_uv(*x);
+            xv.value = std::clamp(xv.value, get_real(*lo), get_real(*hi));
+            return xv;
+        }
+        case TokenType::BUILTIN_FUNC_LERP: {
+            const auto& args = std::get<ASTCall>(ast->data).args;
+            auto a = args[0]->evaluate(evalulator); if(!a) return a;
+            auto b = args[1]->evaluate(evalulator); if(!b) return b;
+            auto t = args[2]->evaluate(evalulator); if(!t) return t;
+            return *a + *t * (*b - *a);
+        }
+        case TokenType::BUILTIN_FUNC_NORM: {
+            auto arg = std::get<ASTCall>(ast->data).args[0]->evaluate(evalulator);
+            if(!arg) return arg;
+            if(const auto* vv = std::get_if<VectorValue>(&*arg)) return vv->magnitude();
+            if(const auto* list = std::get_if<UnitValueList>(&*arg)) {
+                if(list->elements.empty()) return UnitValue{0.0L};
+                long double sum = 0.0L;
+                for(const auto& e : list->elements) sum += e.value * e.value;
+                return UnitValue{(long double)std::sqrt((double)sum), list->elements[0].unit};
+            }
+            return nero::builtins::abs(*arg);
+        }
+        case TokenType::BUILTIN_FUNC_DOT_ARRAY: {
+            const auto& args = std::get<ASTCall>(ast->data).args;
+            auto a = args[0]->evaluate(evalulator); if(!a) return a;
+            auto b = args[1]->evaluate(evalulator); if(!b) return b;
+            if(const auto* va = std::get_if<VectorValue>(&*a))
+                if(const auto* vb = std::get_if<VectorValue>(&*b))
+                    return va->dot(*vb);
+            if(const auto* la = std::get_if<UnitValueList>(&*a))
+                if(const auto* lb = std::get_if<UnitValueList>(&*b)) {
+                    if(la->elements.size() != lb->elements.size())
+                        return std::unexpected<std::string>{"\\dot: arrays must have same length"};
+                    if(la->elements.empty()) return UnitValue{0.0L};
+                    UnitVector result_unit = la->elements[0].unit * lb->elements[0].unit;
+                    long double result = 0.0L;
+                    for(std::size_t i = 0; i < la->elements.size(); i++)
+                        result += la->elements[i].value * lb->elements[i].value;
+                    return UnitValue{result, result_unit};
+                }
+            return std::unexpected<std::string>{"\\dot: requires two arrays or vectors"};
+        }
+        case TokenType::BUILTIN_FUNC_CROSS_ARRAY: {
+            const auto& args = std::get<ASTCall>(ast->data).args;
+            auto a = args[0]->evaluate(evalulator); if(!a) return a;
+            auto b = args[1]->evaluate(evalulator); if(!b) return b;
+            if(const auto* va = std::get_if<VectorValue>(&*a))
+                if(const auto* vb = std::get_if<VectorValue>(&*b))
+                    return va->cross(*vb);
+            if(const auto* la = std::get_if<UnitValueList>(&*a))
+                if(const auto* lb = std::get_if<UnitValueList>(&*b)) {
+                    if(la->elements.size() != 3 || lb->elements.size() != 3)
+                        return std::unexpected<std::string>{"\\cross: arrays must have exactly 3 elements"};
+                    UnitVector cross_unit = la->elements[0].unit * lb->elements[0].unit;
+                    UnitValueList result;
+                    result.elements.push_back({la->elements[1].value * lb->elements[2].value - la->elements[2].value * lb->elements[1].value, cross_unit});
+                    result.elements.push_back({la->elements[2].value * lb->elements[0].value - la->elements[0].value * lb->elements[2].value, cross_unit});
+                    result.elements.push_back({la->elements[0].value * lb->elements[1].value - la->elements[1].value * lb->elements[0].value, cross_unit});
+                    return result;
+                }
+            return std::unexpected<std::string>{"\\cross: requires two 3-element arrays or vectors"};
         }
         // Piecewise
         case TokenType::PIECEWISE_BEGIN: {

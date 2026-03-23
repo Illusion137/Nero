@@ -58,6 +58,7 @@ namespace nero {
         BUILTIN_FUNC_VALUE,
         FORMULA_QUERY,
         PLUS_MINUS,
+        MINUS_PLUS,
         ARRAY_LITERAL,
         INDEX_ACCESS,
         FUNC_CALL,
@@ -107,6 +108,27 @@ namespace nero {
         BUILTIN_FUNC_CELF,  // \CelF(x) — Fahrenheit → Celsius
         BUILTIN_FUNC_FAHRC, // \FahrC(x) — Celsius → Fahrenheit
         BUILTIN_FUNC_FAHRK, // \FahrK(x) — Kelvin → Fahrenheit
+        // Hyperbolic trig
+        BUILTIN_FUNC_SINH,
+        BUILTIN_FUNC_COSH,
+        BUILTIN_FUNC_TANH,
+        BUILTIN_FUNC_SECH,
+        BUILTIN_FUNC_CSCH,
+        BUILTIN_FUNC_COTH,
+        BUILTIN_FUNC_ARCSINH,
+        BUILTIN_FUNC_ARCCOSH,
+        BUILTIN_FUNC_ARCTANH,
+        // Statistical aggregates
+        BUILTIN_FUNC_MEAN,
+        BUILTIN_FUNC_STD,
+        BUILTIN_FUNC_VAR,
+        BUILTIN_FUNC_MEDIAN,
+        // Utilities
+        BUILTIN_FUNC_CLAMP,
+        BUILTIN_FUNC_LERP,
+        BUILTIN_FUNC_NORM,
+        BUILTIN_FUNC_DOT_ARRAY,
+        BUILTIN_FUNC_CROSS_ARRAY,
     };
     
     struct Token {

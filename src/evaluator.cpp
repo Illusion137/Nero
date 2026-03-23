@@ -39,7 +39,9 @@ nero::Evaluator::Evaluator(){
         {"e", "2.718281828459", "1"},
         {"e_c", "1.602*10^{-19}", "\\C"},
         {"e_0", "8.854187817*10^{-12}", "\\frac{\\F}{\\m}"},
+        {"\\epsilon_0", "8.854187817*10^{-12}", "\\frac{\\F}{\\m}"},
         {"k_e", "8.99*10^9", "\\frac{\\N\\m^2}{\\C^2}"},
+        {"\\mu_0", "4\\pi*10^{-7}", "\\frac{\\H}{\\m}"},
         
         {"c", "2.99792458*10^8", "\\frac{\\m}{\\s}"},
         {"m_e", "9.1093837*10^{-31}", "\\kg"},
@@ -47,10 +49,12 @@ nero::Evaluator::Evaluator(){
         {"m_n", "1.674927*10^{-27}", "\\kg"},
         
         {"R_g", "8.31446", "\\J\\K^{-1}\\mol^{-1}"},
+        {"R_a", "0.0821", "\\ATM\\L\\K^{-1}\\mol^{-1}"},
         {"C_K", "273.15", "\\K"},
-        {"h", "6.620607015*10^{-34}", "\\J\\s"},
+        {"h", "6.62607015*10^{-34}", "\\J\\s"},
         {"a_0", "5.291772*10^{-11}", "\\m"},
         {"N_A", "6.022*10^{23}", "\\mol^{-1}"},
+        {"\\alpha", "7.2973525693*10^{-3}", "1"}
     };
     for(const auto &expression : const_expressions){
         insert_constant(expression.identifier, expression);
@@ -517,27 +521,38 @@ void nero::Evaluator::insert_constant(const std::string name, const Expression &
 }
 
 std::vector<Physics::Formula> nero::Evaluator::get_available_formulas(const nero::UnitVector &target, bool filter_dependencies) const noexcept {
-    std::vector<nero::UnitVector> available_units;
+    // Collect (unit, variable_name) pairs
+    std::vector<std::pair<nero::UnitVector, std::string>> unit_name_pairs;
     for(const auto &[key, value]: this->evaluated_variables) {
         if (filter_dependencies && consumed_variables.contains(key)) continue;
         if(const auto* uv = std::get_if<UnitValue>(&value)) {
-            available_units.push_back(uv->unit);
+            unit_name_pairs.push_back({uv->unit, key});
         } else if(const auto* uvl = std::get_if<UnitValueList>(&value)) {
-            for(const auto& e : uvl->elements) available_units.push_back(e.unit);
+            for(const auto& e : uvl->elements) unit_name_pairs.push_back({e.unit, key});
         } else if(const auto* vv = std::get_if<VectorValue>(&value)) {
-            available_units.push_back(vv->x.unit);
-            available_units.push_back(vv->y.unit);
-            available_units.push_back(vv->z.unit);
+            unit_name_pairs.push_back({vv->x.unit, key});
+            unit_name_pairs.push_back({vv->y.unit, key});
+            unit_name_pairs.push_back({vv->z.unit, key});
         }
     }
-    // Deduplicate
-    std::sort(available_units.begin(), available_units.end(), [](const auto& a, const auto& b){
-        return a.vec < b.vec;
+    // Sort by unit vector for deduplication
+    std::sort(unit_name_pairs.begin(), unit_name_pairs.end(), [](const auto& a, const auto& b){
+        return a.first.vec < b.first.vec;
     });
-    available_units.erase(
-        std::unique(available_units.begin(), available_units.end(),
-            [](const auto& a, const auto& b){ return a.vec == b.vec; }),
-        available_units.end());
+    // Deduplicate by unit, keeping first name for each unique unit
+    unit_name_pairs.erase(
+        std::unique(unit_name_pairs.begin(), unit_name_pairs.end(),
+            [](const auto& a, const auto& b){ return a.first.vec == b.first.vec; }),
+        unit_name_pairs.end());
+
+    std::vector<nero::UnitVector> available_units;
+    std::vector<std::string> pool_var_names;
+    available_units.reserve(unit_name_pairs.size());
+    pool_var_names.reserve(unit_name_pairs.size());
+    for (const auto& [unit, name] : unit_name_pairs) {
+        available_units.push_back(unit);
+        pool_var_names.push_back(name);
+    }
 
     // Multi-entry cache keyed by (available units, target, filter flag)
     FormulaCacheKey key;
@@ -548,7 +563,7 @@ std::vector<Physics::Formula> nero::Evaluator::get_available_formulas(const nero
     if (auto it = formula_cache_.find(key); it != formula_cache_.end())
         return it->second;
 
-    auto result = searcher.find_by_units(available_units, target);
+    auto result = searcher.find_by_units(available_units, target, pool_var_names);
     if ((int)formula_cache_.size() >= FORMULA_CACHE_CAP)
         formula_cache_.erase(formula_cache_.begin());
     formula_cache_.emplace(std::move(key), result);

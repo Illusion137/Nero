@@ -273,3 +273,87 @@ export class DimensionalEvaluator {
         }
     }
 }
+// AUTO_GENERATED_START
+export const AUTO_COMMANDS = "pi pm mp theta sqrt sum int hat prod coprod nthroot alpha beta phi lambda sigma delta mu tau epsilon varepsilon Alpha Beta Phi Lambda Sigma Delta Mu Epsilon Tau Re Im nleqslant ngeqslant leqslant";
+export const AUTO_OPERATOR_NAMES = "ln sin cos tan sec csc cot log abs nCr nPr ceil fact floor round arcsin arccos arctan arcsec arccsc arccot val unit min max gcd lcm sig det conj trace FahrC FahrK CelK CelF rad deg sinh cosh tanh sech csch coth arcsinh arccosh arctanh mean std var median clamp lerp norm dot cross ans";
+// AUTO_GENERATED_END
+
+export function array_empty(unit: number[]): boolean {
+    if (unit.length == 0) return true;
+    for (const u of unit) {
+        if (u != 0) return false;
+    }
+    return true;
+}
+export function latex_unit_splitter(latex: string): string {
+    // UNIT_SPLITTER_GENERATED_START
+    const base_units = ["m", "s", "g", "A", "K", "mol", "cd"];
+
+    const derived_units = [
+        "Hz", "N", "Pa", "J", "W", "C", "V", "F", "Ohm", "Omega", "Wb", "T", "H", "S", "L", "eV"
+    ];
+    // UNIT_SPLITTER_GENERATED_END
+
+    const prefixes = [
+        "Y", "Z", "E", "P", "T", "G", "M", "k", "h", "da",
+        "d", "c", "m", "\\mu", "μ", "n", "p", "f", "a", "z", "y"
+    ];
+
+    const all_units = new Set<string>();
+
+    base_units.forEach(unit => all_units.add(unit));
+
+    base_units.forEach(unit => {
+        if (unit !== "kg") {
+            prefixes.forEach(prefix => {
+                all_units.add(prefix + unit);
+            });
+        }
+    });
+
+    // Add derived units
+    derived_units.forEach(unit => all_units.add(unit));
+
+    // Add derived units with prefixes
+    derived_units.forEach(unit => {
+        prefixes.forEach(prefix => {
+            all_units.add(prefix + unit);
+        });
+    });
+
+    all_units.add("nmi");
+    all_units.add("AU");
+    all_units.add("ly");
+    all_units.add("pc");
+    all_units.add("cal");
+    all_units.add("kcal");
+    all_units.add("PSI");
+    all_units.add("in");
+    all_units.add("ft");
+    all_units.add("yd");
+    all_units.add("mi");
+    all_units.add("oz");
+    all_units.add("lb");
+    all_units.add("min");
+    all_units.add("hour");
+    all_units.add("day");
+    all_units.add("month");
+    all_units.add("year");
+    all_units.add("ATM");
+    all_units.add("pH");
+
+    // Sort by length (descending) to match longer units first
+    const sorted_units = Array.from(all_units).sort((a, b) => b.length - a.length);
+
+    // Create regex pattern that matches units not already preceded by backslash
+    // The negative lookbehind checks for backslash not followed by 'mu'
+    // or a regular backslash
+    const pattern = new RegExp(
+        `(?<!\\\\)(?<!\\\\mu )(${sorted_units.map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`,
+        'g'
+    );
+
+    // Replace matched units with backslash + unit
+    const new_unit = latex.replace(pattern, '\\$1').replaceAll('\\\\Omega', '\\Omega');
+    return new_unit;
+}

@@ -51,7 +51,7 @@ const units_map: Record<string, BASE_UNIT> = {
     "Hz": "DIM_HERTZ",
     "S": "DIM_SIEMENS",
     "Ohm": "DIM_OHM",
-    "\\\\Omega": "DIM_OHM",
+    "\\Omega": "DIM_OHM",
     "F": "DIM_FARAD",
     "V": "DIM_VOLT",
     "W": "DIM_WATT",
@@ -88,7 +88,7 @@ const units_prefixes: Record<string, number> = {
 
 const unit_case_map: [string, string][] = [];
 
-const get_unit_case = (unit_name: string, exponent_str: string|number, unit_value: BASE_UNIT) => `UNIT_CASE("${unit_name}", ${exponent_str}, ${unit_value});\n`;
+const get_unit_case = (unit_name: string, exponent_str: string|number, unit_value: BASE_UNIT) => `UNIT_CASE("${unit_name.replaceAll('\\', '\\\\')}", ${exponent_str}, ${unit_value});\n`;
 
 for(const [suffix, unit_value] of Object.entries(units_map)){
     for(let [prefix, prefix_exponent] of Object.entries(units_prefixes)) {
@@ -96,11 +96,41 @@ for(const [suffix, unit_value] of Object.entries(units_map)){
         if(suffix === "eV") prefix_exponent -= 19;
         const exponent_str = suffix === "eV" ? (prefix_exponent === 0 ? '1.60218e-19' : prefix_exponent > 0 ? `1.60218e+${prefix_exponent}` : `1.60218e${prefix_exponent}`)
             : (prefix_exponent === 0 ? '1' : prefix_exponent > 0 ? `1e+${prefix_exponent}` : `1e${prefix_exponent}`);
-        const unit_name = prefix + suffix;
+        let unit_name = prefix + suffix;
+        if(unit_name === "\\Omega") unit_name = "Omega";
         const unit_case = get_unit_case(unit_name, exponent_str, unit_value);
         unit_case_map.push([unit_name, unit_case]);
     }
 }
+
+const greek_letters = [
+    "alpha", "Alpha",
+    "beta", "Beta",
+    "gamma", "Gamma",
+    "delta", "Delta",
+    "epsilon", "Epsilon",
+    "zeta", "Zeta",
+    "eta", "Eta",
+    "theta", "Theta",
+    "iota", "Iota",
+    "kappa", "Kappa",
+    "lambda", "Lambda",
+    "mu", "Mu",
+    "nu", "Nu",
+    "xi", "Xi",
+    "omicron", "Omicron",
+    "pi", "Pi",
+    "rho", "Rho",
+    "sigma", "Sigma",
+    "tau", "Tau",
+    "upsilon", "Upsilon",
+    "phi", "Phi",
+    "chi", "Chi",
+    "psi", "Psi",
+    "omega",
+];
+
+greek_letters.forEach(letter => unit_case_map.push([letter, `GREEK_LETTER_CASE("${letter}");\n`]))
 
 unit_case_map.push(["nmi", get_unit_case("nmi", 1852, "DIM_METER")]);
 unit_case_map.push(["AU", get_unit_case("AU", 1.496e11, "DIM_METER")]);
@@ -125,6 +155,7 @@ unit_case_map.push(["guass", get_unit_case("guass", 1e-4, "DIM_TESLA")]);
 
 let file_str = auto_generated_header;
 file_str += `
+#define GREEK_LETTER_CASE(str) case strint<str>(): return get_indentifier_token();
 #define UNIT_CASE(str, value, unit) case strint<str>(): return advance_with_token(nero::UnitValue{value, unit}, sizeof(str) - 1)
 #define UNIT_CASE_LIST_BEGIN(size) if(remaining_length() >= size) { switch(strint_fn(it, size)) { default: break;
 #define UNIT_CASE_LIST_END(size) }}

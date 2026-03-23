@@ -16,26 +16,38 @@ nero::UnitValue nero::builtins::ln(UnitValue val) {
     return {(long double)std::log((double)val.value)};
 }
 
+// Suppress floating-point noise near zero for trig functions (e.g. sin(π) = 1.22e-16 → 0).
+// Values below this threshold relative to 1 (the output scale of sin/cos/tan) are display noise.
+static constexpr long double TRIG_NOISE_THRESHOLD = 1e-14L;
+
 nero::UnitValue nero::builtins::sin(UnitValue val) {
     if(val.is_complex()) {
         // sin(a+bi) = sin(a)*cosh(b) + i*cos(a)*sinh(b)
         double a = (double)val.value, b = (double)val.imag;
-        return {(long double)(std::sin(a) * std::cosh(b)),
-                (long double)(std::cos(a) * std::sinh(b)),
-                nero::UnitVector{nero::DIMENSIONLESS_VEC}};
+        long double re = (long double)(std::sin(a) * std::cosh(b));
+        long double im = (long double)(std::cos(a) * std::sinh(b));
+        if(std::fabs(re) < TRIG_NOISE_THRESHOLD) re = 0.0L;
+        if(std::fabs(im) < TRIG_NOISE_THRESHOLD) im = 0.0L;
+        return {re, im, nero::UnitVector{nero::DIMENSIONLESS_VEC}};
     }
-    return {(long double)std::sin((double)val.value)};
+    long double result = (long double)std::sin((double)val.value);
+    if(std::fabs(result) < TRIG_NOISE_THRESHOLD) result = 0.0L;
+    return {result};
 }
 
 nero::UnitValue nero::builtins::cos(UnitValue val) {
     if(val.is_complex()) {
         // cos(a+bi) = cos(a)*cosh(b) - i*sin(a)*sinh(b)
         double a = (double)val.value, b = (double)val.imag;
-        return {(long double)(std::cos(a) * std::cosh(b)),
-                (long double)(-std::sin(a) * std::sinh(b)),
-                nero::UnitVector{nero::DIMENSIONLESS_VEC}};
+        long double re = (long double)(std::cos(a) * std::cosh(b));
+        long double im = (long double)(-std::sin(a) * std::sinh(b));
+        if(std::fabs(re) < TRIG_NOISE_THRESHOLD) re = 0.0L;
+        if(std::fabs(im) < TRIG_NOISE_THRESHOLD) im = 0.0L;
+        return {re, im, nero::UnitVector{nero::DIMENSIONLESS_VEC}};
     }
-    return {(long double)std::cos((double)val.value)};
+    long double result = (long double)std::cos((double)val.value);
+    if(std::fabs(result) < TRIG_NOISE_THRESHOLD) result = 0.0L;
+    return {result};
 }
 
 nero::UnitValue nero::builtins::tan(UnitValue val) {
@@ -45,7 +57,9 @@ nero::UnitValue nero::builtins::tan(UnitValue val) {
         auto c = cos(val);
         return s / c;
     }
-    return {(long double)std::tan((double)val.value)};
+    long double result = (long double)std::tan((double)val.value);
+    if(std::fabs(result) < TRIG_NOISE_THRESHOLD) result = 0.0L;
+    return {result};
 }
 
 nero::EValue nero::builtins::sec(double value) {
@@ -151,4 +165,31 @@ nero::EValue nero::builtins::arccsc(double value) {
 }
 nero::EValue nero::builtins::arccot(double value) {
     return nero::UnitValue{1.0L / (long double)std::atan(value)};
+}
+nero::EValue nero::builtins::sinh(double value) {
+    return nero::UnitValue{(long double)std::sinh(value)};
+}
+nero::EValue nero::builtins::cosh(double value) {
+    return nero::UnitValue{(long double)std::cosh(value)};
+}
+nero::EValue nero::builtins::tanh(double value) {
+    return nero::UnitValue{(long double)std::tanh(value)};
+}
+nero::EValue nero::builtins::sech(double value) {
+    return nero::UnitValue{1.0L / (long double)std::cosh(value)};
+}
+nero::EValue nero::builtins::csch(double value) {
+    return nero::UnitValue{1.0L / (long double)std::sinh(value)};
+}
+nero::EValue nero::builtins::coth(double value) {
+    return nero::UnitValue{1.0L / (long double)std::tanh(value)};
+}
+nero::EValue nero::builtins::arcsinh(double value) {
+    return nero::UnitValue{(long double)std::asinh(value)};
+}
+nero::EValue nero::builtins::arccosh(double value) {
+    return nero::UnitValue{(long double)std::acosh(value)};
+}
+nero::EValue nero::builtins::arctanh(double value) {
+    return nero::UnitValue{(long double)std::atanh(value)};
 }
