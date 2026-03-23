@@ -25,15 +25,10 @@ jobs:
 
       - name: Run code generation
         run: |
-          npx ts-node unit_gen/unit_gen.ts
+          npx ts-node scripts/unit_gen.ts
           npx ts-node -T formula_gen/formula_extractor.ts
           npx ts-node -T formula_gen/formulas_to_cpp.ts
-
-      - name: Generate interface constants
-        run: npx ts-node -T scripts/gen_interface_consts.ts
-
-      - name: Generate README tables
-        run: npx ts-node -T scripts/gen_readme_tables.ts
+          npx ts-node -T scripts/constants_gen.ts
 
       - name: Set up Emscripten
         uses: mymindstorm/setup-emsdk@v14

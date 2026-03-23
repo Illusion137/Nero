@@ -11,8 +11,8 @@ const auto formula_database = Physics::FormulaDatabase{};
 
 struct UnitVecHash {
     std::size_t operator()(const nero::UnitVec& v) const noexcept {
-        std::size_t h = 14695981039346656037ULL;
-        for (int8_t b : v) { h ^= static_cast<uint8_t>(b); h *= 1099511628211ULL; }
+        std::size_t h = static_cast<std::size_t>(14695981039346656037ULL);
+        for (int8_t b : v) { h ^= static_cast<uint8_t>(b); h *= static_cast<std::size_t>(1099511628211ULL); }
         return h;
     }
 };

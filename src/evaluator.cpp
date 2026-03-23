@@ -35,6 +35,7 @@ nero::Evaluator::~Evaluator() = default;
 
 nero::Evaluator::Evaluator(){
     std::vector<nero::AssignExpression> const_expressions = {
+    // CONSTANTS_GENERATED_START
         {"g", "9.8", "\\frac{\\m}{\\s^2}"},
         {"e", "2.718281828459", "1"},
         {"e_c", "1.602*10^{-19}", "\\C"},
@@ -42,19 +43,18 @@ nero::Evaluator::Evaluator(){
         {"epsilon_0", "8.854187817*10^{-12}", "\\frac{\\F}{\\m}"},
         {"k_e", "8.99*10^9", "\\frac{\\N\\m^2}{\\C^2}"},
         {"mu_0", "4\\pi*10^{-7}", "\\frac{\\H}{\\m}"},
-        
         {"c", "2.99792458*10^8", "\\frac{\\m}{\\s}"},
         {"m_e", "9.1093837*10^{-31}", "\\kg"},
         {"m_p", "1.67262192*10^{-27}", "\\kg"},
         {"m_n", "1.674927*10^{-27}", "\\kg"},
-        
         {"R_g", "8.31446", "\\J\\K^{-1}\\mol^{-1}"},
         {"R_a", "0.0821", "\\ATM\\L\\K^{-1}\\mol^{-1}"},
         {"C_K", "273.15", "\\K"},
         {"h", "6.62607015*10^{-34}", "\\J\\s"},
         {"a_0", "5.291772*10^{-11}", "\\m"},
         {"N_A", "6.022*10^{23}", "\\mol^{-1}"},
-        {"alpha", "7.2973525693*10^{-3}", "1"}
+        {"alpha", "7.2973525693*10^{-3}", "1"},
+// CONSTANTS_GENERATED_END
     };
     for(const auto &expression : const_expressions){
         insert_constant(expression.identifier, expression);
