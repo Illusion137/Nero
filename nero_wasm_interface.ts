@@ -288,7 +288,7 @@ export function array_empty(unit: number[]): boolean {
 export function latex_unit_splitter(latex: string): string {
     // UNIT_SPLITTER_GENERATED_START
     const base_units = ["m", "g", "s", "A", "K", "mol", "cd"];
-    const derived_units = ["N", "J", "Pa", "C", "Hz", "S", "Ohm", "Omega", "F", "V", "W", "Wb", "T", "H", "L", "eV"];
+    const derived_units = ["N", "J", "Pa", "C", "Hz", "S", "Ohm", "\\Omega", "F", "V", "W", "Wb", "T", "H", "L", "eV"];
     const singleton_units = ["nmi", "AU", "ly", "pc", "cal", "kcal", "PSI", "in", "ft", "yd", "mi", "oz", "lb", "min", "hour", "day", "month", "year", "ATM", "gauss"];
     // UNIT_SPLITTER_GENERATED_END
 
@@ -334,6 +334,6 @@ export function latex_unit_splitter(latex: string): string {
     );
 
     // Replace matched units with backslash + unit
-    const new_unit = latex.replace(pattern, '\\$1').replaceAll('\\\\Omega', '\\Omega');
+    const new_unit = latex.replace(pattern, '\\$1').replaceAll('\\\\', '\\');
     return new_unit;
 }

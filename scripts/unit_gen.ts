@@ -79,7 +79,6 @@ const units_prefixes: Record<string, number> = {
     "M": 6,
     "k": 3,
     "h": 2,
-    "da": 1,
     "d": -1,
     "c": -2,
     "m": -3,
@@ -102,7 +101,7 @@ for(const [suffix, unit_value] of Object.entries(units_map)){
         if(suffix === "eV") prefix_exponent -= 19;
         const exponent_str = suffix === "eV" ? (prefix_exponent === 0 ? '1.60218e-19' : prefix_exponent > 0 ? `1.60218e+${prefix_exponent}` : `1.60218e${prefix_exponent}`)
             : (prefix_exponent === 0 ? '1' : prefix_exponent > 0 ? `1e+${prefix_exponent}` : `1e${prefix_exponent}`);
-        let unit_name = prefix + suffix;
+        let unit_name = (prefix === "mu " && suffix === "\\Omega") ? "mu\\Omega" : (prefix + suffix);
         if(unit_name === "\\Omega") unit_name = "Omega";
         const unit_case = get_unit_case(unit_name, exponent_str, unit_value);
         unit_case_map.push([unit_name, unit_case]);
@@ -190,7 +189,7 @@ const fmt = (arr: string[]) => `[${arr.map(u => JSON.stringify(u)).join(", ")}]`
 const unit_splitter_block = [
     "    // UNIT_SPLITTER_GENERATED_START",
     `    const base_units = ${fmt(Object.keys(base_units_map))};`,
-    `    const derived_units = ${fmt(Object.keys(derived_units_map).map(u => u === "\\Omega" ? "Omega" : u))};`,
+    `    const derived_units = ${fmt(Object.keys(derived_units_map))};`,
     `    const singleton_units = ${fmt(singleton_unit_names)};`,
     "    // UNIT_SPLITTER_GENERATED_END",
 ].join("\n");
