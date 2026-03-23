@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 const auto_generated_header = 
 `/************************************************************
@@ -36,7 +37,7 @@ type BASE_UNIT = "DIM_METER"
     | "DIM_LITER";
 
 
-const units_map: Record<string, BASE_UNIT> = {
+const base_units_map: Record<string, BASE_UNIT> = {
     "m": "DIM_METER",
     "g": "DIM_KILOGRAM",
     "s": "DIM_SECOND",
@@ -44,6 +45,9 @@ const units_map: Record<string, BASE_UNIT> = {
     "K": "DIM_KELVIN",
     "mol": "DIM_MOLE",
     "cd": "DIM_CANDELA",
+} as const;
+
+const derived_units_map: Record<string, BASE_UNIT> = {
     "N": "DIM_NEWTON",
     "J": "DIM_JOULE",
     "Pa": "DIM_PASCAL",
@@ -59,8 +63,10 @@ const units_map: Record<string, BASE_UNIT> = {
     "T": "DIM_TESLA",
     "H": "DIM_HENRY",
     "L": "DIM_LITER",
-    "eV": "DIM_JOULE"
+    "eV": "DIM_JOULE",
 } as const;
+
+const units_map: Record<string, BASE_UNIT> = { ...base_units_map, ...derived_units_map };
 
 const units_prefixes: Record<string, number> = {
     "": 0,
@@ -73,7 +79,6 @@ const units_prefixes: Record<string, number> = {
     "M": 6,
     "k": 3,
     "h": 2,
-    "da": 1,
     "d": -1,
     "c": -2,
     "m": -3,
@@ -96,7 +101,7 @@ for(const [suffix, unit_value] of Object.entries(units_map)){
         if(suffix === "eV") prefix_exponent -= 19;
         const exponent_str = suffix === "eV" ? (prefix_exponent === 0 ? '1.60218e-19' : prefix_exponent > 0 ? `1.60218e+${prefix_exponent}` : `1.60218e${prefix_exponent}`)
             : (prefix_exponent === 0 ? '1' : prefix_exponent > 0 ? `1e+${prefix_exponent}` : `1e${prefix_exponent}`);
-        let unit_name = prefix + suffix;
+        let unit_name = (prefix === "mu " && suffix === "\\Omega") ? "mu\\Omega" : (prefix + suffix);
         if(unit_name === "\\Omega") unit_name = "Omega";
         const unit_case = get_unit_case(unit_name, exponent_str, unit_value);
         unit_case_map.push([unit_name, unit_case]);
@@ -132,26 +137,32 @@ const greek_letters = [
 
 greek_letters.forEach(letter => unit_case_map.push([letter, `GREEK_LETTER_CASE("${letter}");\n`]))
 
-unit_case_map.push(["nmi", get_unit_case("nmi", 1852, "DIM_METER")]);
-unit_case_map.push(["AU", get_unit_case("AU", 1.496e11, "DIM_METER")]);
-unit_case_map.push(["ly", get_unit_case("ly", 9.461e15, "DIM_METER")]);
-unit_case_map.push(["pc", get_unit_case("pc", 3.086e16, "DIM_METER")]);
-unit_case_map.push(["cal", get_unit_case("cal", 4.184, "DIM_JOULE")]);
-unit_case_map.push(["kcal", get_unit_case("kcal", 4184, "DIM_JOULE")]);
-unit_case_map.push(["PSI", get_unit_case("PSI", 6894.76, "DIM_PASCAL")]);
-unit_case_map.push(["in", get_unit_case("in", 0.0254, "DIM_METER")]);
-unit_case_map.push(["ft", get_unit_case("ft", 0.3048, "DIM_METER")]);
-unit_case_map.push(["yd", get_unit_case("yd", 0.9144, "DIM_METER")]);
-unit_case_map.push(["mi", get_unit_case("mi", 1609.34, "DIM_METER")]);
-unit_case_map.push(["oz", get_unit_case("oz", 0.0283495, "DIM_KILOGRAM")]);
-unit_case_map.push(["lb", get_unit_case("lb", 0.453592, "DIM_KILOGRAM")]);
-unit_case_map.push(["min", get_unit_case("min", 60, "DIM_SECOND")]);
-unit_case_map.push(["hour", get_unit_case("hour", 60 * 60, "DIM_SECOND")]);
-unit_case_map.push(["day", get_unit_case("day", 60 * 60 * 24, "DIM_SECOND")]);
-unit_case_map.push(["month", get_unit_case("month", 60 * 60 * 24 * 30, "DIM_SECOND")]);
-unit_case_map.push(["year", get_unit_case("year", 60 * 60 * 364, "DIM_SECOND")]);
-unit_case_map.push(["ATM", get_unit_case("ATM", 101325, "DIM_PASCAL")]);
-unit_case_map.push(["gauss", get_unit_case("gauss", 1e-4, "DIM_TESLA")]);
+const singleton_unit_names: string[] = [];
+const push_singleton = (name: string, exponent: string | number, unit: BASE_UNIT) => {
+    unit_case_map.push([name, get_unit_case(name, exponent, unit)]);
+    singleton_unit_names.push(name);
+};
+
+push_singleton("nmi", 1852, "DIM_METER");
+push_singleton("AU", 1.496e11, "DIM_METER");
+push_singleton("ly", 9.461e15, "DIM_METER");
+push_singleton("pc", 3.086e16, "DIM_METER");
+push_singleton("cal", 4.184, "DIM_JOULE");
+push_singleton("kcal", 4184, "DIM_JOULE");
+push_singleton("PSI", 6894.76, "DIM_PASCAL");
+push_singleton("in", 0.0254, "DIM_METER");
+push_singleton("ft", 0.3048, "DIM_METER");
+push_singleton("yd", 0.9144, "DIM_METER");
+push_singleton("mi", 1609.34, "DIM_METER");
+push_singleton("oz", 0.0283495, "DIM_KILOGRAM");
+push_singleton("lb", 0.453592, "DIM_KILOGRAM");
+push_singleton("min", 60, "DIM_SECOND");
+push_singleton("hour", 60 * 60, "DIM_SECOND");
+push_singleton("day", 60 * 60 * 24, "DIM_SECOND");
+push_singleton("month", 60 * 60 * 24 * 30, "DIM_SECOND");
+push_singleton("year", 60 * 60 * 364, "DIM_SECOND");
+push_singleton("ATM", 101325, "DIM_PASCAL");
+push_singleton("gauss", 1e-4, "DIM_TESLA");
 
 let file_str = auto_generated_header;
 file_str += `
@@ -172,3 +183,22 @@ for(const key of keys){
 }
 
 fs.writeFileSync('src/gen/lexer_units.ghpp', file_str);
+
+// Inject UNIT_SPLITTER block directly into nero_wasm_interface.ts
+const fmt = (arr: string[]) => `[${arr.map(u => JSON.stringify(u)).join(", ")}]`;
+const unit_splitter_block = [
+    "    // UNIT_SPLITTER_GENERATED_START",
+    `    const base_units = ${fmt(Object.keys(base_units_map))};`,
+    `    const derived_units = ${fmt(Object.keys(derived_units_map))};`,
+    `    const singleton_units = ${fmt(singleton_unit_names)};`,
+    "    // UNIT_SPLITTER_GENERATED_END",
+].join("\n");
+
+const interface_path = path.resolve(__dirname, '..', 'nero_wasm_interface.ts');
+let interface_ts = fs.readFileSync(interface_path, "utf-8");
+interface_ts = interface_ts.replace(
+    /[ \t]*\/\/ UNIT_SPLITTER_GENERATED_START[\s\S]*?\/\/ UNIT_SPLITTER_GENERATED_END/,
+    unit_splitter_block,
+);
+fs.writeFileSync(interface_path, interface_ts, "utf-8");
+console.log("✓ Updated nero_wasm_interface.ts UNIT_SPLITTER block");

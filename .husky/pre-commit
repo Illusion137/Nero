@@ -8,6 +8,9 @@ cmake --build build --parallel > /dev/null
 echo "==> Running tests..."
 ./build/NeroTest
 
+echo "==> Building..."
+sh build.sh
+
 echo "==> Updating README benchmarks..."
 python3 scripts/update_bench_readme.py
 git add README.md public/benchmarks.png

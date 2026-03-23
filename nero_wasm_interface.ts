@@ -273,10 +273,8 @@ export class DimensionalEvaluator {
         }
     }
 }
-// AUTO_GENERATED_START
 export const AUTO_COMMANDS = "pi pm mp theta sqrt sum int hat prod coprod nthroot alpha beta phi lambda sigma delta mu tau epsilon varepsilon Alpha Beta Phi Lambda Sigma Delta Mu Epsilon Tau Re Im nleqslant ngeqslant leqslant";
 export const AUTO_OPERATOR_NAMES = "arcsinh arccosh arctanh arcsin arccos arctan median floor round clamp cross sqrt ceil fact prod sinh cosh tanh sech csch coth lerp norm mean conj sin cos tan sec csc cot abs nCr nPr log sum int min max gcd lcm sig det std var dot deg ln Re Im arcsec arccsc arccot trace FahrC FahrK unit CelK CelF val rad tr";
-// AUTO_GENERATED_END
 
 export function array_empty(unit: number[]): boolean {
     if (unit.length == 0) return true;
@@ -287,9 +285,9 @@ export function array_empty(unit: number[]): boolean {
 }
 export function latex_unit_splitter(latex: string): string {
     // UNIT_SPLITTER_GENERATED_START
-    const base_units = ["m", "s", "g", "A", "K", "mol", "cd"];
-
-    const derived_units = ["da\\\\Omega", "Y\\\\Omega", "Z\\\\Omega", "E\\\\Omega", "P\\\\Omega", "T\\\\Omega", "G\\\\Omega", "M\\\\Omega", "k\\\\Omega", "h\\\\Omega", "d\\\\Omega", "c\\\\Omega", "m\\\\Omega", "n\\\\Omega", "p\\\\Omega", "f\\\\Omega", "a\\\\Omega", "z\\\\Omega", "y\\\\Omega", "damol", "daOhm", "Omega", "month", "gauss", "Ymol", "Zmol", "Emol", "Pmol", "Tmol", "Gmol", "Mmol", "kmol", "hmol", "dmol", "cmol", "mmol", "nmol", "pmol", "fmol", "amol", "zmol", "ymol", "dacd", "daPa", "daHz", "YOhm", "ZOhm", "EOhm", "POhm", "TOhm", "GOhm", "MOhm", "kOhm", "hOhm", "dOhm", "cOhm", "mOhm", "nOhm", "pOhm", "fOhm", "aOhm", "zOhm", "yOhm", "daWb", "daeV", "kcal", "hour", "year", "dam", "dag", "das", "daA", "daK", "Ycd", "Zcd", "Ecd", "Pcd", "Tcd", "Gcd", "Mcd", "kcd", "hcd", "dcd", "ccd", "mcd", "ncd", "pcd", "fcd", "acd", "zcd", "ycd", "daN", "daJ", "YPa", "ZPa", "EPa", "PPa", "TPa", "GPa", "MPa", "kPa", "hPa", "dPa", "cPa", "mPa", "nPa", "pPa", "fPa", "aPa", "zPa", "yPa", "daC", "YHz", "ZHz", "EHz", "PHz", "THz", "GHz", "MHz", "kHz", "hHz", "dHz", "cHz", "mHz", "nHz", "pHz", "fHz", "aHz", "zHz", "yHz", "daS", "Ohm", "daF", "daV", "daW", "YWb", "ZWb", "EWb", "PWb", "TWb", "GWb", "MWb", "kWb", "hWb", "dWb", "cWb", "mWb", "nWb", "pWb", "fWb", "aWb", "zWb", "yWb", "daT", "daH", "daL", "YeV", "ZeV", "EeV", "PeV", "TeV", "GeV", "MeV", "keV", "heV", "deV", "ceV", "meV", "neV", "peV", "feV", "aeV", "zeV", "yeV", "nmi", "cal", "PSI", "min", "day", "ATM", "Ym", "Zm", "Em", "Pm", "Tm", "Gm", "Mm", "km", "hm", "dm", "cm", "mm", "nm", "pm", "fm", "am", "zm", "ym", "Yg", "Zg", "Eg", "Pg", "Tg", "Gg", "Mg", "kg", "hg", "dg", "cg", "mg", "ng", "pg", "fg", "ag", "zg", "yg", "Ys", "Zs", "Es", "Ps", "Ts", "Gs", "Ms", "ks", "hs", "ds", "cs", "ms", "ns", "ps", "fs", "as", "zs", "ys", "YA", "ZA", "EA", "PA", "TA", "GA", "MA", "kA", "hA", "dA", "cA", "mA", "nA", "pA", "fA", "aA", "zA", "yA", "YK", "ZK", "EK", "PK", "TK", "GK", "MK", "kK", "hK", "dK", "cK", "mK", "nK", "pK", "fK", "aK", "zK", "yK", "YN", "ZN", "EN", "PN", "TN", "GN", "MN", "kN", "hN", "dN", "cN", "mN", "nN", "pN", "fN", "aN", "zN", "yN", "YJ", "ZJ", "EJ", "PJ", "TJ", "GJ", "MJ", "kJ", "hJ", "dJ", "cJ", "mJ", "nJ", "pJ", "fJ", "aJ", "zJ", "yJ", "Pa", "YC", "ZC", "EC", "PC", "TC", "GC", "MC", "kC", "hC", "dC", "cC", "mC", "nC", "pC", "fC", "aC", "zC", "yC", "Hz", "YS", "ZS", "ES", "PS", "TS", "GS", "MS", "kS", "hS", "dS", "cS", "mS", "nS", "pS", "fS", "aS", "zS", "yS", "YF", "ZF", "EF", "PF", "TF", "GF", "MF", "kF", "hF", "dF", "cF", "mF", "nF", "pF", "fF", "aF", "zF", "yF", "YV", "ZV", "EV", "PV", "TV", "GV", "MV", "kV", "hV", "dV", "cV", "mV", "nV", "pV", "fV", "aV", "zV", "yV", "YW", "ZW", "EW", "PW", "TW", "GW", "MW", "kW", "hW", "dW", "cW", "mW", "nW", "pW", "fW", "aW", "zW", "yW", "Wb", "YT", "ZT", "ET", "PT", "TT", "GT", "MT", "kT", "hT", "dT", "cT", "mT", "nT", "pT", "fT", "aT", "zT", "yT", "YH", "ZH", "EH", "PH", "TH", "GH", "MH", "kH", "hH", "dH", "cH", "mH", "nH", "pH", "fH", "aH", "zH", "yH", "YL", "ZL", "EL", "PL", "TL", "GL", "ML", "kL", "hL", "dL", "cL", "mL", "nL", "pL", "fL", "aL", "zL", "yL", "eV", "AU", "ly", "pc", "in", "ft", "yd", "mi", "oz", "lb"];
+    const base_units = ["m", "g", "s", "A", "K", "mol", "cd"];
+    const derived_units = ["N", "J", "Pa", "C", "Hz", "S", "Ohm", "\\Omega", "F", "V", "W", "Wb", "T", "H", "L", "eV"];
+    const singleton_units = ["nmi", "AU", "ly", "pc", "cal", "kcal", "PSI", "in", "ft", "yd", "mi", "oz", "lb", "min", "hour", "day", "month", "year", "ATM", "gauss"];
     // UNIT_SPLITTER_GENERATED_END
 
     const prefixes = [
@@ -319,25 +317,7 @@ export function latex_unit_splitter(latex: string): string {
         });
     });
 
-    all_units.add("nmi");
-    all_units.add("AU");
-    all_units.add("ly");
-    all_units.add("pc");
-    all_units.add("cal");
-    all_units.add("kcal");
-    all_units.add("PSI");
-    all_units.add("in");
-    all_units.add("ft");
-    all_units.add("yd");
-    all_units.add("mi");
-    all_units.add("oz");
-    all_units.add("lb");
-    all_units.add("min");
-    all_units.add("hour");
-    all_units.add("day");
-    all_units.add("month");
-    all_units.add("year");
-    all_units.add("ATM");
+    singleton_units.forEach(unit => all_units.add(unit));
     all_units.add("pH");
 
     // Sort by length (descending) to match longer units first
@@ -352,6 +332,6 @@ export function latex_unit_splitter(latex: string): string {
     );
 
     // Replace matched units with backslash + unit
-    const new_unit = latex.replace(pattern, '\\$1').replaceAll('\\\\Omega', '\\Omega');
+    const new_unit = latex.replace(pattern, '\\$1').replaceAll('\\\\', '\\');
     return new_unit;
 }

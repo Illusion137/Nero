@@ -9,6 +9,7 @@ A C++23 library for evaluating LaTeX math expressions with builtin dimensional a
 For a demo of Nero being used in a React application, see [Everett](https://github.com/Illusion137/Everett). For the demo of Everett, see [Everett Demo](https://sumii.me/everett.html).
 
 ## Installation as Library
+
 ```bash
 git clone https://github.com/Illusion137/Nero.git
 ```
@@ -32,6 +33,7 @@ C:\msys64\usr\bin\bash.exe -lc "cd '$(pwd)' && cmake --build build"
 ```
 
 ### Add built WASM library to HTML
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +42,7 @@ C:\msys64\usr\bin\bash.exe -lc "cd '$(pwd)' && cmake --build build"
 		<link rel="icon" type="image/webp" href="/nero.webp" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<!-- [ADD THIS LINE BELOW] -->
-        <script src="/wasm/Nero.js"></script>
+		<script src="/wasm/Nero.js"></script>
 		<title>Everett</title>
 	</head>
 	<body class="vscode-dark">
@@ -48,9 +50,10 @@ C:\msys64\usr\bin\bash.exe -lc "cd '$(pwd)' && cmake --build build"
 		<script type="module" src="/src/main.tsx"></script>
 	</body>
 </html>
-
 ```
+
 ### Example File Structure
+
 ```
 .
 ├── index.html
@@ -90,7 +93,9 @@ target_link_libraries(your_target PRIVATE NeroLib)
 ```
 
 ## Usage
+
 ### Evaluate Single Expression
+
 ```cpp
 #include "evaluator.hpp"
 
@@ -109,6 +114,7 @@ if (auto p = std::get_if<nero::UnitValueList>(&result.value())) return p->elemen
 // Boolean value
 if (auto p = std::get_if<nero::BooleanValue>(&result.value())) return p->value ? 1.0L : 0.0L;
 ```
+
 Notice how the value can be many things. Not limited to just these; values can also be `UnitValue`, `UnitValueList`, `BooleanValue`, `Function`, `VoidValue`, `VectorValue`.
 
 ## What it does
@@ -122,70 +128,67 @@ z = x * y       → 17.976 (sig figs: 2)
 ```
 
 Supported:
-- Arithmetic: `+`, `-`, `*`, `/`, `^`, `\frac{}{}`, `\sqrt{}`, `\sqrt[n]{}`, `\div`
-- Trig / log: `\sin`, `\cos`, `\tan`, `\sec`, `\csc`, `\cot`, `\ln`, `\log`, `\log_b`
-- Combinatorics: `n!`, `\nCr`, `\nPr`
-- Complex numbers (imaginary results propagate automatically)
-- Arrays: `x = [1, 2, 3]`, `x[0]`
-- Piecewise: `\begin{cases} ... \end{cases}`
-- Summation / product: `\sum_{i=1}^{n}`, `\prod_{i=1}^{n}`
-- Plus/minus: `a \pm b` (returns two-element array)
-- Custom functions: `f(x) = x^2`, `f'(x)`, `\frac{d}{dx}(expr)`
-- Numeric integration: `\int_{a}^{b} f(x) \, dx`
-- Logical / comparison: `<`, `>`, `\leq`, `\geq`, `\land`, `\lor`, `\lnot`
-- Modulo: `a \mod b`
-- Percentages: `25\%`
-- Hex / binary literals: `0xFF`, `0b1010`
-- Significant figures: propagated through arithmetic; `\sig(x)` returns the count
-- Unit conversion via `conversion_unit_expr` on the `Expression` struct
-- `\operatorname{ans}` holds the last evaluated result
+
+-   Arithmetic: `+`, `-`, `*`, `/`, `^`, `\frac{}{}`, `\sqrt{}`, `\sqrt[n]{}`, `\div`
+-   Trig / log: `\sin`, `\cos`, `\tan`, `\sec`, `\csc`, `\cot`, `\ln`, `\log`, `\log_b`
+-   Combinatorics: `n!`, `\nCr`, `\nPr`
+-   Complex numbers (imaginary results propagate automatically)
+-   Arrays: `x = [1, 2, 3]`, `x[0]`
+-   Piecewise: `\begin{cases} ... \end{cases}`
+-   Summation / product: `\sum_{i=1}^{n}`, `\prod_{i=1}^{n}`
+-   Plus/minus: `a \pm b` (returns two-element array)
+-   Custom functions: `f(x) = x^2`, `f'(x)`, `\frac{d}{dx}(expr)`
+-   Numeric integration: `\int_{a}^{b} f(x) \, dx`
+-   Logical / comparison: `<`, `>`, `\leq`, `\geq`, `\land`, `\lor`, `\lnot`
+-   Modulo: `a \mod b`
+-   Percentages: `25\%`
+-   Hex / binary literals: `0xFF`, `0b1010`
+-   Significant figures: propagated through arithmetic; `\sig(x)` returns the count
+-   Unit conversion via `conversion_unit_expr` on the `Expression` struct
+-   `\operatorname{ans}` holds the last evaluated result
 
 ### Constants
 
 <!-- CONSTANTS_START -->
-| Constant                                                               | Name                     |
-| ---------------------------------------------------------------------- | ------------------------ |
-| $\pi = 3.14159265358979323846 \cdot \mathrm{1}$                        | Pi                       |
-| $\mathrm{e} = 2.718281828459 \cdot \mathrm{1}$                         | Euler's Constant         |
-| $\mathrm{e_c} = 1.602 \cdot 10^{-19} \cdot \mathrm{C}$                 | Elementary Charge        |
-| $\mathrm{e_0} = 8.854187817 \cdot 10^{-12} \cdot \mathrm{\frac{F}{m}}$ | Electric Constant        |
-| $\mathrm{k_e} = 8.99 \cdot 10^9 \cdot \mathrm{\frac{Nm^2}{C^2}}$       | Coulomb constant         |
-| $\mathrm{c} = 2.99792458 \cdot 10^8 \cdot \mathrm{\frac{m}{s}}$        | Speed of light in vacuum |
-| $\mathrm{m_e} = 9.1093837 \cdot 10^{-31} \cdot \mathrm{kg}$            | Electron mass            |
-| $\mathrm{m_p} = 1.67262192 \cdot 10^{-27} \cdot \mathrm{kg}$           | Proton mass              |
-| $\mathrm{m_n} = 1.674927 \cdot 10^{-27} \cdot \mathrm{kg}$             | Neutron mass             |
-| $\mathrm{R_g} = 8.31446 \cdot \mathrm{JK^{-1}mol^{-1}}$                | Ideal gas constant       |
-| $\mathrm{R_a} = 0.0821 \cdot \mathrm{L\,atm\,K^{-1}\,mol^{-1}}$        | Ideal gas constant (atm) |
-| $\mathrm{C_K} = 273.15 \cdot \mathrm{K}$                               | Celsius–Kelvin offset    |
-| $\mathrm{h} = 6.62607015 \cdot 10^{-34} \cdot \mathrm{Js}$             | Planck constant          |
-| $\mathrm{a_0} = 5.291772 \cdot 10^{-11} \cdot \mathrm{m}$              | Bohr radius              |
-| $\mathrm{N_A} = 6.022 \cdot 10^{23} \cdot \mathrm{mol^{-1}}$           | Avogadro constant        |
-| $\epsilon_0 = 8.854187817 \cdot 10^{-12} \cdot \mathrm{F\,m^{-1}}$     | Vacuum permittivity      |
-| $\mu_0 = 4\pi \cdot 10^{-7} \cdot \mathrm{H\,m^{-1}}$                  | Vacuum permeability      |
-| $\alpha = 7.2973525693 \cdot 10^{-3}$                                  | Fine-structure constant  |
+| Constant       | Description                                    | Value                                              |
+| -------------- | ---------------------------------------------- | -------------------------------------------------- |
+| $\mathrm{g}$   | Gravitational acceleration                     | $9.8 \ \frac{m}{s^2}$                              |
+| $\mathrm{e}$   | Euler's number                                 | $2.718281828459$                                   |
+| $\mathrm{e_c}$ | Elementary charge                              | $1.602 \cdot 10^{-19} \ C$                         |
+| $\mathrm{e_0}$ | Electric constant (permittivity of free space) | $8.854187817 \cdot 10^{-12} \ \frac{F}{m}$         |
+| $\epsilon_0$   | Vacuum permittivity (alias for e_0)            | $8.854187817 \cdot 10^{-12} \ \frac{F}{m}$         |
+| $\mathrm{k_e}$ | Coulomb constant                               | $8.99 \cdot 10^9 \ \frac{Nm^2}{C^2}$               |
+| $\mu_0$        | Vacuum permeability                            | $4\pi \cdot 10^{-7} \ \frac{H}{m}$                 |
+| $\mathrm{c}$   | Speed of light in vacuum                       | $2.99792458 \cdot 10^8 \ \frac{m}{s}$              |
+| $\mathrm{m_e}$ | Electron mass                                  | $9.1093837 \cdot 10^{-31} \ kg$                    |
+| $\mathrm{m_p}$ | Proton mass                                    | $1.67262192 \cdot 10^{-27} \ kg$                   |
+| $\mathrm{m_n}$ | Neutron mass                                   | $1.674927 \cdot 10^{-27} \ kg$                     |
+| $\mathrm{R_g}$ | Ideal gas constant                             | $8.31446 \ JK^{-1}mol^{-1}$                        |
+| $\mathrm{R_a}$ | Ideal gas constant (atm units)                 | $0.0821 \ ATMLK^{-1}mol^{-1}$                      |
+| $\mathrm{C_K}$ | Celsius->Kelvin offset                         | $273.15 \ K$                                       |
+| $\mathrm{h}$   | Planck constant                                | $6.62607015 \cdot 10^{-34} \ Js$                   |
+| $\mathrm{a_0}$ | Bohr radius                                    | $5.291772 \cdot 10^{-11} \ m$                      |
+| $\mathrm{N_A}$ | Avogadro constant                              | $6.022 \cdot 10^{23} \ mol^{-1}$                   |
+| $\alpha$       | Fine-structure constant                        | $7.2973525693 \cdot 10^{-3}$                       |
 <!-- CONSTANTS_END -->
 
 ### Functions
 
-<!-- FUNCTIONS_START -->
 #### Basic Math
 
 `sqrt` `ceil` `floor` `round` `abs`
 
 #### Trigonometric
 
-`sin` `cos` `tan`
-`sec` `csc` `cot`
+`sin` `cos` `tan` `sec` `csc` `cot`
 
 #### Inverse Trigonometric
 
-`arcsin` `arccos` `arctan`
-`arcsec` `arccsc` `arccot`
+`arcsin` `arccos` `arctan` `arcsec` `arccsc` `arccot`
 
 #### Hyperbolic
 
-`sinh` `cosh` `tanh`
-`sech` `csch` `coth`
+`sinh` `cosh` `tanh` `sech` `csch` `coth`
 
 #### Inverse Hyperbolic
 
@@ -234,7 +237,10 @@ Supported:
 #### Angle Conversion
 
 `rad` `deg`
-<!-- FUNCTIONS_END -->
+
+#### Other
+
+`sin^{-1}` `cos^{-1}` `tan^{-1}` `sec^{-1}` `csc^{-1}` `cot^{-1}` `tr`
 
 ## Benchmarks
 
@@ -243,17 +249,17 @@ Supported:
 
 | Benchmark      | µs / op    | ops / sec    | op unit |
 | -------------- | ---------- | ------------ | ------- |
-| Scalar         | 0.67 µs    | 1.49 M/s     | op      |
-| Trig           | 0.93 µs    | 1.07 M/s     | op      |
-| Derivative     | 1.74 µs    | 573.4 k/s    | op      |
-| Integral       | 1.42 µs    | 704.2 k/s    | op      |
-| Summation      | 4.76 µs    | 210.3 k/s    | op      |
+| Scalar         | 0.67 µs    | 1.48 M/s     | op      |
+| Trig           | 0.94 µs    | 1.06 M/s     | op      |
+| Derivative     | 1.76 µs    | 567.5 k/s    | op      |
+| Integral       | 1.43 µs    | 701.3 k/s    | op      |
+| Summation      | 4.62 µs    | 216.5 k/s    | op      |
 | Batch          | 0.96 µs    | 1.04 M/s     | expr    |
-| Formula search | 463.70 µs  | 2.2 k/s      | op      |
-| Solve-for      | 4.84 µs    | 206.6 k/s    | op      |
-| System solver  | 3.80 µs    | 263.2 k/s    | op      |
-| Random pool    | 0.40 µs    | 2.51 M/s     | expr    |
-| Lex            | 0.03 µs    | 32.55 M/s    | token   |
+| Formula search | 483.80 µs  | 2.1 k/s      | op      |
+| Solve-for      | 5.00 µs    | 199.9 k/s    | op      |
+| System solver  | 3.72 µs    | 268.8 k/s    | op      |
+| Random pool    | 0.41 µs    | 2.43 M/s     | expr    |
+| Lex            | 0.03 µs    | 33.36 M/s    | token   |
 
 <details>
 <summary>Raw numbers</summary>
@@ -261,20 +267,20 @@ Supported:
 ```
 === Nero Benchmarks ===
 
-Scalar: 1 + 2 * 3                                           67.19 ms       1488330/s
-Trig: sin(pi/6) + cos(pi/3)                                 46.55 ms       1074114/s
-Derivative: d/dx(x^3) at x=2                                17.44 ms        573255/s
-Integral: int_0^1 x^2 dx                                     7.10 ms        703742/s
-Summation: sum_{i=1}^{100}(i)                               23.78 ms        210301/s
-Batch (5 unit-carrying exprs)                               47.96 ms        208507/s
-Formula search (acceleration target)                       463.70 ms          2157/s
-Solve-for: x^2 - 4 ; x :=                                   14.52 ms        206613/s
-System solver: x+y=5, x-y=1 ; @=x,y                          7.60 ms        263325/s
-Random pool (30 exprs, 1000 rounds)                         11.94 ms         83740/s
+Scalar: 1 + 2 * 3                                           67.46 ms       1482337/s
+Trig: sin(pi/6) + cos(pi/3)                                 47.20 ms       1059387/s
+Derivative: d/dx(x^3) at x=2                                17.62 ms        567513/s
+Integral: int_0^1 x^2 dx                                     7.13 ms        701250/s
+Summation: sum_{i=1}^{100}(i)                               23.10 ms        216405/s
+Batch (5 unit-carrying exprs)                               47.98 ms        208399/s
+Formula search (acceleration target)                       483.80 ms          2067/s
+Solve-for: x^2 - 4 ; x :=                                   15.01 ms        199825/s
+System solver: x+y=5, x-y=1 ; @=x,y                          7.44 ms        268689/s
+Random pool (30 exprs, 1000 rounds)                         12.35 ms         80979/s
 
 --- Lex Throughput ---
-Lex: 50k-token string (all token types)                    768.05 ms           651/s
-  Tokens/sec: 32.55M   Throughput: 149.6 MB/s
+Lex: 50k-token string (all token types)                    749.48 ms           667/s
+  Tokens/sec: 33.36M   Throughput: 153.3 MB/s
 ```
 
 </details>
@@ -321,30 +327,31 @@ Precompiled WASM artifacts are also available on the [GitHub Releases](https://g
 Copy `nero_wasm_interface.ts` into your project alongside the generated `Nero.js`/`Nero.wasm` files, then:
 
 ```typescript
-import createModule from './Nero.js';
-import { DimensionalEvaluator } from './nero_wasm_interface';
+import createModule from "./Nero.js";
+import { DimensionalEvaluator } from "./nero_wasm_interface";
 
 const Module = await createModule();
 const evaluator = new DimensionalEvaluator(Module);
 
 // Single expression
-const [result] = evaluator.eval_batch(['x^2 + 1'], [''], ['']);
+const [result] = evaluator.eval_batch(["x^2 + 1"], [""], [""]);
 if (result.success) {
-    console.log(result.value);           // numeric value
-    console.log(result.unit_latex);      // LaTeX unit string, e.g. "\\mathrm{m}"
-    console.log(result.value_scientific); // formatted string with sig figs
+	console.log(result.value); // numeric value
+	console.log(result.unit_latex); // LaTeX unit string, e.g. "\\mathrm{m}"
+	console.log(result.value_scientific); // formatted string with sig figs
 }
 
 // Batch — expressions share variable context
 const results = evaluator.eval_batch(
-    ['r = 5.0', 'T = 2.0', 'v = r / T'],
-    ['\\m',     '\\s',      ''],
-    ['',        '',         '\\frac{\\km}{\\hour}']  // optional conversion units
+	["r = 5.0", "T = 2.0", "v = r / T"],
+	["\\m", "\\s", ""],
+	["", "", "\\frac{\\km}{\\hour}"] // optional conversion units
 );
 // results[2] → { value: 2.5, unit_latex: "\\mathrm{\\frac{m}{s}}", success: true, ... }
 ```
 
 Each result object has the shape:
+
 ```typescript
 {
     value: number;           // real part of the numeric result
