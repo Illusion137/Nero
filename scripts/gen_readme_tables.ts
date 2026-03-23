@@ -99,13 +99,22 @@ function buildConstantsTable(constants: Constant[]): string {
 // Parse builtin function names from lexer.cpp
 // ============================================================================
 function parseBuiltinNames(lexerSrc: string): string[] {
-    const names: string[] = [];
-    const re = /case strint<"([^"]+)">[\s\S]*?BUILTIN_FUNC_/g;
+    const names = new Set<string>();
+    // Match each individual `case strint<"...">` arm and capture its body up to
+    // the next `case`, `default:`, or end of input. This prevents the regex
+    // from spanning across multiple case arms.
+    const caseRe = /case\s+strint<"([^"]+)">([\s\S]*?)(?=case\s+strint<"[^"]+">|default:|$)/g;
     let m: RegExpExecArray | null;
-    while ((m = re.exec(lexerSrc)) !== null) {
-        names.push(m[1]);
+    while ((m = caseRe.exec(lexerSrc)) !== null) {
+        const name = m[1];
+        const body = m[2];
+        // Only treat this name as a builtin if its own case arm maps to a
+        // BUILTIN_FUNC_* token.
+        if (/BUILTIN_FUNC_/.test(body)) {
+            names.add(name);
+        }
     }
-    return [...new Set(names)];
+    return Array.from(names);
 }
 
 // Categorization of builtin functions

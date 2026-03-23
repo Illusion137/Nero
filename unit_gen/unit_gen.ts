@@ -151,7 +151,7 @@ unit_case_map.push(["day", get_unit_case("day", 60 * 60 * 24, "DIM_SECOND")]);
 unit_case_map.push(["month", get_unit_case("month", 60 * 60 * 24 * 30, "DIM_SECOND")]);
 unit_case_map.push(["year", get_unit_case("year", 60 * 60 * 364, "DIM_SECOND")]);
 unit_case_map.push(["ATM", get_unit_case("ATM", 101325, "DIM_PASCAL")]);
-unit_case_map.push(["guass", get_unit_case("guass", 1e-4, "DIM_TESLA")]);
+unit_case_map.push(["gauss", get_unit_case("gauss", 1e-4, "DIM_TESLA")]);
 
 let file_str = auto_generated_header;
 file_str += `

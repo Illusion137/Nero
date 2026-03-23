@@ -25,14 +25,19 @@ const INTERFACE_TS = path.join(ROOT, "nero_wasm_interface.ts");
 // ============================================================================
 function parseBuiltinFunctionNames(lexerSrc: string): string[] {
     const names: string[] = [];
-    // Match strint<"name">() followed (eventually) by BUILTIN_FUNC_
-    const strintRe = /case strint<"([^"]+)">[\s\S]*?BUILTIN_FUNC_/g;
+    // Match a single case arm: case strint<"name">(): ... (up to next case/default/})
+    const caseArmRe = /case\s+strint<"([^"]+)">\(\):([\s\S]*?)(?=case\b|default\b|})/g;
     let m: RegExpExecArray | null;
-    while ((m = strintRe.exec(lexerSrc)) !== null) {
-        names.push(m[1]);
+    while ((m = caseArmRe.exec(lexerSrc)) !== null) {
+        const name = m[1];
+        const armBody = m[2];
+        // Only treat as builtin if this case arm actually maps to a BUILTIN_FUNC token
+        if (/TokenType::BUILTIN_FUNC_/.test(armBody)) {
+            names.push(name);
+        }
     }
     // Deduplicate while preserving order
-    return [...new Set(names)];
+    return [...new Set(names)].filter((n) => !/(\{|\(|\))/.test(n));
 }
 
 // ============================================================================
