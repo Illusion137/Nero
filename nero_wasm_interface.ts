@@ -273,8 +273,10 @@ export class DimensionalEvaluator {
         }
     }
 }
+// AUTO_GENERATED_START
 export const AUTO_COMMANDS = "pi pm mp theta sqrt sum int hat prod coprod nthroot alpha beta phi lambda sigma delta mu tau epsilon varepsilon Alpha Beta Phi Lambda Sigma Delta Mu Epsilon Tau Re Im nleqslant ngeqslant leqslant";
-export const AUTO_OPERATOR_NAMES = "ln sin cos tan sec csc cot log abs nCr nPr ceil fact floor round arcsin arccos arctan arcsec arccsc arccot val unit min max gcd lcm sig det conj trace FahrC FahrK CelK CelF rad deg";
+export const AUTO_OPERATOR_NAMES = "ln sin cos tan sec csc cot log abs nCr nPr ceil fact floor round arcsin arccos arctan arcsec arccsc arccot val unit min max gcd lcm sig det conj trace FahrC FahrK CelK CelF rad deg sinh cosh tanh sech csch coth arcsinh arccosh arctanh mean std var median clamp lerp norm dot cross ans";
+// AUTO_GENERATED_END
 
 export function array_empty(unit: number[]): boolean {
     if (unit.length == 0) return true;
@@ -284,11 +286,13 @@ export function array_empty(unit: number[]): boolean {
     return true;
 }
 export function latex_unit_splitter(latex: string): string {
+    // UNIT_SPLITTER_GENERATED_START
     const base_units = ["m", "s", "g", "A", "K", "mol", "cd"];
 
     const derived_units = [
-        "Hz", "N", "Pa", "J", "W", "C", "V", "F", "Ohm", "\\Omega", "Wb", "T", "H", "S", "L", "eV"
+        "Hz", "N", "Pa", "J", "W", "C", "V", "F", "Ohm", "Omega", "Wb", "T", "H", "S", "L", "eV"
     ];
+    // UNIT_SPLITTER_GENERATED_END
 
     const prefixes = [
         "Y", "Z", "E", "P", "T", "G", "M", "k", "h", "da",
@@ -350,5 +354,6 @@ export function latex_unit_splitter(latex: string): string {
     );
 
     // Replace matched units with backslash + unit
-    return latex.replace(pattern, '\\$1');
+    const new_unit = latex.replace(pattern, '\\$1').replaceAll('\\\\Omega', '\\Omega');
+    return new_unit;
 }

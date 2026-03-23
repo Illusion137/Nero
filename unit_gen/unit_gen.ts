@@ -51,7 +51,7 @@ const units_map: Record<string, BASE_UNIT> = {
     "Hz": "DIM_HERTZ",
     "S": "DIM_SIEMENS",
     "Ohm": "DIM_OHM",
-    "\\\\Omega": "DIM_OHM",
+    "\\Omega": "DIM_OHM",
     "F": "DIM_FARAD",
     "V": "DIM_VOLT",
     "W": "DIM_WATT",
@@ -88,7 +88,7 @@ const units_prefixes: Record<string, number> = {
 
 const unit_case_map: [string, string][] = [];
 
-const get_unit_case = (unit_name: string, exponent_str: string|number, unit_value: BASE_UNIT) => `UNIT_CASE("${unit_name}", ${exponent_str}, ${unit_value});\n`;
+const get_unit_case = (unit_name: string, exponent_str: string|number, unit_value: BASE_UNIT) => `UNIT_CASE("${unit_name.replaceAll('\\', '\\\\')}", ${exponent_str}, ${unit_value});\n`;
 
 for(const [suffix, unit_value] of Object.entries(units_map)){
     for(let [prefix, prefix_exponent] of Object.entries(units_prefixes)) {
@@ -96,7 +96,8 @@ for(const [suffix, unit_value] of Object.entries(units_map)){
         if(suffix === "eV") prefix_exponent -= 19;
         const exponent_str = suffix === "eV" ? (prefix_exponent === 0 ? '1.60218e-19' : prefix_exponent > 0 ? `1.60218e+${prefix_exponent}` : `1.60218e${prefix_exponent}`)
             : (prefix_exponent === 0 ? '1' : prefix_exponent > 0 ? `1e+${prefix_exponent}` : `1e${prefix_exponent}`);
-        const unit_name = prefix + suffix;
+        let unit_name = prefix + suffix;
+        if(unit_name === "\\Omega") unit_name = "Omega";
         const unit_case = get_unit_case(unit_name, exponent_str, unit_value);
         unit_case_map.push([unit_name, unit_case]);
     }
@@ -126,7 +127,7 @@ const greek_letters = [
     "phi", "Phi",
     "chi", "Chi",
     "psi", "Psi",
-    "omega", "Omega",
+    "omega",
 ];
 
 greek_letters.forEach(letter => unit_case_map.push([letter, `GREEK_LETTER_CASE("${letter}");\n`]))

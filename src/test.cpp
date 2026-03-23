@@ -269,6 +269,81 @@ int main(){
         // Temperature: 0°C in Fahrenheit = 32°F  — FahrC(0) = 32
         // (already covered above; add FahrC(0) = 32)
         {"\\operatorname{FahrC}(0)", 32.0},
+
+        // === DEFAULT CONSTANTS ===
+        {"g", 9.8},
+        {"e", 2.718281828459},
+        {"e_c", 1.602e-19},
+        {"e_0", 8.854187817e-12},
+        {"k_e", 8.99e9},
+        {"c", 2.99792458e8},
+        {"m_e", 9.1093837e-31},
+        {"m_p", 1.67262192e-27},
+        {"m_n", 1.674927e-27},
+        {"R_g", 8.31446},
+        {"R_a", 0.0821},
+        {"C_K", 273.15},
+        {"h", 6.62607015e-34},
+        {"a_0", 5.291772e-11},
+        {"N_A / 10^{23}", 6.022},       // N_A ≈ 6.022e23 mol⁻¹ (tested via ratio to stay within abs epsilon)
+
+        // === TRIG NOISE SUPPRESSION ===
+        {"\\sin(\\pi)", 0.0},
+        {"\\cos(\\pi/2)", 0.0},
+        {"\\tan(\\pi)", 0.0},
+
+        // === HYPERBOLIC TRIG ===
+        {"\\sinh(0)", 0.0},
+        {"\\cosh(0)", 1.0},
+        {"\\tanh(0)", 0.0},
+        {"\\sech(0)", 1.0},
+        {"\\csch(\\ln(2))", 1.0 / std::sinh(std::log(2.0))},
+        {"\\coth(\\ln(2))", 1.0 / std::tanh(std::log(2.0))},
+        {"\\arcsinh(0)", 0.0},
+        {"\\arccosh(1)", 0.0},
+        {"\\arctanh(0)", 0.0},
+        // identity: cosh^2 - sinh^2 = 1
+        {"\\cosh(2)^2 - \\sinh(2)^2", 1.0},
+
+        // === STATISTICAL FUNCTIONS ===
+        {"\\mean([1, 2, 3, 4, 5])", 3.0},
+        {"\\mean([10, 20, 30])", 20.0},
+        {"\\mean(7)", 7.0},  // scalar passthrough
+        {"\\median([3, 1, 2])", 2.0},
+        {"\\median([1, 2, 3, 4])", 2.5},  // even count: avg of 2 middles
+        {"\\std([2, 4, 4, 4, 5, 5, 7, 9])", 2.0},
+        {"\\var([2, 4, 4, 4, 5, 5, 7, 9])", 4.0},
+
+        // === UTILITY FUNCTIONS ===
+        {"\\clamp(5, 1, 10)", 5.0},
+        {"\\clamp(15, 1, 10)", 10.0},
+        {"\\clamp(-5, 1, 10)", 1.0},
+        {"\\lerp(0, 10, 0.5)", 5.0},
+        {"\\lerp(0, 10, 0)", 0.0},
+        {"\\lerp(0, 10, 1)", 10.0},
+        {"\\norm([3, 4])", 5.0},
+        {"\\norm([0, 0, 0])", 0.0},
+        {"\\norm([1, 0, 0])", 1.0},
+
+        // === UNIQUE EDGE CASES ===
+        // Nested hyperbolic identity
+        {"\\cosh(\\arcsinh(0))", 1.0},
+        // Euler's identity: e^{i*pi} + 1 ≈ 0 (real part)
+        // mean of min/max: min(1,2)=1, max(3,4)=4, mean=(1+4)/2=2.5
+        {"\\mean([\\min(1, 2), \\max(3, 4)])", 2.5},
+        // clamp at boundary
+        {"\\clamp(1, 1, 10)", 1.0},
+        {"\\clamp(10, 1, 10)", 10.0},
+        // lerp endpoint
+        {"\\lerp(5, 5, 0.7)", 5.0},
+        // std of identical values = 0
+        {"\\std([3, 3, 3])", 0.0},
+        // var of identical values = 0
+        {"\\var([3, 3, 3])", 0.0},
+        // mean of single-element array
+        {"\\mean([42])", 42.0},
+        // median of single element
+        {"\\median([7])", 7.0},
     };
 
     static const std::vector<LatexMultiTest> MULTI_TESTS = {
@@ -290,11 +365,11 @@ int main(){
         {{"foo(x) = x^3", "foo'(2)"}, 12},
 
         // Integral
-        {{"\\int_{0}^{1} x \\, dx", "ans"}, 0.5},
-        {{"\\int_{0}^{\\pi} \\sin(x) \\, dx", "ans"}, 2.0},
+        {{"\\int_{0}^{1} x \\, dx", "\\operatorname{ans}"}, 0.5},
+        {{"\\int_{0}^{\\pi} \\sin(x) \\, dx", "\\operatorname{ans}"}, 2.0},
 
         // ans variable
-        {{"2+3", "ans*2"}, 10},
+        {{"2+3", "\\operatorname{ans}*2"}, 10},
 
         // Summation with expression
         {{"x = 10", "\\sum_{i=1}^{x}(i)"}, 55},
@@ -304,7 +379,7 @@ int main(){
         {{"x = -3", "\\begin{cases} 1 & x > 0 \\\\ -1 & \\text{otherwise} \\end{cases}"}, -1},
 
         // Plus/minus
-        {{"5 \\pm 2", "ans"}, 7}, // first value of [7, 3] is 7
+        {{"5 \\pm 2", "\\operatorname{ans}"}, 7}, // first value of [7, 3] is 7
 
         // Array indexing
         {{"x = [10, 20, 30]", "x[1]"}, 20},
@@ -335,7 +410,7 @@ int main(){
         {{"a = 2.5", "b = 4.0", "\\sig(a)"}, 2.0},
 
         // Definite integral of x^2 from 0 to 2 = 8/3 ≈ 2.6667
-        {{"\\int_{0}^{2} x^2 \\, dx", "ans"}, 8.0 / 3.0},
+        {{"\\int_{0}^{2} x^2 \\, dx", "\\operatorname{ans}"}, 8.0 / 3.0},
 
         // sqrt then square
         {{"x = 4", "\\sqrt{x}^2"}, 4.0},
@@ -609,11 +684,11 @@ int main(){
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
     }
 
-    // 5. \pm prefix then index: \pm 3 ; ans[0] → 3
+    // 5. \pm prefix then index: \pm 3 ; \operatorname{ans}[0] → 3
     {
         std::vector<nero::Expression> pm_idx_exprs = {
             nero::Expression{.value_expr = "\\pm 3"},
-            nero::Expression{.value_expr = "ans[0]"},
+            nero::Expression{.value_expr = "\\operatorname{ans}[0]"},
         };
         nero::Evaluator pm_idx_eval;
         const auto pm_idx_results = pm_idx_eval.evaluate_expression_list(pm_idx_exprs);
@@ -623,7 +698,7 @@ int main(){
             if(const auto* uv = std::get_if<nero::UnitValue>(&r.value()))
                 ok = std::fabs((double)uv->value - 3.0) < 0.001;
         }
-        nero_println("{} \\pm 3 ; ans[0] → 3 {}",
+        nero_println("{} \\pm 3 ; \\operatorname{{ans}}[0] → 3 {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
     }

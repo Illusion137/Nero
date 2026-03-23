@@ -27,5 +27,15 @@ namespace nero {
         EValue arcsec(double value);
         EValue arccsc(double value);
         EValue arccot(double value);
+        // Hyperbolic trig
+        EValue sinh(double value);
+        EValue cosh(double value);
+        EValue tanh(double value);
+        EValue sech(double value);
+        EValue csch(double value);
+        EValue coth(double value);
+        EValue arcsinh(double value);
+        EValue arccosh(double value);
+        EValue arctanh(double value);
     }
 }

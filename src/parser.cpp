@@ -92,6 +92,24 @@ std::int32_t nero::Parser::builtin_function_args(nero::TokenType type){
         case nero::TokenType::BUILTIN_FUNC_CELF: return 1;
         case nero::TokenType::BUILTIN_FUNC_FAHRC: return 1;
         case nero::TokenType::BUILTIN_FUNC_FAHRK: return 1;
+        case nero::TokenType::BUILTIN_FUNC_SINH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_COSH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_TANH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_SECH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_CSCH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_COTH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCSINH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCCOSH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_ARCTANH: return 1;
+        case nero::TokenType::BUILTIN_FUNC_MEAN: return 1;
+        case nero::TokenType::BUILTIN_FUNC_STD: return 1;
+        case nero::TokenType::BUILTIN_FUNC_VAR: return 1;
+        case nero::TokenType::BUILTIN_FUNC_MEDIAN: return 1;
+        case nero::TokenType::BUILTIN_FUNC_CLAMP: return 3;
+        case nero::TokenType::BUILTIN_FUNC_LERP: return 3;
+        case nero::TokenType::BUILTIN_FUNC_NORM: return 1;
+        case nero::TokenType::BUILTIN_FUNC_DOT_ARRAY: return 2;
+        case nero::TokenType::BUILTIN_FUNC_CROSS_ARRAY: return 2;
         case nero::TokenType::BUILTIN_FUNC_MIN: return -2; // variadic, at least 2
         case nero::TokenType::BUILTIN_FUNC_MAX: return -2;
         case nero::TokenType::BUILTIN_FUNC_GCD: return -2;
@@ -215,6 +233,24 @@ bool nero::Parser::is_builtin_function(nero::TokenType type){
         case nero::TokenType::BUILTIN_FUNC_CELF:
         case nero::TokenType::BUILTIN_FUNC_FAHRC:
         case nero::TokenType::BUILTIN_FUNC_FAHRK:
+        case nero::TokenType::BUILTIN_FUNC_SINH:
+        case nero::TokenType::BUILTIN_FUNC_COSH:
+        case nero::TokenType::BUILTIN_FUNC_TANH:
+        case nero::TokenType::BUILTIN_FUNC_SECH:
+        case nero::TokenType::BUILTIN_FUNC_CSCH:
+        case nero::TokenType::BUILTIN_FUNC_COTH:
+        case nero::TokenType::BUILTIN_FUNC_ARCSINH:
+        case nero::TokenType::BUILTIN_FUNC_ARCCOSH:
+        case nero::TokenType::BUILTIN_FUNC_ARCTANH:
+        case nero::TokenType::BUILTIN_FUNC_MEAN:
+        case nero::TokenType::BUILTIN_FUNC_STD:
+        case nero::TokenType::BUILTIN_FUNC_VAR:
+        case nero::TokenType::BUILTIN_FUNC_MEDIAN:
+        case nero::TokenType::BUILTIN_FUNC_CLAMP:
+        case nero::TokenType::BUILTIN_FUNC_LERP:
+        case nero::TokenType::BUILTIN_FUNC_NORM:
+        case nero::TokenType::BUILTIN_FUNC_DOT_ARRAY:
+        case nero::TokenType::BUILTIN_FUNC_CROSS_ARRAY:
             return true;
         default: return false;
     }

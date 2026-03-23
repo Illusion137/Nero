@@ -138,10 +138,11 @@ Supported:
 - Hex / binary literals: `0xFF`, `0b1010`
 - Significant figures: propagated through arithmetic; `\sig(x)` returns the count
 - Unit conversion via `conversion_unit_expr` on the `Expression` struct
-- `ans` holds the last evaluated result
+- `\operatorname{ans}` holds the last evaluated result
 
 ### Constants
 
+<!-- CONSTANTS_START -->
 | Constant                                                               | Name                     |
 | ---------------------------------------------------------------------- | ------------------------ |
 | $\pi = 3.14159265358979323846 \cdot \mathrm{1}$                        | Pi                       |
@@ -150,38 +151,53 @@ Supported:
 | $\mathrm{e_0} = 8.854187817 \cdot 10^{-12} \cdot \mathrm{\frac{F}{m}}$ | Electric Constant        |
 | $\mathrm{k_e} = 8.99 \cdot 10^9 \cdot \mathrm{\frac{Nm^2}{C^2}}$       | Coulomb constant         |
 | $\mathrm{c} = 2.99792458 \cdot 10^8 \cdot \mathrm{\frac{m}{s}}$        | Speed of light in vacuum |
-| $\mathrm{m_e} = 9.1938 \cdot 10^{-31} \cdot \mathrm{kg}$               | Electron mass            |
-| $\mathrm{m_p} = 1.67262 \cdot 10^{-27} \cdot \mathrm{kg}$              | Proton mass              |
+| $\mathrm{m_e} = 9.1093837 \cdot 10^{-31} \cdot \mathrm{kg}$            | Electron mass            |
+| $\mathrm{m_p} = 1.67262192 \cdot 10^{-27} \cdot \mathrm{kg}$           | Proton mass              |
 | $\mathrm{m_n} = 1.674927 \cdot 10^{-27} \cdot \mathrm{kg}$             | Neutron mass             |
 | $\mathrm{R_g} = 8.31446 \cdot \mathrm{JK^{-1}mol^{-1}}$                | Ideal gas constant       |
+| $\mathrm{R_a} = 0.0821 \cdot \mathrm{L\,atm\,K^{-1}\,mol^{-1}}$        | Ideal gas constant (atm) |
 | $\mathrm{C_K} = 273.15 \cdot \mathrm{K}$                               | Celsius–Kelvin offset    |
 | $\mathrm{h} = 6.62607015 \cdot 10^{-34} \cdot \mathrm{Js}$             | Planck constant          |
 | $\mathrm{a_0} = 5.291772 \cdot 10^{-11} \cdot \mathrm{m}$              | Bohr radius              |
 | $\mathrm{N_A} = 6.022 \cdot 10^{23} \cdot \mathrm{mol^{-1}}$           | Avogadro constant        |
-| $\epsilon_0 = 8.8541878128 \cdot 10^{-12} \cdot \mathrm{F\,m^{-1}}$    | vacuum permittivity      |
-| $\mu_0 = 1.25663706212 \cdot 10^{-6} \cdot \mathrm{H\,m^{-1}}$         | vacuum permeability      |
-| $R_a = 0.082057 \cdot \mathrm{L\,atm\,K^{-1}\,mol^{-1}}$               | ideal gas constant (atm) |
-| $\alpha = 7.2973525693 \cdot 10^{-3}$                                  | fine-structure constant  |
+| $\epsilon_0 = 8.854187817 \cdot 10^{-12} \cdot \mathrm{F\,m^{-1}}$     | Vacuum permittivity      |
+| $\mu_0 = 4\pi \cdot 10^{-7} \cdot \mathrm{H\,m^{-1}}$                  | Vacuum permeability      |
+| $\alpha = 7.2973525693 \cdot 10^{-3}$                                  | Fine-structure constant  |
+<!-- CONSTANTS_END -->
 
 ### Functions
 
+<!-- FUNCTIONS_START -->
 #### Basic Math
 
 `sqrt` `ceil` `floor` `round` `abs`
 
 #### Trigonometric
 
-`sin` `cos` `tan`  
+`sin` `cos` `tan`
 `sec` `csc` `cot`
 
 #### Inverse Trigonometric
 
-`arcsin` `arccos` `arctan`  
+`arcsin` `arccos` `arctan`
 `arcsec` `arccsc` `arccot`
+
+#### Hyperbolic
+
+`sinh` `cosh` `tanh`
+`sech` `csch` `coth`
+
+#### Inverse Hyperbolic
+
+`arcsinh` `arccosh` `arctanh`
 
 #### Logarithmic
 
 `log` `ln`
+
+#### Statistical
+
+`mean` `std` `var` `median`
 
 #### Combinatorics
 
@@ -205,7 +221,7 @@ Supported:
 
 #### Utility
 
-`fact` `sig` `val` `unit`
+`fact` `sig` `val` `unit` `clamp` `lerp` `norm` `dot` `cross`
 
 #### Integration
 
@@ -218,6 +234,7 @@ Supported:
 #### Angle Conversion
 
 `rad` `deg`
+<!-- FUNCTIONS_END -->
 
 ## Benchmarks
 
@@ -226,17 +243,17 @@ Supported:
 
 | Benchmark      | µs / op    | ops / sec    | op unit |
 | -------------- | ---------- | ------------ | ------- |
-| Scalar         | 0.43 µs    | 2.33 M/s     | op      |
-| Trig           | 0.91 µs    | 1.10 M/s     | op      |
-| Derivative     | 1.74 µs    | 573.7 k/s    | op      |
-| Integral       | 1.41 µs    | 711.2 k/s    | op      |
-| Summation      | 4.75 µs    | 210.3 k/s    | op      |
-| Batch          | 0.93 µs    | 1.07 M/s     | expr    |
-| Formula search | 458.40 µs  | 2.2 k/s      | op      |
-| Solve-for      | 4.94 µs    | 202.3 k/s    | op      |
-| System solver  | 3.74 µs    | 267.4 k/s    | op      |
-| Random pool    | 0.40 µs    | 2.49 M/s     | expr    |
-| Lex            | 0.03 µs    | 36.12 M/s    | token   |
+| Scalar         | 0.74 µs    | 1.36 M/s     | op      |
+| Trig           | 0.93 µs    | 1.07 M/s     | op      |
+| Derivative     | 1.73 µs    | 577.7 k/s    | op      |
+| Integral       | 1.40 µs    | 712.3 k/s    | op      |
+| Summation      | 4.62 µs    | 216.3 k/s    | op      |
+| Batch          | 0.95 µs    | 1.05 M/s     | expr    |
+| Formula search | 464.54 µs  | 2.2 k/s      | op      |
+| Solve-for      | 4.93 µs    | 203.0 k/s    | op      |
+| System solver  | 3.69 µs    | 271.0 k/s    | op      |
+| Random pool    | 0.40 µs    | 2.51 M/s     | expr    |
+| Lex            | 0.03 µs    | 33.05 M/s    | token   |
 
 <details>
 <summary>Raw numbers</summary>
@@ -244,20 +261,20 @@ Supported:
 ```
 === Nero Benchmarks ===
 
-Scalar: 1 + 2 * 3                                           42.96 ms       2327894/s
-Trig: sin(pi/6) + cos(pi/3)                                 45.29 ms       1104033/s
-Derivative: d/dx(x^3) at x=2                                17.43 ms        573662/s
-Integral: int_0^1 x^2 dx                                     7.03 ms        711002/s
-Summation: sum_{i=1}^{100}(i)                               23.77 ms        210313/s
-Batch (5 unit-carrying exprs)                               46.55 ms        214842/s
-Formula search (acceleration target)                       458.40 ms          2182/s
-Solve-for: x^2 - 4 ; x :=                                   14.83 ms        202271/s
-System solver: x+y=5, x-y=1 ; @=x,y                          7.48 ms        267207/s
-Random pool (30 exprs, 1000 rounds)                         12.03 ms         83146/s
+Scalar: 1 + 2 * 3                                           73.69 ms       1357124/s
+Trig: sin(pi/6) + cos(pi/3)                                 46.65 ms       1071893/s
+Derivative: d/dx(x^3) at x=2                                17.31 ms        577698/s
+Integral: int_0^1 x^2 dx                                     7.02 ms        712382/s
+Summation: sum_{i=1}^{100}(i)                               23.12 ms        216235/s
+Batch (5 unit-carrying exprs)                               47.56 ms        210258/s
+Formula search (acceleration target)                       464.54 ms          2153/s
+Solve-for: x^2 - 4 ; x :=                                   14.78 ms        202915/s
+System solver: x+y=5, x-y=1 ; @=x,y                          7.38 ms        270842/s
+Random pool (30 exprs, 1000 rounds)                         11.93 ms         83792/s
 
 --- Lex Throughput ---
-Lex: 50k-token string (all token types)                    692.18 ms           722/s
-  Tokens/sec: 36.12M   Throughput: 166.0 MB/s
+Lex: 50k-token string (all token types)                    756.36 ms           661/s
+  Tokens/sec: 33.05M   Throughput: 151.9 MB/s
 ```
 
 </details>

@@ -6,13 +6,13 @@
 #define UNIT_CASE(str, value, unit) case strint<str>(): return advance_with_token(nero::UnitValue{value, unit}, sizeof(str) - 1)
 #define UNIT_CASE_LIST_BEGIN(size) if(remaining_length() >= size) { switch(strint_fn(it, size)) { default: break;
 #define UNIT_CASE_LIST_END(size) }}
-UNIT_CASE_LIST_BEGIN(10) {
+UNIT_CASE_LIST_BEGIN(9) {
 	UNIT_CASE("mu \\Omega", 1e-6, DIM_OHM);
 } UNIT_CASE_LIST_END();
-UNIT_CASE_LIST_BEGIN(9) {
+UNIT_CASE_LIST_BEGIN(8) {
 	UNIT_CASE("da\\Omega", 1e+1, DIM_OHM);
 } UNIT_CASE_LIST_END();
-UNIT_CASE_LIST_BEGIN(8) {
+UNIT_CASE_LIST_BEGIN(7) {
 	UNIT_CASE("Y\\Omega", 1e+24, DIM_OHM);
 	UNIT_CASE("Z\\Omega", 1e+21, DIM_OHM);
 	UNIT_CASE("E\\Omega", 1e+18, DIM_OHM);
@@ -31,9 +31,6 @@ UNIT_CASE_LIST_BEGIN(8) {
 	UNIT_CASE("a\\Omega", 1e-18, DIM_OHM);
 	UNIT_CASE("z\\Omega", 1e-21, DIM_OHM);
 	UNIT_CASE("y\\Omega", 1e-24, DIM_OHM);
-} UNIT_CASE_LIST_END();
-UNIT_CASE_LIST_BEGIN(7) {
-	UNIT_CASE("\\Omega", 1, DIM_OHM);
 	GREEK_LETTER_CASE("epsilon");
 	GREEK_LETTER_CASE("Epsilon");
 	GREEK_LETTER_CASE("omicron");
@@ -53,6 +50,7 @@ UNIT_CASE_LIST_BEGIN(5) {
 	UNIT_CASE("mu Pa", 1e-6, DIM_PASCAL);
 	UNIT_CASE("mu Hz", 1e-6, DIM_HERTZ);
 	UNIT_CASE("daOhm", 1e+1, DIM_OHM);
+	UNIT_CASE("Omega", 1, DIM_OHM);
 	UNIT_CASE("mu Wb", 1e-6, DIM_WEBER);
 	UNIT_CASE("mu eV", 1.60218e-25, DIM_JOULE);
 	GREEK_LETTER_CASE("alpha");
@@ -68,7 +66,6 @@ UNIT_CASE_LIST_BEGIN(5) {
 	GREEK_LETTER_CASE("sigma");
 	GREEK_LETTER_CASE("Sigma");
 	GREEK_LETTER_CASE("omega");
-	GREEK_LETTER_CASE("Omega");
 	UNIT_CASE("month", 2592000, DIM_SECOND);
 	UNIT_CASE("guass", 0.0001, DIM_TESLA);
 } UNIT_CASE_LIST_END();

@@ -39,6 +39,7 @@ struct JsFormula {
     std::string latex;
     std::string category;
     std::vector<JsFormulaVariable> variables;
+    double score = 0.0;
 };
 
 // ============================================================================
@@ -154,6 +155,7 @@ static JsFormula physics_formula_to_js(const Physics::Formula& f) {
     jf.name = f.name;
     jf.latex = f.latex;
     jf.category = f.category;
+    jf.score = f.score;
     for (const auto& v : f.variables) {
         jf.variables.push_back({
             v.name,
@@ -367,7 +369,8 @@ EMSCRIPTEN_BINDINGS(UnitEval) {
         .field("name",      &JsFormula::name)
         .field("latex",     &JsFormula::latex)
         .field("category",  &JsFormula::category)
-        .field("variables", &JsFormula::variables);
+        .field("variables", &JsFormula::variables)
+        .field("score",     &JsFormula::score);
 
     value_object<JsResult>("Result")
         .field("value",           &JsResult::value)
