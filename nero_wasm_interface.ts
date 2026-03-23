@@ -273,10 +273,8 @@ export class DimensionalEvaluator {
         }
     }
 }
-// AUTO_GENERATED_START
 export const AUTO_COMMANDS = "pi pm mp theta sqrt sum int hat prod coprod nthroot alpha beta phi lambda sigma delta mu tau epsilon varepsilon Alpha Beta Phi Lambda Sigma Delta Mu Epsilon Tau Re Im nleqslant ngeqslant leqslant";
 export const AUTO_OPERATOR_NAMES = "arcsinh arccosh arctanh arcsin arccos arctan median floor round clamp cross sqrt ceil fact prod sinh cosh tanh sech csch coth lerp norm mean conj sin cos tan sec csc cot abs nCr nPr log sum int min max gcd lcm sig det std var dot deg ln Re Im arcsec arccsc arccot trace FahrC FahrK unit CelK CelF val rad tr";
-// AUTO_GENERATED_END
 
 export function array_empty(unit: number[]): boolean {
     if (unit.length == 0) return true;
