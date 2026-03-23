@@ -20,6 +20,7 @@
         "strictNullChecks": true,
         "noImplicitReturns": true,
         "skipLibCheck": true,
+        "rootDir": ".",
         "allowJs": true,
         "allowSyntheticDefaultImports": true,
         "allowImportingTsExtensions": true,
