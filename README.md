@@ -31,7 +31,7 @@ cmake --build build-wasm
 C:\msys64\usr\bin\bash.exe -lc "cd '$(pwd)' && cmake --build build"
 ```
 
-### Add built WASM library to HMTL
+### Add built WASM library to HTML
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -243,17 +243,17 @@ Supported:
 
 | Benchmark      | µs / op    | ops / sec    | op unit |
 | -------------- | ---------- | ------------ | ------- |
-| Scalar         | 0.42 µs    | 2.39 M/s     | op      |
-| Trig           | 0.93 µs    | 1.08 M/s     | op      |
-| Derivative     | 1.71 µs    | 584.5 k/s    | op      |
-| Integral       | 1.40 µs    | 712.3 k/s    | op      |
-| Summation      | 4.48 µs    | 223.0 k/s    | op      |
-| Batch          | 0.94 µs    | 1.07 M/s     | expr    |
-| Formula search | 453.18 µs  | 2.2 k/s      | op      |
-| Solve-for      | 4.94 µs    | 202.4 k/s    | op      |
-| System solver  | 3.61 µs    | 277.0 k/s    | op      |
-| Random pool    | 0.41 µs    | 2.46 M/s     | expr    |
-| Lex            | 0.03 µs    | 31.62 M/s    | token   |
+| Scalar         | 0.67 µs    | 1.49 M/s     | op      |
+| Trig           | 0.93 µs    | 1.07 M/s     | op      |
+| Derivative     | 1.74 µs    | 573.4 k/s    | op      |
+| Integral       | 1.42 µs    | 704.2 k/s    | op      |
+| Summation      | 4.76 µs    | 210.3 k/s    | op      |
+| Batch          | 0.96 µs    | 1.04 M/s     | expr    |
+| Formula search | 463.70 µs  | 2.2 k/s      | op      |
+| Solve-for      | 4.84 µs    | 206.6 k/s    | op      |
+| System solver  | 3.80 µs    | 263.2 k/s    | op      |
+| Random pool    | 0.40 µs    | 2.51 M/s     | expr    |
+| Lex            | 0.03 µs    | 32.55 M/s    | token   |
 
 <details>
 <summary>Raw numbers</summary>
@@ -261,20 +261,20 @@ Supported:
 ```
 === Nero Benchmarks ===
 
-Scalar: 1 + 2 * 3                                           41.76 ms       2394517/s
-Trig: sin(pi/6) + cos(pi/3)                                 46.30 ms       1079839/s
-Derivative: d/dx(x^3) at x=2                                17.11 ms        584482/s
-Integral: int_0^1 x^2 dx                                     7.02 ms        712162/s
-Summation: sum_{i=1}^{100}(i)                               22.42 ms        223053/s
-Batch (5 unit-carrying exprs)                               46.82 ms        213597/s
-Formula search (acceleration target)                       453.18 ms          2207/s
-Solve-for: x^2 - 4 ; x :=                                   14.82 ms        202476/s
-System solver: x+y=5, x-y=1 ; @=x,y                          7.22 ms        277181/s
-Random pool (30 exprs, 1000 rounds)                         12.19 ms         82023/s
+Scalar: 1 + 2 * 3                                           67.19 ms       1488330/s
+Trig: sin(pi/6) + cos(pi/3)                                 46.55 ms       1074114/s
+Derivative: d/dx(x^3) at x=2                                17.44 ms        573255/s
+Integral: int_0^1 x^2 dx                                     7.10 ms        703742/s
+Summation: sum_{i=1}^{100}(i)                               23.78 ms        210301/s
+Batch (5 unit-carrying exprs)                               47.96 ms        208507/s
+Formula search (acceleration target)                       463.70 ms          2157/s
+Solve-for: x^2 - 4 ; x :=                                   14.52 ms        206613/s
+System solver: x+y=5, x-y=1 ; @=x,y                          7.60 ms        263325/s
+Random pool (30 exprs, 1000 rounds)                         11.94 ms         83740/s
 
 --- Lex Throughput ---
-Lex: 50k-token string (all token types)                    790.66 ms           632/s
-  Tokens/sec: 31.62M   Throughput: 145.3 MB/s
+Lex: 50k-token string (all token types)                    768.05 ms           651/s
+  Tokens/sec: 32.55M   Throughput: 149.6 MB/s
 ```
 
 </details>
