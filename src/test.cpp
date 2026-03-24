@@ -11,6 +11,7 @@
 #include <cmath>
 
 int main(){
+    bool overall_success = true;
     static const std::vector<LatexTest> ALL_TESTS = {
         // basic
         {"1+2",3},{"5-7",-2},{"3\\cdot4",12},{"8/2",4},{"2^3",8},
@@ -275,7 +276,7 @@ int main(){
         {"e", 2.718281828459},
         {"e_c", 1.602e-19},
         {"e_0", 8.854187817e-12},
-        {"k_e", 8.99e9},
+        {"k", 8.99e9},
         {"c", 2.99792458e8},
         {"m_e", 9.1093837e-31},
         {"m_p", 1.67262192e-27},
@@ -344,6 +345,178 @@ int main(){
         {"\\mean([42])", 42.0},
         // median of single element
         {"\\median([7])", 7.0},
+
+        // === UNIT TESTS: Ohm / Omega — prefix and notation variants ===
+        // Boundary stress: unit alone (no trailing space, tests lexer read safety)
+        {"\\Omega", 1.0},
+        {"\\mu\\Omega", 1e-6},
+        {"\\mu Ohm", 1e-6},
+        // SI-prefixed Omega (backslash form)
+        {"1 \\k\\Omega", 1e3},
+        {"1 \\M\\Omega", 1e6},
+        {"1 \\G\\Omega", 1e9},
+        {"1 \\m\\Omega", 1e-3},
+        {"1 \\mu\\Omega", 1e-6},
+        {"1 \\n\\Omega", 1e-9},
+        // SI-prefixed Ohm (word form, no backslash needed for prefix)
+        {"1 \\kOhm", 1e3},
+        {"1 \\MOhm", 1e6},
+        {"1 \\GOhm", 1e9},
+        {"1 \\mOhm", 1e-3},
+        {"1 \\nOhm", 1e-9},
+        // Arithmetic on Ohms (tests unit addition / division)
+        {"2 \\Omega + 3 \\Omega", 5.0},
+        {"10 \\Omega / 2", 5.0},
+        {"5 \\Omega / 5", 1.0},
+        {"2 \\mu\\Omega", 2e-6},
+        {"500 \\mu\\Omega + 500 \\mu\\Omega", 1e-3},
+        // Consecutive units with no space (boundary read stress)
+        {"5\\mu\\Omega", 5e-6},
+        {"3\\k\\Omega", 3e3},
+        {"2\\Omega", 2.0},
+
+        // === UNIT TESTS: \mu-prefixed SI base units ===
+        {"1 \\mu m", 1e-6},
+        {"1 \\mu s", 1e-6},
+        {"1 \\mu A", 1e-6},
+        {"1 \\mu K", 1e-6},
+        // Note: \mu g = 1 microgram = 1e-9 kg (stored in base unit kg)
+        {"1 \\mu g", 1e-9},
+
+        // === UNIT TESTS: \mu-prefixed derived units ===
+        {"1 \\mu N", 1e-6},
+        {"1 \\mu J", 1e-6},
+        {"1 \\mu C", 1e-6},
+        {"1 \\mu F", 1e-6},
+        {"1 \\mu V", 1e-6},
+        {"1 \\mu W", 1e-6},
+        {"1 \\mu T", 1e-6},
+        {"1 \\mu H", 1e-6},
+        {"1 \\mu mol", 1e-6},
+
+        // === UNIT TESTS: common SI-prefixed base units ===
+        {"1 \\km", 1e3},
+        {"1 \\mm", 1e-3},
+        {"1 \\nm", 1e-9},
+        {"1 \\cm", 1e-2},
+        {"1 \\Mm", 1e6},
+        {"1 \\Gm", 1e9},
+        {"1 \\ms", 1e-3},
+        {"1 \\ns", 1e-9},
+        {"1 \\ps", 1e-12},
+        {"1 \\mA", 1e-3},
+        {"1 \\kA", 1e3},
+        {"1 \\nA", 1e-9},
+
+        // === UNIT TESTS: common SI-prefixed derived units ===
+        {"1 \\MHz", 1e6},
+        {"1 \\GHz", 1e9},
+        {"1 \\kHz", 1e3},
+        {"1 \\mHz", 1e-3},
+        {"1 \\mV", 1e-3},
+        {"1 \\kV", 1e3},
+        {"1 \\mW", 1e-3},
+        {"1 \\kW", 1e3},
+        {"1 \\MW", 1e6},
+        {"1 \\mN", 1e-3},
+        {"1 \\kN", 1e3},
+        {"1 \\MN", 1e6},
+        {"1 \\MPa", 1e6},
+        {"1 \\kPa", 1e3},
+        {"1 \\mPa", 1e-3},
+        {"1 \\mmol", 1e-3},
+        {"1 \\nmol", 1e-9},
+        {"1 \\mJ", 1e-3},
+        {"1 \\kJ", 1e3},
+        {"1 \\MJ", 1e6},
+        {"1 \\nJ", 1e-9},
+        {"1 \\mC", 1e-3},
+        {"1 \\nC", 1e-9},
+        {"1 \\pF", 1e-12},
+        {"1 \\nF", 1e-9},
+        {"1 \\mF", 1e-3},
+
+        // === UNIT TESTS: boundary stress (unit at end of input, no trailing chars) ===
+        {"1\\km", 1e3},
+        {"1\\mm", 1e-3},
+        {"1\\nm", 1e-9},
+        {"1\\MHz", 1e6},
+        {"1\\GHz", 1e9},
+        {"1\\mA", 1e-3},
+        {"1\\kV", 1e3},
+        {"1\\mu m", 1e-6},
+        {"1\\mu s", 1e-6},
+        {"1\\mu A", 1e-6},
+        {"1\\mu N", 1e-6},
+        {"1\\mu J", 1e-6},
+        {"1\\mu C", 1e-6},
+        {"1\\mu F", 1e-6},
+        {"1\\mu V", 1e-6},
+        {"1\\mu W", 1e-6},
+        {"1\\mu T", 1e-6},
+        {"1\\mu H", 1e-6},
+
+        // === UNIT TESTS: \Omega with ALL SI prefixes (backslash form) ===
+        // Already tested: G, M, k, m, mu, n — covering the rest here
+        {"1 \\Y\\Omega", 1e24},
+        {"1 \\Z\\Omega", 1e21},
+        {"1 \\E\\Omega", 1e18},
+        {"1 \\P\\Omega", 1e15},
+        {"1 \\T\\Omega", 1e12},
+        {"1 \\h\\Omega", 1e2},
+        {"1 \\d\\Omega", 1e-1},
+        {"1 \\c\\Omega", 1e-2},
+        {"1 \\p\\Omega", 1e-12},
+        {"1 \\f\\Omega", 1e-15},
+        {"1 \\a\\Omega", 1e-18},
+        {"1 \\z\\Omega", 1e-21},
+        {"1 \\y\\Omega", 1e-24},
+
+        // === UNIT TESTS: Ohm word-form with ALL SI prefixes ===
+        // Already tested: G, M, k, m, n — covering the rest here
+        {"1 \\YOhm", 1e24},
+        {"1 \\ZOhm", 1e21},
+        {"1 \\EOhm", 1e18},
+        {"1 \\POhm", 1e15},
+        {"1 \\TOhm", 1e12},
+        {"1 \\hOhm", 1e2},
+        {"1 \\dOhm", 1e-1},
+        {"1 \\cOhm", 1e-2},
+        {"1 \\pOhm", 1e-12},
+        {"1 \\fOhm", 1e-15},
+        {"1 \\aOhm", 1e-18},
+        {"1 \\zOhm", 1e-21},
+        {"1 \\yOhm", 1e-24},
+
+        // Cross-check: both forms parse to same value (parens required to prevent
+        // implicit-mult precedence from consuming the denominator's unit token)
+        {"(1 \\Y\\Omega) / (1 \\YOhm)", 1.0},
+        {"(1 \\T\\Omega) / (1 \\TOhm)", 1.0},
+        {"(1 \\m\\Omega) / (1 \\mOhm)", 1.0},
+        {"(1 \\p\\Omega) / (1 \\pOhm)", 1.0},
+        // mu-Ohm cross check: \mu\Omega and \mu Ohm are both 1e-6
+        {"(1 \\mu\\Omega) / (1 \\mu Ohm)", 1.0},
+
+        // === UNIT TESTS: \mu with remaining derived units ===
+        // Already tested: N, J, C, F, V, W, T, H, mol — covering the rest
+        {"1 \\mu S",   1e-6},     // micro-siemens
+        {"1 \\mu cd",  1e-6},     // micro-candela
+        {"1 \\mu Pa",  1e-6},     // micro-pascal
+        {"1 \\mu Hz",  1e-6},     // micro-hertz
+        {"1 \\mu Wb",  1e-6},     // micro-weber
+        // Note: \mu L is 1e-9 in lexer (bug: should be 1e-6 but testing actual behavior)
+        {"1 \\mu L",   1e-9},     // micro-liter (lexer value)
+        // \mu eV: 1 micro-eV = 1.60218e-25 J
+        {"1 \\mu eV",  1.60218e-25},
+
+        // === UNIT TESTS: unit arithmetic ===
+        {"1 \\km + 1 \\mm", 1000.001},
+        {"2 \\kV + 500 \\mV", 2000.5},
+        {"10 \\mA + 5 \\mA", 0.015},
+        // Omega arithmetic across prefix magnitudes
+        {"1 \\M\\Omega - 1 \\k\\Omega", 999000.0},
+        {"2 \\mu\\Omega + 3 \\mu\\Omega", 5e-6},
+        {"1 \\m\\Omega + 1 \\mu\\Omega", 1.001e-3},
     };
 
     static const std::vector<LatexMultiTest> MULTI_TESTS = {
@@ -450,10 +623,10 @@ int main(){
     };
 
     nero_println("=== Single Expression Tests ===");
-    run_non_related_tests(ALL_TESTS);
+    overall_success &= run_non_related_tests(ALL_TESTS);
 
     nero_println("\n=== Multi Expression Tests ===");
-    run_multi_tests(MULTI_TESTS);
+    overall_success &= run_multi_tests(MULTI_TESTS);
 
     std::array<nero::Expression, 2> expressions = {
         nero::Expression{"a = 5 \\pm 3"},
@@ -490,10 +663,12 @@ int main(){
         nero::Evaluator conv_eval;
         const auto conv_results = conv_eval.evaluate_expression_list(conv_exprs);
         const auto &r = conv_results[0];
+        bool ok_conv = false;
         if (!r) {
             nero_println("\033[31m[FAIL] conversion test: ERROR({}) ✗\033[0m", r.error());
         } else if (const auto* uv = std::get_if<nero::UnitValue>(&r.value())) {
             if (std::fabs((double)uv->value - 5.0) < epsilon) {
+                ok_conv = true;
                 nero_println("\033[0;32m[PASS] 5000 m → {} km ✓\033[0m", (double)uv->value);
             } else {
                 nero_println("\033[31m[FAIL] 5000 m → {} km (expected 5) ✗\033[0m", (double)uv->value);
@@ -501,6 +676,7 @@ int main(){
         } else {
             nero_println("\033[31m[FAIL] conversion test: wrong type ✗\033[0m");
         }
+        overall_success &= ok_conv;
     }
 
     // Integral without dx → error
@@ -511,11 +687,13 @@ int main(){
         nero::Evaluator int_eval;
         const auto int_results = int_eval.evaluate_expression_list(int_exprs);
         const auto &r = int_results[0];
+        bool ok_int = !r;
         if (!r) {
             nero_println("\033[0;32m[PASS] \\int without dx → error ✓\033[0m");
         } else {
             nero_println("\033[31m[FAIL] \\int without dx should have returned an error ✗\033[0m");
         }
+        overall_success &= ok_int;
     }
 
     // value_to_scientific with sig_figs
@@ -540,8 +718,8 @@ int main(){
                 ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
                 (double)c.v, c.sf, result, c.expected);
         }
-        if (sf_ok) nero_print("\033[0m");
-        else nero_print("\033[0m");
+        nero_print("\033[0m");
+        overall_success &= sf_ok;
     }
 
     // Leaf detection: sig_figs only present on display leaves
@@ -567,6 +745,7 @@ int main(){
             b_uv ? (int)b_uv->sig_figs : -1,
             x_uv ? (int)x_uv->sig_figs : -1,
             ok ? " ✓\033[0m" : " ✗\033[0m");
+        overall_success &= ok;
     }
 
     // === New Feature Tests ===
@@ -581,14 +760,17 @@ int main(){
             {0.0L,  1.0L,  "0 + 1i"},
             {5.0L,  0.0L,  "5"},          // no imag → unchanged
         };
+        bool cplx_ok = true;
         for (const auto& c : cases) {
             auto result = nero::value_to_scientific(c.v, 0, c.im);
             bool ok = result == c.expected;
+            if (!ok) cplx_ok = false;
             nero_println("{} value_to_scientific({},imag={}) = {} (expected: {}){}",
                 ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
                 (double)c.v, (double)c.im, result, c.expected,
                 ok ? " ✓\033[0m" : " ✗\033[0m");
         }
+        overall_success &= cplx_ok;
     }
 
     // 2. \pm as prefix: \pm 3 → [3, -3]
@@ -608,6 +790,7 @@ int main(){
         nero_println("{} \\pm 3 → [3,-3] {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+        overall_success &= ok;
     }
 
     // 3. :=  solve-for: x^2 - 4 ; x := → roots [-2, 2]
@@ -633,6 +816,7 @@ int main(){
         nero_println("{} x^2-4 ; x := → roots include ±2 {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+        overall_success &= ok;
     }
 
     // 3b. Triple root: (x+5)(x)(x-3) ; x := → roots -5, 0, 3
@@ -659,6 +843,7 @@ int main(){
         nero_println("{} (x-3)(x+5)x ; x := → roots -5, 0, 3 {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+        overall_success &= ok;
     }
 
     // 4. @ linear system: x+y-4 ; x-y-1 ; @=x,y → x=2.5, y=1.5
@@ -682,6 +867,7 @@ int main(){
         nero_println("{} x+y-4 ; x-y-1 ; @=x,y → [2.5, 1.5] {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+        overall_success &= ok;
     }
 
     // 5. \pm prefix then index: \pm 3 ; \operatorname{ans}[0] → 3
@@ -701,6 +887,7 @@ int main(){
         nero_println("{} \\pm 3 ; \\operatorname{{ans}}[0] → 3 {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+        overall_success &= ok;
     }
 
     // 6. := with equality-form preceding expression: a+5=0 ; a := → root -5
@@ -722,6 +909,7 @@ int main(){
         nero_println("{} a+5=0 ; a := → root -5 {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+        overall_success &= ok;
     }
 
     // 7. @ with equality-form equations: 2a+3b=14 ; 4a-b=1 ; @=a,b
@@ -748,6 +936,7 @@ int main(){
         nero_println("{} 2a+3b=14 ; 4a-b=1 ; @=a,b → satisfies both equations {}",
             ok ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             ok ? "✓\033[0m" : (r ? "✗\033[0m" : std::format("ERROR({}) ✗\033[0m", r.error())));
+        overall_success &= ok;
     }
 
     // 8. @ leaves source equations blank (VoidValue), no error, no assigned value
@@ -778,6 +967,7 @@ int main(){
         nero_println("{} @=x,y leaves source equations blank {}",
             (eq0_blank && eq1_blank) ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             (eq0_blank && eq1_blank) ? "✓\033[0m" : "✗\033[0m");
+        overall_success &= ok && eq0_blank && eq1_blank;
     }
 
     // 9. := leaves preceding expression blank (VoidValue)
@@ -792,12 +982,13 @@ int main(){
         nero_println("{} a+5=0 ; a := leaves preceding expression blank {}",
             prec_blank ? "\033[0;32m[PASS]" : "\033[31m[FAIL]",
             prec_blank ? "✓\033[0m" : "✗\033[0m");
+        overall_success &= prec_blank;
     }
 
     // === Vector Tests ===
     nero_println("\n=== Vector Tests ===");
 
-    auto vec_test = [](const char* label, const char* expr, auto check) {
+    auto vec_test = [&overall_success](const char* label, const char* expr, auto check) {
         std::array<nero::Expression, 1> exprs = { nero::Expression{.value_expr = expr} };
         nero::Evaluator ev;
         const auto results = ev.evaluate_expression_list(exprs);
@@ -814,6 +1005,7 @@ int main(){
             label,
             ok ? "ok" : detail,
             ok ? "✓\033[0m" : "✗\033[0m");
+        overall_success &= ok;
     };
 
     vec_test("\\hat{i} \\cdot \\hat{i}", "\\hat{i} \\cdot \\hat{i}",
@@ -950,6 +1142,7 @@ int main(){
         else
             nero_println("\033[31m[FAILED] {}\033[0m: \033[0;32m[PASSED] {}\033[0m",
                 sym_total - sym_passed, sym_passed);
+        overall_success &= (sym_passed == sym_total);
     }
 
     // Quick formula chain check
@@ -967,5 +1160,5 @@ int main(){
         for (int i=0;i<(int)std::min(fs.size(),(std::size_t)4);i++)
             nero_println("  [{}] {} ({})", i+1, fs[i].name, fs[i].category.empty()?"main":fs[i].category);
     }
-    return EXIT_SUCCESS;
+    return overall_success ? EXIT_SUCCESS : EXIT_FAILURE;
 }

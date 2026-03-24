@@ -126,10 +126,10 @@ nero::MaybeEValue nero::AST::evaluate(const AST *ast, nero::Evaluator &evalulato
         }
         case TokenType::IDENTIFIER: {
             const auto &token_id = std::string{ast->token.text};
-            if(evalulator.fixed_constants.contains(token_id))
-                return evalulator.fixed_constants.at(token_id);
             if(evalulator.evaluated_variables.contains(token_id))
                 return evalulator.evaluated_variables.at(token_id);
+            if(evalulator.fixed_constants.contains(token_id))
+                return evalulator.fixed_constants.at(token_id);
             // Imaginary unit 'i' — only if not otherwise defined
             if(token_id == "i") {
                 return UnitValue{0.0L, 1.0L, UnitVector{DIMENSIONLESS_VEC}};

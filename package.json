@@ -24,7 +24,8 @@
   "main": "index.js",
   "scripts": {
     "prepare": "husky",
-    "test": "cmake -S . -B build && cmake --build build && ./build/NeroTest"
+    "test": "cmake -S . -B build && cmake --build build && ./build/NeroTest",
+    "test:ts": "npx ts-node -T nero_wasm_interface.test.ts"
   },
   "devDependencies": {
     "@types/node": "^25.2.3",

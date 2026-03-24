@@ -26,7 +26,7 @@ const CONSTANTS: Constant[] = [
     ["e_c",       "1.602*10^{-19}",          "\\C",                           "Elementary charge"],
     ["e_0",       "8.854187817*10^{-12}",    "\\frac{\\F}{\\m}",              "Electric constant (permittivity of free space)"],
     ["epsilon_0", "8.854187817*10^{-12}",    "\\frac{\\F}{\\m}",              "Vacuum permittivity (alias for e_0)",            "\\epsilon_0"],
-    ["k_e",       "8.99*10^9",               "\\frac{\\N\\m^2}{\\C^2}",       "Coulomb constant"],
+    ["k",       "8.99*10^9",               "\\frac{\\N\\m^2}{\\C^2}",         "Coulomb constant"],
 
     ["mu_0",      "4\\pi*10^{-7}",           "\\frac{\\H}{\\m}",              "Vacuum permeability",                           "\\mu_0"],
     ["c",         "2.99792458*10^8",         "\\frac{\\m}{\\s}",              "Speed of light in vacuum"],
