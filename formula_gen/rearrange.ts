@@ -1255,10 +1255,16 @@ function nodeToLatex(node: Node): string {
       const r = wrap(node.right, "mul");
       const rNode = node.right;
       const lNode = node.left;
+      const isVector = (n: Node) =>
+        n.kind === "var" && (n.name.startsWith("\\hat{") ||
+          n.name.startsWith("\\vec{") || n.name.startsWith("\\mathbf{"));
       const rIsAlpha = rNode.kind === "var" || rNode.kind === "fn" ||
         (rNode.kind === "pow" && (rNode.left.kind === "var" || rNode.left.kind === "fn"));
+      const lIsAlpha = lNode.kind === "var" || lNode.kind === "fn" ||
+        (lNode.kind === "pow" && (lNode.left.kind === "var" || lNode.left.kind === "fn"));
       const lIsNum = lNode.kind === "num";
-      if (lIsNum && rIsAlpha) return `${l} ${r}`;
+      if ((lIsNum || lIsAlpha) && rIsAlpha && !isVector(lNode) && !isVector(rNode))
+        return `${l} ${r}`;
       return `${l} \\cdot ${r}`;
     }
     case "div":
@@ -1349,7 +1355,7 @@ export interface RearrangementResult {
  *
  * Results may contain \pm for equations with two solutions (e.g. quadratics).
  */
-export function rearrangeLatex(latex: string): RearrangementResult[] {
+export function rearrangeLatex(latex: string, constants?: Set<string>): RearrangementResult[] {
   let equation: Node;
   try {
     const tokens = tokenise(latex);
@@ -1359,7 +1365,7 @@ export function rearrangeLatex(latex: string): RearrangementResult[] {
     return [{ variable: "?", latex, solved: false, reason: `Parse error: ${err}` }];
   }
 
-  const vars = Array.from(collectVars(equation)).sort();
+  const vars = Array.from(collectVars(equation)).filter(v => !constants?.has(v)).sort();
 
   if (vars.length === 0)
     return [{ variable: "?", latex, solved: false, reason: "No variables found." }];

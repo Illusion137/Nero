@@ -1,147 +1,95 @@
 [
-    {
-        "name": "Capacitance",
-        "latex": "C = \\frac{Q}{V}",
-        "variables": [
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
-            { "name": "Q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge", "constant": false },
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false }
-        ]
-    },
-    {
-        "name": "Parallel Plate Capacitor",
-        "latex": "C = \\epsilon_0 \\frac{A}{d}",
-        "variables": [
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Plate area", "constant": false },
-            { "name": "d", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Plate separation", "constant": false }
-        ]
-    },
-    {
-        "name": "Capacitor Energy (Voltage)",
-        "latex": "U = \\frac{1}{2}CV^2",
-        "variables": [
-            { "name": "U", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Energy stored", "constant": false },
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false }
-        ]
-    },
-    {
-        "name": "Capacitor Energy (Charge)",
-        "latex": "U = \\frac{Q^2}{2C}",
-        "variables": [
-            { "name": "U", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Energy stored", "constant": false },
-            { "name": "Q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge", "constant": false },
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
-        ]
-    },
-    {
-        "name": "Capacitors in Parallel",
-        "latex": "C_{total} = C_1 + C_2",
-        "variables": [
-            { "name": "C_{total}", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Total capacitance", "constant": false },
-            { "name": "C_1", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance 1", "constant": false },
-            { "name": "C_2", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance 2", "constant": false }
-        ]
-    },
-    {
-        "name": "Capacitance with Dielectric",
-        "latex": "C = \\kappa C_0",
-        "variables": [
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance with dielectric", "constant": false },
-            { "name": "\\kappa", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Dielectric constant", "constant": false },
-            { "name": "C_0", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance without dielectric", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Field in Dielectric",
-        "latex": "E = \\frac{E_0}{\\kappa}",
-        "variables": [
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field in dielectric", "constant": false },
-            { "name": "E_0", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field in vacuum", "constant": false },
-            { "name": "\\kappa", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Dielectric constant", "constant": false }
-        ]
-    },
-    {
-        "name": "Spherical Capacitor",
-        "latex": "C = 4\\pi\\epsilon_0 \\frac{r_a r_b}{r_b - r_a}",
-        "variables": [
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
-            { "name": "\\pi", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Pi", "constant": true },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true },
-            { "name": "r_a", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Inner radius", "constant": false },
-            { "name": "r_b", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Outer radius", "constant": false }
-        ]
-    },
-    {
-        "name": "Cylindrical Capacitor",
-        "latex": "C = \\frac{2\\pi\\epsilon_0 L}{\\ln(r_b/r_a)}",
-        "variables": [
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
-            { "name": "\\pi", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Pi", "constant": true },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true },
-            { "name": "L", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Length", "constant": false },
-            { "name": "r_a", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Inner radius", "constant": false },
-            { "name": "r_b", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Outer radius", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Energy Density",
-        "latex": "u = \\frac{1}{2}\\epsilon_0 E^2",
-        "variables": [
-            { "name": "u", "unit": [-1, -2, 1, 0, 0, 0, 0], "description": "Energy density", "constant": false },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true },
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false }
-        ]
-    },
-    {
-        "name": "Capacitor Energy (QV Form)",
-        "latex": "U = \\frac{1}{2}QV",
-        "variables": [
-            { "name": "U", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Energy stored", "constant": false },
-            { "name": "Q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge", "constant": false },
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false }
-        ]
-    },
-    {
-        "name": "Parallel Plate Capacitor with Dielectric",
-        "latex": "C = \\kappa\\epsilon_0\\frac{A}{d}",
-        "variables": [
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
-            { "name": "\\kappa", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Dielectric constant", "constant": false },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Plate area", "constant": false },
-            { "name": "d", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Plate separation", "constant": false }
-        ]
-    },
-    {
-        "name": "Isolated Sphere Capacitance",
-        "latex": "C = 4\\pi\\epsilon_0 R",
-        "variables": [
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false },
-            { "name": "\\pi", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Pi", "constant": true },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true },
-            { "name": "R", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Radius of sphere", "constant": false }
-        ]
-    },
-    {
-        "name": "Energy Density in Dielectric",
-        "latex": "u = \\frac{1}{2}\\kappa\\epsilon_0 E^2",
-        "variables": [
-            { "name": "u", "unit": [-1, -2, 1, 0, 0, 0, 0], "description": "Energy density", "constant": false },
-            { "name": "\\kappa", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Dielectric constant", "constant": false },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true },
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false }
-        ]
-    },
-    {
-        "name": "Capacitors in Series (Two)",
-        "latex": "C_{total} = \\frac{C_1 C_2}{C_1 + C_2}",
-        "variables": [
-            { "name": "C_{total}", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Total capacitance", "constant": false },
-            { "name": "C_1", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance 1", "constant": false },
-            { "name": "C_2", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance 2", "constant": false }
-        ]
-    }
+  {
+    "name": "Capacitance Definition",
+    "latex": "C = \\frac{Q}{V}",
+    "variables": [
+      {"name": "C", "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",       "constant": false},
+      {"name": "Q", "unit": [0,1,0,1,0,0,0],   "description": "Stored charge",     "constant": false},
+      {"name": "V", "unit": [2,-3,1,-1,0,0,0], "description": "Voltage across capacitor","constant": false}
+    ]
+  },
+  {
+    "name": "Parallel Plate Capacitance",
+    "latex": "C = \\frac{e_0 A}{d}",
+    "variables": [
+      {"name": "C",   "unit": [-2,4,-1,2,0,0,0],  "description": "Capacitance",          "constant": false},
+      {"name": "e_0", "unit": [-3,4,-1,2,0,0,0],  "description": "Electric permittivity","constant": true},
+      {"name": "A",   "unit": [2,0,0,0,0,0,0],    "description": "Plate area",           "constant": false},
+      {"name": "d",   "unit": [1,0,0,0,0,0,0],    "description": "Plate separation",     "constant": false}
+    ]
+  },
+  {
+    "name": "Capacitance with Dielectric",
+    "latex": "C = \\frac{\\kappa e_0 A}{d}",
+    "variables": [
+      {"name": "C",       "unit": [-2,4,-1,2,0,0,0],  "description": "Capacitance with dielectric","constant": false},
+      {"name": "\\kappa", "unit": [0,0,0,0,0,0,0],    "description": "Dielectric constant",         "constant": false},
+      {"name": "e_0",     "unit": [-3,4,-1,2,0,0,0],  "description": "Electric permittivity",       "constant": true},
+      {"name": "A",       "unit": [2,0,0,0,0,0,0],    "description": "Plate area",                  "constant": false},
+      {"name": "d",       "unit": [1,0,0,0,0,0,0],    "description": "Plate separation",            "constant": false}
+    ]
+  },
+  {
+    "name": "Dielectric Constant",
+    "latex": "\\kappa = \\frac{C}{C_0}",
+    "variables": [
+      {"name": "\\kappa", "unit": [0,0,0,0,0,0,0],   "description": "Dielectric constant",           "constant": false},
+      {"name": "C",       "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance with dielectric",   "constant": false},
+      {"name": "C_0",     "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance without dielectric","constant": false}
+    ]
+  },
+  {
+    "name": "Capacitor Energy (voltage)",
+    "latex": "U_C = \\frac{1}{2} C V^2",
+    "variables": [
+      {"name": "U_C", "unit": [2,-2,1,0,0,0,0], "description": "Energy stored in capacitor","constant": false},
+      {"name": "C",   "unit": [-2,4,-1,2,0,0,0],"description": "Capacitance",               "constant": false},
+      {"name": "V",   "unit": [2,-3,1,-1,0,0,0],"description": "Voltage",                   "constant": false}
+    ]
+  },
+  {
+    "name": "Capacitor Energy (charge)",
+    "latex": "U_C = \\frac{Q^2}{2 C}",
+    "variables": [
+      {"name": "U_C", "unit": [2,-2,1,0,0,0,0],  "description": "Energy stored in capacitor","constant": false},
+      {"name": "Q",   "unit": [0,1,0,1,0,0,0],   "description": "Stored charge",             "constant": false},
+      {"name": "C",   "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",               "constant": false}
+    ]
+  },
+  {
+    "name": "Capacitor Energy (charge and voltage)",
+    "latex": "U_C = \\frac{1}{2} Q V",
+    "variables": [
+      {"name": "U_C", "unit": [2,-2,1,0,0,0,0],  "description": "Energy stored in capacitor","constant": false},
+      {"name": "Q",   "unit": [0,1,0,1,0,0,0],   "description": "Stored charge",             "constant": false},
+      {"name": "V",   "unit": [2,-3,1,-1,0,0,0], "description": "Voltage",                   "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Energy Density",
+    "latex": "u_E = \\frac{1}{2} e_0 E^2",
+    "variables": [
+      {"name": "u_E", "unit": [-1,-2,1,0,0,0,0],  "description": "Electric energy density", "constant": false},
+      {"name": "e_0", "unit": [-3,4,-1,2,0,0,0],  "description": "Electric permittivity",   "constant": true},
+      {"name": "E",   "unit": [1,-3,1,-1,0,0,0],  "description": "Electric field",          "constant": false}
+    ]
+  },
+  {
+    "name": "Capacitors in Series (two)",
+    "latex": "C_{eq} = \\frac{C_1 C_2}{C_1 + C_2}",
+    "variables": [
+      {"name": "C_{eq}", "unit": [-2,4,-1,2,0,0,0], "description": "Equivalent series capacitance","constant": false},
+      {"name": "C_1",    "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance 1",                "constant": false},
+      {"name": "C_2",    "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance 2",                "constant": false}
+    ]
+  },
+  {
+    "name": "Capacitors in Parallel",
+    "latex": "C_{eq} = C_1 + C_2",
+    "variables": [
+      {"name": "C_{eq}", "unit": [-2,4,-1,2,0,0,0], "description": "Equivalent parallel capacitance","constant": false},
+      {"name": "C_1",    "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance 1",                  "constant": false},
+      {"name": "C_2",    "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance 2",                  "constant": false}
+    ]
+  }
 ]

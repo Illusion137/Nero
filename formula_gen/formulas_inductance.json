@@ -1,112 +1,237 @@
 [
-    {
-        "name": "Self-Inductance EMF",
-        "latex": "V = \\frac{LI}{t}",
-        "variables": [
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Induced voltage", "constant": false },
-            { "name": "L", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance", "constant": false },
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current change", "constant": false },
-            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time interval", "constant": false }
-        ]
-    },
-    {
-        "name": "Solenoid Inductance",
-        "latex": "L = \\mu_0 n^2 A l",
-        "variables": [
-            { "name": "L", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance", "constant": false },
-            { "name": "\\mu_0", "unit": [1, -2, 1, -2, 0, 0, 0], "description": "Permeability of free space", "constant": true },
-            { "name": "n", "unit": [-1, 0, 0, 0, 0, 0, 0], "description": "Turns per unit length", "constant": false },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Cross-sectional area", "constant": false },
-            { "name": "l", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Solenoid length", "constant": false }
-        ]
-    },
-    {
-        "name": "Energy Stored in Inductor",
-        "latex": "U = \\frac{1}{2}LI^2",
-        "variables": [
-            { "name": "U", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Energy stored", "constant": false },
-            { "name": "L", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance", "constant": false },
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false }
-        ]
-    },
-    {
-        "name": "RL Time Constant",
-        "latex": "\\tau = \\frac{L}{R}",
-        "variables": [
-            { "name": "\\tau", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time constant", "constant": false },
-            { "name": "L", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance", "constant": false },
-            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false }
-        ]
-    },
-    {
-        "name": "Mutual Inductance EMF",
-        "latex": "E_2 = \\frac{MI_1}{t}",
-        "variables": [
-            { "name": "E_2", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Induced EMF in coil 2", "constant": false },
-            { "name": "M", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Mutual inductance", "constant": false },
-            { "name": "I_1", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current change in coil 1", "constant": false },
-            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time interval", "constant": false }
-        ]
-    },
-    {
-        "name": "LC Oscillation Frequency",
-        "latex": "f = \\frac{1}{2\\pi\\sqrt{LC}}",
-        "variables": [
-            { "name": "f", "unit": [0, -1, 0, 0, 0, 0, 0], "description": "Resonant frequency", "constant": false },
-            { "name": "\\pi", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Pi", "constant": true },
-            { "name": "L", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance", "constant": false },
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
-        ]
-    },
-    {
-        "name": "Inductance from Flux",
-        "latex": "L = \\frac{N\\Phi_B}{I}",
-        "variables": [
-            { "name": "L", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance", "constant": false },
-            { "name": "N", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Number of turns", "constant": false },
-            { "name": "\\Phi_B", "unit": [2, -2, 1, -1, 0, 0, 0], "description": "Magnetic flux", "constant": false },
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false }
-        ]
-    },
-    {
-        "name": "Toroid Inductance",
-        "latex": "L = \\frac{\\mu_0 N^2 A}{2\\pi r}",
-        "variables": [
-            { "name": "L", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance", "constant": false },
-            { "name": "\\mu_0", "unit": [1, -2, 1, -2, 0, 0, 0], "description": "Permeability of free space", "constant": true },
-            { "name": "N", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Total number of turns", "constant": false },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Cross-sectional area", "constant": false },
-            { "name": "\\pi", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Pi", "constant": true },
-            { "name": "r", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Radius of toroid", "constant": false }
-        ]
-    },
-    {
-        "name": "Mutual Inductance Relation",
-        "latex": "M = k\\sqrt{L_1 L_2}",
-        "variables": [
-            { "name": "M", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Mutual inductance", "constant": false },
-            { "name": "k", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Coupling coefficient", "constant": false },
-            { "name": "L_1", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance of coil 1", "constant": false },
-            { "name": "L_2", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance of coil 2", "constant": false }
-        ]
-    },
-    {
-        "name": "LC Angular Frequency",
-        "latex": "\\omega = \\frac{1}{\\sqrt{LC}}",
-        "variables": [
-            { "name": "\\omega", "unit": [0, -1, 0, 0, 0, 0, 0], "description": "Angular frequency", "constant": false },
-            { "name": "L", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance", "constant": false },
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
-        ]
-    },
-    {
-        "name": "Quality Factor",
-        "latex": "Q = \\frac{\\omega_0 L}{R}",
-        "variables": [
-            { "name": "Q", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Quality factor", "constant": false },
-            { "name": "\\omega_0", "unit": [0, -1, 0, 0, 0, 0, 0], "description": "Resonant angular frequency", "constant": false },
-            { "name": "L", "unit": [2, -2, 1, -2, 0, 0, 0], "description": "Inductance", "constant": false },
-            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false }
-        ]
-    }
+  {
+    "name": "Self-Inductance EMF",
+    "latex": "\\varepsilon = L \\frac{\\Delta I}{\\Delta t}",
+    "variables": [
+      {"name": "\\varepsilon", "unit": [2,-3,1,-1,0,0,0], "description": "Induced EMF (magnitude)",    "constant": false},
+      {"name": "L",            "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                 "constant": false},
+      {"name": "\\Delta I",    "unit": [0,0,0,1,0,0,0],   "description": "Change in current",          "constant": false},
+      {"name": "\\Delta t",    "unit": [0,1,0,0,0,0,0],   "description": "Time interval",              "constant": false}
+    ]
+  },
+  {
+    "name": "Inductance from Flux",
+    "latex": "L = \\frac{N \\Phi_B}{I}",
+    "variables": [
+      {"name": "L",       "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",         "constant": false},
+      {"name": "N",       "unit": [0,0,0,0,0,0,0],   "description": "Number of turns",    "constant": false},
+      {"name": "\\Phi_B", "unit": [2,-2,1,-1,0,0,0], "description": "Magnetic flux",      "constant": false},
+      {"name": "I",       "unit": [0,0,0,1,0,0,0],   "description": "Current",            "constant": false}
+    ]
+  },
+  {
+    "name": "Solenoid Inductance",
+    "latex": "L = \\frac{\\mu_0 N^2 A}{l}",
+    "variables": [
+      {"name": "L",      "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",            "constant": false},
+      {"name": "\\mu_0", "unit": [1,-2,1,-2,0,0,0], "description": "Vacuum permeability",   "constant": true},
+      {"name": "N",      "unit": [0,0,0,0,0,0,0],   "description": "Number of turns",       "constant": false},
+      {"name": "A",      "unit": [2,0,0,0,0,0,0],   "description": "Cross-sectional area",  "constant": false},
+      {"name": "l",      "unit": [1,0,0,0,0,0,0],   "description": "Length of solenoid",    "constant": false}
+    ]
+  },
+  {
+    "name": "Inductor Energy",
+    "latex": "U_L = \\frac{1}{2} L I^2",
+    "variables": [
+      {"name": "U_L", "unit": [2,-2,1,0,0,0,0],  "description": "Energy stored in inductor","constant": false},
+      {"name": "L",   "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",               "constant": false},
+      {"name": "I",   "unit": [0,0,0,1,0,0,0],   "description": "Current",                  "constant": false}
+    ]
+  },
+  {
+    "name": "Magnetic Energy Density",
+    "latex": "u_B = \\frac{B^2}{2 \\mu_0}",
+    "variables": [
+      {"name": "u_B",    "unit": [-1,-2,1,0,0,0,0],  "description": "Magnetic energy density","constant": false},
+      {"name": "B",      "unit": [0,-2,1,-1,0,0,0],  "description": "Magnetic field",         "constant": false},
+      {"name": "\\mu_0", "unit": [1,-2,1,-2,0,0,0],  "description": "Vacuum permeability",    "constant": true}
+    ]
+  },
+  {
+    "name": "RL Time Constant",
+    "latex": "\\tau = \\frac{L}{R}",
+    "variables": [
+      {"name": "\\tau", "unit": [0,1,0,0,0,0,0],   "description": "RL time constant","constant": false},
+      {"name": "L",     "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",       "constant": false},
+      {"name": "R",     "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",       "constant": false}
+    ]
+  },
+  {
+    "name": "RL Current Decay",
+    "latex": "i = I_0 e^{-t/\\tau}",
+    "variables": [
+      {"name": "i",    "unit": [0,0,0,1,0,0,0],  "description": "Current at time t", "constant": false},
+      {"name": "I_0",  "unit": [0,0,0,1,0,0,0],  "description": "Initial current",   "constant": false},
+      {"name": "t",    "unit": [0,1,0,0,0,0,0],  "description": "Time",              "constant": false},
+      {"name": "\\tau","unit": [0,1,0,0,0,0,0],  "description": "RL time constant",  "constant": false}
+    ]
+  },
+  {
+    "name": "RL Current Growth",
+    "latex": "i = I_0 (1 - e^{-t/\\tau})",
+    "variables": [
+      {"name": "i",    "unit": [0,0,0,1,0,0,0],  "description": "Current at time t",  "constant": false},
+      {"name": "I_0",  "unit": [0,0,0,1,0,0,0],  "description": "Maximum current",    "constant": false},
+      {"name": "t",    "unit": [0,1,0,0,0,0,0],  "description": "Time",               "constant": false},
+      {"name": "\\tau","unit": [0,1,0,0,0,0,0],  "description": "RL time constant",   "constant": false}
+    ]
+  },
+  {
+    "name": "LC Angular Frequency",
+    "latex": "\\omega = \\frac{1}{\\sqrt{L C}}",
+    "variables": [
+      {"name": "\\omega", "unit": [0,-1,0,0,0,0,0],  "description": "Angular frequency",  "constant": false},
+      {"name": "L",       "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",          "constant": false},
+      {"name": "C",       "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",         "constant": false}
+    ]
+  },
+  {
+    "name": "Inductive Reactance",
+    "latex": "X_L = \\omega L",
+    "variables": [
+      {"name": "X_L",     "unit": [2,-3,1,-2,0,0,0], "description": "Inductive reactance","constant": false},
+      {"name": "\\omega", "unit": [0,-1,0,0,0,0,0],  "description": "Angular frequency",  "constant": false},
+      {"name": "L",       "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",          "constant": false}
+    ]
+  },
+  {
+    "name": "Capacitive Reactance",
+    "latex": "X_C = \\frac{1}{\\omega C}",
+    "variables": [
+      {"name": "X_C",     "unit": [2,-3,1,-2,0,0,0], "description": "Capacitive reactance","constant": false},
+      {"name": "\\omega", "unit": [0,-1,0,0,0,0,0],  "description": "Angular frequency",   "constant": false},
+      {"name": "C",       "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",          "constant": false}
+    ]
+  },
+  {
+    "name": "Impedance",
+    "latex": "Z = \\sqrt{R^2 + (X_L - X_C)^2}",
+    "variables": [
+      {"name": "Z",   "unit": [2,-3,1,-2,0,0,0], "description": "Impedance",           "constant": false},
+      {"name": "R",   "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",          "constant": false},
+      {"name": "X_L", "unit": [2,-3,1,-2,0,0,0], "description": "Inductive reactance", "constant": false},
+      {"name": "X_C", "unit": [2,-3,1,-2,0,0,0], "description": "Capacitive reactance","constant": false}
+    ]
+  },
+  {
+    "name": "Resonant Angular Frequency",
+    "latex": "\\omega_0 = \\frac{1}{\\sqrt{L C}}",
+    "variables": [
+      {"name": "\\omega_0", "unit": [0,-1,0,0,0,0,0],  "description": "Resonant angular frequency","constant": false},
+      {"name": "L",         "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                "constant": false},
+      {"name": "C",         "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",               "constant": false}
+    ]
+  },
+  {
+    "name": "Average Power (AC)",
+    "latex": "P_{avg} = \\frac{1}{2} V_0 I_0 \\cos(\\phi)",
+    "variables": [
+      {"name": "P_{avg}", "unit": [2,-3,1,0,0,0,0],  "description": "Average power",       "constant": false},
+      {"name": "V_0",     "unit": [2,-3,1,-1,0,0,0], "description": "Peak voltage",        "constant": false},
+      {"name": "I_0",     "unit": [0,0,0,1,0,0,0],   "description": "Peak current",        "constant": false},
+      {"name": "\\phi",   "unit": [0,0,0,0,0,0,0],   "description": "Phase angle",         "constant": false}
+    ]
+  },
+  {
+    "name": "Mutual Inductance EMF",
+    "latex": "\\varepsilon_2 = M \\frac{\\Delta I_1}{\\Delta t}",
+    "variables": [
+      {"name": "\\varepsilon_2", "unit": [2,-3,1,-1,0,0,0], "description": "Induced EMF in coil 2",    "constant": false},
+      {"name": "M",              "unit": [2,-2,1,-2,0,0,0], "description": "Mutual inductance",         "constant": false},
+      {"name": "\\Delta I_1",    "unit": [0,0,0,1,0,0,0],   "description": "Change in current in coil 1","constant": false},
+      {"name": "\\Delta t",      "unit": [0,1,0,0,0,0,0],   "description": "Time interval",             "constant": false}
+    ]
+  },
+  {
+    "name": "Toroid Inductance",
+    "latex": "L = \\frac{\\mu_0 N^2 A}{2 \\pi r}",
+    "variables": [
+      {"name": "L",      "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",            "constant": false},
+      {"name": "\\mu_0", "unit": [1,-2,1,-2,0,0,0], "description": "Vacuum permeability",   "constant": true},
+      {"name": "N",      "unit": [0,0,0,0,0,0,0],   "description": "Number of turns",       "constant": false},
+      {"name": "A",      "unit": [2,0,0,0,0,0,0],   "description": "Cross-sectional area",  "constant": false},
+      {"name": "r",      "unit": [1,0,0,0,0,0,0],   "description": "Mean radius of toroid", "constant": false}
+    ]
+  },
+  {
+    "name": "Mutual Inductance (Coupling Coefficient)",
+    "latex": "M = k \\sqrt{L_1 L_2}",
+    "variables": [
+      {"name": "M",   "unit": [2,-2,1,-2,0,0,0], "description": "Mutual inductance",    "constant": false},
+      {"name": "k",   "unit": [0,0,0,0,0,0,0],   "description": "Coupling coefficient", "constant": false},
+      {"name": "L_1", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance of coil 1", "constant": false},
+      {"name": "L_2", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance of coil 2", "constant": false}
+    ]
+  },
+  {
+    "name": "Series Inductors",
+    "latex": "L_s = L_1 + L_2",
+    "variables": [
+      {"name": "L_s", "unit": [2,-2,1,-2,0,0,0], "description": "Total series inductance", "constant": false},
+      {"name": "L_1", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance 1",            "constant": false},
+      {"name": "L_2", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance 2",            "constant": false}
+    ]
+  },
+  {
+    "name": "Inductor Quality Factor",
+    "latex": "Q_L = \\frac{\\omega L}{R}",
+    "variables": [
+      {"name": "Q_L",     "unit": [0,0,0,0,0,0,0],   "description": "Quality factor",    "constant": false},
+      {"name": "\\omega", "unit": [0,-1,0,0,0,0,0],  "description": "Angular frequency", "constant": false},
+      {"name": "L",       "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",        "constant": false},
+      {"name": "R",       "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",        "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Damping Ratio",
+    "latex": "\\zeta = \\frac{R}{2} \\sqrt{\\frac{C}{L}}",
+    "variables": [
+      {"name": "\\zeta", "unit": [0,0,0,0,0,0,0],   "description": "Damping ratio", "constant": false},
+      {"name": "R",      "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",    "constant": false},
+      {"name": "C",      "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",   "constant": false},
+      {"name": "L",      "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",    "constant": false}
+    ]
+  },
+  {
+    "name": "Coaxial Cable Inductance",
+    "latex": "L = \\frac{\\mu_0 l}{2 \\pi} \\ln\\left(\\frac{b}{a}\\right)",
+    "variables": [
+      {"name": "L",      "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",          "constant": false},
+      {"name": "\\mu_0", "unit": [1,-2,1,-2,0,0,0], "description": "Vacuum permeability", "constant": true},
+      {"name": "l",      "unit": [1,0,0,0,0,0,0],   "description": "Length of cable",     "constant": false},
+      {"name": "b",      "unit": [1,0,0,0,0,0,0],   "description": "Outer radius",        "constant": false},
+      {"name": "a",      "unit": [1,0,0,0,0,0,0],   "description": "Inner radius",        "constant": false}
+    ]
+  },
+  {
+    "name": "Transformer Voltage Ratio",
+    "latex": "\\frac{V_2}{V_1} = \\frac{N_2}{N_1}",
+    "variables": [
+      {"name": "V_2", "unit": [2,-3,1,-1,0,0,0], "description": "Secondary voltage",       "constant": false},
+      {"name": "V_1", "unit": [2,-3,1,-1,0,0,0], "description": "Primary voltage",         "constant": false},
+      {"name": "N_2", "unit": [0,0,0,0,0,0,0],   "description": "Secondary turns",         "constant": false},
+      {"name": "N_1", "unit": [0,0,0,0,0,0,0],   "description": "Primary turns",           "constant": false}
+    ]
+  },
+  {
+    "name": "Transformer Current Ratio",
+    "latex": "\\frac{I_2}{I_1} = \\frac{N_1}{N_2}",
+    "variables": [
+      {"name": "I_2", "unit": [0,0,0,1,0,0,0], "description": "Secondary current", "constant": false},
+      {"name": "I_1", "unit": [0,0,0,1,0,0,0], "description": "Primary current",   "constant": false},
+      {"name": "N_1", "unit": [0,0,0,0,0,0,0], "description": "Primary turns",     "constant": false},
+      {"name": "N_2", "unit": [0,0,0,0,0,0,0], "description": "Secondary turns",   "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Resonance Q Factor",
+    "latex": "Q = \\frac{1}{R} \\sqrt{\\frac{L}{C}}",
+    "variables": [
+      {"name": "Q", "unit": [0,0,0,0,0,0,0],   "description": "Quality factor", "constant": false},
+      {"name": "R", "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",     "constant": false},
+      {"name": "L", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",     "constant": false},
+      {"name": "C", "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",    "constant": false}
+    ]
+  }
 ]

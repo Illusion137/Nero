@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Electric Potential (Point Charge)",
+    "latex": "V = k \\frac{q}{r}",
+    "variables": [
+      {"name": "V", "unit": [2,-3,1,-1,0,0,0],  "description": "Electric potential",   "constant": false},
+      {"name": "k", "unit": [3,-4,1,-2,0,0,0],  "description": "Coulomb's constant",   "constant": true},
+      {"name": "q", "unit": [0,1,0,1,0,0,0],    "description": "Source charge",        "constant": false},
+      {"name": "r", "unit": [1,0,0,0,0,0,0],    "description": "Distance from charge", "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Potential from Uniform Field",
+    "latex": "V = E d",
+    "variables": [
+      {"name": "V", "unit": [2,-3,1,-1,0,0,0],  "description": "Potential difference",        "constant": false},
+      {"name": "E", "unit": [1,-3,1,-1,0,0,0],  "description": "Uniform electric field",      "constant": false},
+      {"name": "d", "unit": [1,0,0,0,0,0,0],    "description": "Displacement along E",        "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Field from Potential",
+    "latex": "E = \\frac{\\Delta V}{d}",
+    "variables": [
+      {"name": "E",        "unit": [1,-3,1,-1,0,0,0],  "description": "Electric field (uniform)",  "constant": false},
+      {"name": "\\Delta V","unit": [2,-3,1,-1,0,0,0],  "description": "Potential difference",      "constant": false},
+      {"name": "d",        "unit": [1,0,0,0,0,0,0],    "description": "Distance",                  "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Potential Energy (Two Charges)",
+    "latex": "U = k \\frac{q_1 q_2}{r}",
+    "variables": [
+      {"name": "U",   "unit": [2,-2,1,0,0,0,0],  "description": "Electric potential energy","constant": false},
+      {"name": "k",   "unit": [3,-4,1,-2,0,0,0], "description": "Coulomb's constant",       "constant": true},
+      {"name": "q_1", "unit": [0,1,0,1,0,0,0],   "description": "Charge 1",                 "constant": false},
+      {"name": "q_2", "unit": [0,1,0,1,0,0,0],   "description": "Charge 2",                 "constant": false},
+      {"name": "r",   "unit": [1,0,0,0,0,0,0],   "description": "Distance between charges",  "constant": false}
+    ]
+  },
+  {
+    "name": "Work Done by Electric Field",
+    "latex": "W = q \\Delta V",
+    "variables": [
+      {"name": "W",        "unit": [2,-2,1,0,0,0,0],  "description": "Work done by electric force","constant": false},
+      {"name": "q",        "unit": [0,1,0,1,0,0,0],   "description": "Charge",                    "constant": false},
+      {"name": "\\Delta V","unit": [2,-3,1,-1,0,0,0], "description": "Potential difference",      "constant": false}
+    ]
+  },
+  {
+    "name": "Potential from Electric Field (uniform)",
+    "latex": "\\Delta V = E d",
+    "variables": [
+      {"name": "\\Delta V","unit": [2,-3,1,-1,0,0,0],  "description": "Potential difference",       "constant": false},
+      {"name": "E",        "unit": [1,-3,1,-1,0,0,0],  "description": "Uniform electric field",     "constant": false},
+      {"name": "d",        "unit": [1,0,0,0,0,0,0],    "description": "Displacement along field",   "constant": false}
+    ]
+  },
+  {
+    "name": "Electron Volt to Joules",
+    "latex": "U = q V",
+    "variables": [
+      {"name": "U", "unit": [2,-2,1,0,0,0,0],  "description": "Electric potential energy","constant": false},
+      {"name": "q", "unit": [0,1,0,1,0,0,0],   "description": "Charge",                  "constant": false},
+      {"name": "V", "unit": [2,-3,1,-1,0,0,0], "description": "Electric potential",      "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Potential (Dipole)",
+    "latex": "V = k \\frac{p \\cos(\\theta)}{r^2}",
+    "variables": [
+      {"name": "V",       "unit": [2,-3,1,-1,0,0,0],  "description": "Electric potential from dipole","constant": false},
+      {"name": "k",       "unit": [3,-4,1,-2,0,0,0],  "description": "Coulomb's constant",            "constant": true},
+      {"name": "p",       "unit": [1,1,0,1,0,0,0],    "description": "Electric dipole moment",        "constant": false},
+      {"name": "\\theta", "unit": [0,0,0,0,0,0,0],    "description": "Angle from dipole axis",        "constant": false},
+      {"name": "r",       "unit": [1,0,0,0,0,0,0],    "description": "Distance from dipole center",   "constant": false}
+    ]
+  }
+]

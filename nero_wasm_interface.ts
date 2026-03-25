@@ -286,8 +286,8 @@ export function array_empty(unit: number[]): boolean {
 export function latex_unit_splitter(latex: string): string {
     // UNIT_SPLITTER_GENERATED_START
     const base_units = ["m", "g", "s", "A", "K", "mol", "cd"];
-    const derived_units = ["N", "J", "Pa", "C", "Hz", "S", "Ohm", "\\Omega", "F", "V", "W", "Wb", "T", "H", "L", "eV"];
-    const singleton_units = ["nmi", "AU", "ly", "pc", "cal", "kcal", "PSI", "in", "ft", "yd", "mi", "oz", "lb", "min", "hour", "day", "month", "year", "ATM", "gauss"];
+    const derived_units = ["N", "J", "Pa", "C", "Hz", "S", "Ohm", "\\Omega", "F", "V", "W", "Wb", "T", "H", "L", "eV", "G"];
+    const singleton_units = ["nmi", "AU", "ly", "pc", "cal", "kcal", "PSI", "in", "ft", "yd", "mi", "oz", "lb", "min", "hour", "day", "month", "year", "atm"];
     // UNIT_SPLITTER_GENERATED_END
 
     const prefixes = [
@@ -320,14 +320,21 @@ export function latex_unit_splitter(latex: string): string {
     singleton_units.forEach(unit => all_units.add(unit));
     all_units.add("pH");
 
+    // Add unescaped "mu X" entries so "mu Ohm" etc. match atomically → \mu Ohm
+    const mu_unit_names = [
+        ...base_units,
+        "N", "J", "Pa", "C", "Hz", "S", "Ohm", "F", "V", "W", "Wb", "T", "H", "L", "eV"
+    ];
+    mu_unit_names.forEach(u => all_units.add("mu " + u));
+
     // Sort by length (descending) to match longer units first
     const sorted_units = Array.from(all_units).sort((a, b) => b.length - a.length);
 
-    // Create regex pattern that matches units not already preceded by backslash
-    // The negative lookbehind checks for backslash not followed by 'mu'
-    // or a regular backslash
+    // Create regex pattern that matches units not already preceded by backslash,
+    // not already preceded by \mu , and not in the middle of a word (alpha lookbehind).
+    // The alpha lookbehind prevents sub-unit re-matching, e.g. 'hm' inside 'Ohm'.
     const pattern = new RegExp(
-        `(?<!\\\\)(?<!\\\\mu )(${sorted_units.map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`,
+        `(?<!\\\\)(?<!\\\\mu )(?<![a-zA-Z])(${sorted_units.map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`,
         'g'
     );
 

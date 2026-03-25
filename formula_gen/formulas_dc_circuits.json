@@ -1,96 +1,98 @@
 [
-    {
-        "name": "Resistors in Series",
-        "latex": "R_{total} = R_1 + R_2",
-        "variables": [
-            { "name": "R_{total}", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Total resistance", "constant": false },
-            { "name": "R_1", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance 1", "constant": false },
-            { "name": "R_2", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance 2", "constant": false }
-        ]
-    },
-    {
-        "name": "Resistors in Parallel (Two)",
-        "latex": "R_{total} = \\frac{R_1 R_2}{R_1 + R_2}",
-        "variables": [
-            { "name": "R_{total}", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Total resistance", "constant": false },
-            { "name": "R_1", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance 1", "constant": false },
-            { "name": "R_2", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance 2", "constant": false }
-        ]
-    },
-    {
-        "name": "Voltage Divider",
-        "latex": "V_{out} = V_{in} \\frac{R_2}{R_1 + R_2}",
-        "variables": [
-            { "name": "V_{out}", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Output voltage", "constant": false },
-            { "name": "V_{in}", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Input voltage", "constant": false },
-            { "name": "R_1", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance 1", "constant": false },
-            { "name": "R_2", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance 2", "constant": false }
-        ]
-    },
-    {
-        "name": "EMF with Internal Resistance",
-        "latex": "V = E - Ir",
-        "variables": [
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Terminal voltage", "constant": false },
-            { "name": "E", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Electromotive force", "constant": false },
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false },
-            { "name": "r", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Internal resistance", "constant": false }
-        ]
-    },
-    {
-        "name": "RC Time Constant",
-        "latex": "\\tau = RC",
-        "variables": [
-            { "name": "\\tau", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time constant", "constant": false },
-            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
-            { "name": "C", "unit": [-2, 4, -1, 2, 0, 0, 0], "description": "Capacitance", "constant": false }
-        ]
-    },
-    {
-        "name": "Kirchhoff's Junction Rule (Two Currents)",
-        "latex": "I_{in} = I_1 + I_2",
-        "variables": [
-            { "name": "I_{in}", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Total current entering junction", "constant": false },
-            { "name": "I_1", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current in branch 1", "constant": false },
-            { "name": "I_2", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current in branch 2", "constant": false }
-        ]
-    },
-    {
-        "name": "Wheatstone Bridge Balance",
-        "latex": "R_x = R_3 \\frac{R_2}{R_1}",
-        "variables": [
-            { "name": "R_x", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Unknown resistance", "constant": false },
-            { "name": "R_3", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Known resistance 3", "constant": false },
-            { "name": "R_2", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Known resistance 2", "constant": false },
-            { "name": "R_1", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Known resistance 1", "constant": false }
-        ]
-    },
-    {
-        "name": "Current Divider",
-        "latex": "I_1 = I_{total}\\frac{R_2}{R_1 + R_2}",
-        "variables": [
-            { "name": "I_1", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current through branch 1", "constant": false },
-            { "name": "I_{total}", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Total current", "constant": false },
-            { "name": "R_1", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance 1", "constant": false },
-            { "name": "R_2", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance 2", "constant": false }
-        ]
-    },
-    {
-        "name": "Maximum Power Transfer",
-        "latex": "P_{max} = \\frac{E^2}{4R}",
-        "variables": [
-            { "name": "P_{max}", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Maximum power delivered to load", "constant": false },
-            { "name": "E", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Electromotive force", "constant": false },
-            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false }
-        ]
-    },
-    {
-        "name": "Power Delivered by EMF",
-        "latex": "P = EI",
-        "variables": [
-            { "name": "P", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Power delivered", "constant": false },
-            { "name": "E", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Electromotive force", "constant": false },
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false }
-        ]
-    }
+  {
+    "name": "Terminal Voltage (EMF with internal resistance)",
+    "latex": "V_t = \\varepsilon - I r_i",
+    "variables": [
+      {"name": "V_t",       "unit": [2,-3,1,-1,0,0,0], "description": "Terminal voltage",    "constant": false},
+      {"name": "\\varepsilon","unit": [2,-3,1,-1,0,0,0],"description": "EMF of source",       "constant": false},
+      {"name": "I",         "unit": [0,0,0,1,0,0,0],   "description": "Current",             "constant": false},
+      {"name": "r_i",       "unit": [2,-3,1,-2,0,0,0], "description": "Internal resistance", "constant": false}
+    ]
+  },
+  {
+    "name": "Resistors in Series",
+    "latex": "R_{eq} = R_1 + R_2",
+    "variables": [
+      {"name": "R_{eq}", "unit": [2,-3,1,-2,0,0,0], "description": "Equivalent resistance","constant": false},
+      {"name": "R_1",    "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 1",          "constant": false},
+      {"name": "R_2",    "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 2",          "constant": false}
+    ]
+  },
+  {
+    "name": "Resistors in Parallel (two)",
+    "latex": "R_{eq} = \\frac{R_1 R_2}{R_1 + R_2}",
+    "variables": [
+      {"name": "R_{eq}", "unit": [2,-3,1,-2,0,0,0], "description": "Equivalent parallel resistance","constant": false},
+      {"name": "R_1",    "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 1",                  "constant": false},
+      {"name": "R_2",    "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 2",                  "constant": false}
+    ]
+  },
+  {
+    "name": "RC Time Constant",
+    "latex": "\\tau = R C",
+    "variables": [
+      {"name": "\\tau", "unit": [0,1,0,0,0,0,0],   "description": "RC time constant","constant": false},
+      {"name": "R",     "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",       "constant": false},
+      {"name": "C",     "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",      "constant": false}
+    ]
+  },
+  {
+    "name": "RC Charging (charge)",
+    "latex": "q = Q_0 (1 - e^{-t/\\tau})",
+    "variables": [
+      {"name": "q",   "unit": [0,1,0,1,0,0,0], "description": "Charge at time t",   "constant": false},
+      {"name": "Q_0", "unit": [0,1,0,1,0,0,0], "description": "Maximum charge",     "constant": false},
+      {"name": "t",   "unit": [0,1,0,0,0,0,0], "description": "Time",               "constant": false},
+      {"name": "\\tau","unit": [0,1,0,0,0,0,0],"description": "RC time constant",   "constant": false}
+    ]
+  },
+  {
+    "name": "RC Discharging (charge)",
+    "latex": "q = Q_0 e^{-t/\\tau}",
+    "variables": [
+      {"name": "q",   "unit": [0,1,0,1,0,0,0], "description": "Charge at time t",  "constant": false},
+      {"name": "Q_0", "unit": [0,1,0,1,0,0,0], "description": "Initial charge",    "constant": false},
+      {"name": "t",   "unit": [0,1,0,0,0,0,0], "description": "Time",              "constant": false},
+      {"name": "\\tau","unit": [0,1,0,0,0,0,0],"description": "RC time constant",  "constant": false}
+    ]
+  },
+  {
+    "name": "Voltage Divider",
+    "latex": "V_{out} = V_{in} \\frac{R_2}{R_1 + R_2}",
+    "variables": [
+      {"name": "V_{out}", "unit": [2,-3,1,-1,0,0,0], "description": "Output voltage",  "constant": false},
+      {"name": "V_{in}",  "unit": [2,-3,1,-1,0,0,0], "description": "Input voltage",   "constant": false},
+      {"name": "R_1",     "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 1",    "constant": false},
+      {"name": "R_2",     "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 2",    "constant": false}
+    ]
+  },
+  {
+    "name": "Kirchhoff's Voltage Law (loop)",
+    "latex": "\\varepsilon = I R_1 + I R_2",
+    "variables": [
+      {"name": "\\varepsilon","unit": [2,-3,1,-1,0,0,0],"description": "EMF",            "constant": false},
+      {"name": "I",          "unit": [0,0,0,1,0,0,0],   "description": "Current",        "constant": false},
+      {"name": "R_1",        "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 1",   "constant": false},
+      {"name": "R_2",        "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 2",   "constant": false}
+    ]
+  },
+  {
+    "name": "Power Delivered by EMF",
+    "latex": "P = \\varepsilon I",
+    "variables": [
+      {"name": "P",            "unit": [2,-3,1,0,0,0,0],  "description": "Power delivered",  "constant": false},
+      {"name": "\\varepsilon", "unit": [2,-3,1,-1,0,0,0], "description": "EMF",              "constant": false},
+      {"name": "I",            "unit": [0,0,0,1,0,0,0],   "description": "Current",          "constant": false}
+    ]
+  },
+  {
+    "name": "Wheatstone Bridge Balance",
+    "latex": "R_x = R_3 \\frac{R_2}{R_1}",
+    "variables": [
+      {"name": "R_x", "unit": [2,-3,1,-2,0,0,0], "description": "Unknown resistance","constant": false},
+      {"name": "R_3", "unit": [2,-3,1,-2,0,0,0], "description": "Known resistance 3","constant": false},
+      {"name": "R_2", "unit": [2,-3,1,-2,0,0,0], "description": "Known resistance 2","constant": false},
+      {"name": "R_1", "unit": [2,-3,1,-2,0,0,0], "description": "Known resistance 1","constant": false}
+    ]
+  }
 ]

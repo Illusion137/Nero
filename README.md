@@ -153,6 +153,7 @@ Supported:
 | Constant       | Description                                    | Value                                              |
 | -------------- | ---------------------------------------------- | -------------------------------------------------- |
 | $\mathrm{g}$   | Gravitational acceleration                     | $9.8 \ \frac{m}{s^2}$                              |
+| $\mathrm{G}$   | Gravitational constant                         | $6.6743 \cdot 10^{-11} \ \frac{Nm^2}{kg^2}$        |
 | $\mathrm{e}$   | Euler's number                                 | $2.718281828459$                                   |
 | $\mathrm{e_c}$ | Elementary charge                              | $1.602 \cdot 10^{-19} \ C$                         |
 | $\mathrm{e_0}$ | Electric constant (permittivity of free space) | $8.854187817 \cdot 10^{-12} \ \frac{F}{m}$         |
@@ -251,17 +252,17 @@ Supported:
 
 | Benchmark      | µs / op    | ops / sec    | op unit |
 | -------------- | ---------- | ------------ | ------- |
-| Scalar         | 0.64 µs    | 1.56 M/s     | op      |
-| Trig           | 0.95 µs    | 1.05 M/s     | op      |
+| Scalar         | 0.50 µs    | 2.00 M/s     | op      |
+| Trig           | 0.94 µs    | 1.07 M/s     | op      |
 | Derivative     | 1.71 µs    | 583.4 k/s    | op      |
-| Integral       | 1.42 µs    | 704.2 k/s    | op      |
-| Summation      | 4.10 µs    | 243.8 k/s    | op      |
+| Integral       | 1.38 µs    | 723.6 k/s    | op      |
+| Summation      | 4.19 µs    | 238.9 k/s    | op      |
 | Batch          | 0.94 µs    | 1.06 M/s     | expr    |
-| Formula search | 470.61 µs  | 2.1 k/s      | op      |
-| Solve-for      | 5.12 µs    | 195.3 k/s    | op      |
-| System solver  | 3.88 µs    | 258.1 k/s    | op      |
-| Random pool    | 0.41 µs    | 2.44 M/s     | expr    |
-| Lex            | 0.03 µs    | 34.04 M/s    | token   |
+| Formula search | 18.68 µs   | 53.5 k/s     | op      |
+| Solve-for      | 4.83 µs    | 206.9 k/s    | op      |
+| System solver  | 3.67 µs    | 272.9 k/s    | op      |
+| Random pool    | 0.40 µs    | 2.48 M/s     | expr    |
+| Lex            | 0.03 µs    | 33.98 M/s    | token   |
 
 <details>
 <summary>Raw numbers</summary>
@@ -269,20 +270,20 @@ Supported:
 ```
 === Nero Benchmarks ===
 
-Scalar: 1 + 2 * 3                                           64.11 ms       1559832/s
-Trig: sin(pi/6) + cos(pi/3)                                 47.43 ms       1054130/s
-Derivative: d/dx(x^3) at x=2                                17.14 ms        583374/s
-Integral: int_0^1 x^2 dx                                     7.10 ms        704225/s
-Summation: sum_{i=1}^{100}(i)                               20.51 ms        243809/s
-Batch (5 unit-carrying exprs)                               47.16 ms        212041/s
-Formula search (acceleration target)                       470.61 ms          2125/s
-Solve-for: x^2 - 4 ; x :=                                   15.36 ms        195315/s
-System solver: x+y=5, x-y=1 ; @=x,y                          7.75 ms        258196/s
-Random pool (30 exprs, 1000 rounds)                         12.32 ms         81158/s
+Scalar: 1 + 2 * 3                                           50.12 ms       1995231/s
+Trig: sin(pi/6) + cos(pi/3)                                 46.86 ms       1067047/s
+Derivative: d/dx(x^3) at x=2                                17.14 ms        583545/s
+Integral: int_0^1 x^2 dx                                     6.91 ms        723737/s
+Summation: sum_{i=1}^{100}(i)                               20.93 ms        238867/s
+Batch (5 unit-carrying exprs)                               47.18 ms        211954/s
+Formula search (acceleration target)                        18.68 ms         53524/s
+Solve-for: x^2 - 4 ; x :=                                   14.50 ms        206948/s
+System solver: x+y=5, x-y=1 ; @=x,y                          7.33 ms        272918/s
+Random pool (30 exprs, 1000 rounds)                         12.10 ms         82674/s
 
 --- Lex Throughput ---
-Lex: 50k-token string (all token types)                    734.44 ms           681/s
-  Tokens/sec: 34.04M   Throughput: 156.4 MB/s
+Lex: 50k-token string (all token types)                    735.72 ms           680/s
+  Tokens/sec: 33.98M   Throughput: 156.1 MB/s
 ```
 
 </details>

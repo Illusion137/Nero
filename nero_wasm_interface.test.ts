@@ -57,15 +57,12 @@ describe('latex_unit_splitter — already backslashed (no double-backslash)', ()
         assert.equal(latex_unit_splitter('\\Omega'), '\\Omega');
     });
 
-    // BUG: compound backslashed units get their sub-units re-matched by the regex.
-    // \km → \k\m because 'm' after 'k' is not preceded by '\' and matches as a unit.
-    test('\\\\km → \\\\k\\\\m [BUG: sub-unit re-matched inside compound escaped unit]', () => {
-        assert.equal(latex_unit_splitter('\\km'), '\\k\\m');
+    test('\\\\km stays \\\\km (alpha lookbehind prevents sub-unit re-match)', () => {
+        assert.equal(latex_unit_splitter('\\km'), '\\km');
     });
 
-    // BUG: same root cause — 'Hz' inside '\MHz' matches since it is only preceded by 'M'.
-    test('\\\\MHz → \\\\M\\\\Hz [BUG: sub-unit re-matched]', () => {
-        assert.equal(latex_unit_splitter('\\MHz'), '\\M\\Hz');
+    test('\\\\MHz stays \\\\MHz (alpha lookbehind prevents Hz re-match)', () => {
+        assert.equal(latex_unit_splitter('\\MHz'), '\\MHz');
     });
 
     test('\\\\mu m stays \\\\mu m', () => {
@@ -76,24 +73,72 @@ describe('latex_unit_splitter — already backslashed (no double-backslash)', ()
         assert.equal(latex_unit_splitter('\\mu\\Omega'), '\\mu\\Omega');
     });
 
-    // BUG: 'hm' (hectometer) inside 'Ohm' is matched and backslashed.
-    test('\\\\mu Ohm → \\\\mu O\\\\hm [BUG: hm matched inside Ohm]', () => {
-        assert.equal(latex_unit_splitter('\\mu Ohm'), '\\mu O\\hm');
+    test('\\\\mu Ohm stays \\\\mu Ohm (hm no longer re-matched inside Ohm)', () => {
+        assert.equal(latex_unit_splitter('\\mu Ohm'), '\\mu Ohm');
     });
 
-    // BUG: 'Ohm' inside '\kOhm' is re-matched because it is only preceded by 'k'.
-    test('\\\\kOhm → \\\\k\\\\Ohm [BUG: Ohm re-matched inside kOhm]', () => {
-        assert.equal(latex_unit_splitter('\\kOhm'), '\\k\\Ohm');
+    test('\\\\kOhm stays \\\\kOhm (Ohm no longer re-matched inside kOhm)', () => {
+        assert.equal(latex_unit_splitter('\\kOhm'), '\\kOhm');
     });
 
-    // BUG: 'A' inside '\mA' is re-matched because it is only preceded by 'm'.
-    test('\\\\mA → \\\\m\\\\A [BUG: A re-matched inside mA]', () => {
-        assert.equal(latex_unit_splitter('\\mA'), '\\m\\A');
+    test('\\\\mA stays \\\\mA (A no longer re-matched inside mA)', () => {
+        assert.equal(latex_unit_splitter('\\mA'), '\\mA');
     });
 
-    // BUG: 'V' inside '\kV' is re-matched.
-    test('\\\\kV → \\\\k\\\\V [BUG: V re-matched inside kV]', () => {
-        assert.equal(latex_unit_splitter('\\kV'), '\\k\\V');
+    test('\\\\kV stays \\\\kV (V no longer re-matched inside kV)', () => {
+        assert.equal(latex_unit_splitter('\\kV'), '\\kV');
+    });
+
+    test('\\\\mV stays \\\\mV', () => {
+        assert.equal(latex_unit_splitter('\\mV'), '\\mV');
+    });
+
+    test('\\\\nF stays \\\\nF', () => {
+        assert.equal(latex_unit_splitter('\\nF'), '\\nF');
+    });
+
+    test('\\\\pF stays \\\\pF', () => {
+        assert.equal(latex_unit_splitter('\\pF'), '\\pF');
+    });
+
+    test('\\\\ms stays \\\\ms', () => {
+        assert.equal(latex_unit_splitter('\\ms'), '\\ms');
+    });
+
+    test('\\\\ns stays \\\\ns', () => {
+        assert.equal(latex_unit_splitter('\\ns'), '\\ns');
+    });
+
+    test('\\\\kN stays \\\\kN', () => {
+        assert.equal(latex_unit_splitter('\\kN'), '\\kN');
+    });
+
+    test('\\\\kJ stays \\\\kJ', () => {
+        assert.equal(latex_unit_splitter('\\kJ'), '\\kJ');
+    });
+
+    test('\\\\kPa stays \\\\kPa', () => {
+        assert.equal(latex_unit_splitter('\\kPa'), '\\kPa');
+    });
+
+    test('\\\\MPa stays \\\\MPa', () => {
+        assert.equal(latex_unit_splitter('\\MPa'), '\\MPa');
+    });
+
+    test('\\\\GHz stays \\\\GHz', () => {
+        assert.equal(latex_unit_splitter('\\GHz'), '\\GHz');
+    });
+
+    test('\\\\kHz stays \\\\kHz', () => {
+        assert.equal(latex_unit_splitter('\\kHz'), '\\kHz');
+    });
+
+    test('\\\\mmol stays \\\\mmol', () => {
+        assert.equal(latex_unit_splitter('\\mmol'), '\\mmol');
+    });
+
+    test('\\\\kmol stays \\\\kmol', () => {
+        assert.equal(latex_unit_splitter('\\kmol'), '\\kmol');
     });
 });
 
@@ -385,10 +430,10 @@ describe('latex_unit_splitter — Omega/Ohm combinations', () => {
         assert.equal(latex_unit_splitter('yOhm'), '\\yOhm');
     });
 
-    // muOhm plain word form (no space) — not in the lexer, but tests splitter treatment
-    // BUG: 'm' (base unit) at pos 0 and 'Ohm' at pos 2 are matched separately → '\mu\Ohm'
-    test('muOhm → \\\\mu\\\\Ohm (BUG: m and Ohm matched separately)', () => {
-        assert.equal(latex_unit_splitter('muOhm'), '\\mu\\Ohm');
+    // muOhm plain word form (no space) — not in the C++ lexer; splitter produces \muOhm
+    // which is also not parseable but is less wrong than the old \mu\Ohm output.
+    test('muOhm → \\\\muOhm (m matched at start, Ohm/hm not re-matched due to alpha guard)', () => {
+        assert.equal(latex_unit_splitter('muOhm'), '\\muOhm');
     });
 
     // Already-backslashed Omega variants must not be double-backslashed
@@ -536,9 +581,8 @@ describe('latex_unit_splitter — \\\\mu prefix combinations', () => {
         assert.equal(latex_unit_splitter('\\mu mol'), '\\mu mol');
     });
 
-    // BUG: 'hm' (hectometer) inside 'Ohm' is matched, same root as above.
-    test('\\\\mu Ohm → \\\\mu O\\\\hm [BUG: hm sub-unit matched inside Ohm]', () => {
-        assert.equal(latex_unit_splitter('\\mu Ohm'), '\\mu O\\hm');
+    test('\\\\mu Ohm stays \\\\mu Ohm (hm no longer re-matched inside Ohm)', () => {
+        assert.equal(latex_unit_splitter('\\mu Ohm'), '\\mu Ohm');
     });
 
     // All remaining \mu X forms (already backslashed → no change)
@@ -566,9 +610,8 @@ describe('latex_unit_splitter — \\\\mu prefix combinations', () => {
         assert.equal(latex_unit_splitter('\\mu L'), '\\mu L');
     });
 
-    // BUG: \mu lookbehind blocks 'eV' at pos 4, but 'V' alone at pos 5 still matches
-    test('\\\\mu eV → \\\\mu e\\\\V (BUG: V inside eV matched separately)', () => {
-        assert.equal(latex_unit_splitter('\\mu eV'), '\\mu e\\V');
+    test('\\\\mu eV stays \\\\mu eV (V inside eV no longer re-matched)', () => {
+        assert.equal(latex_unit_splitter('\\mu eV'), '\\mu eV');
     });
 
     // Unicode mu prefix forms
@@ -613,6 +656,142 @@ describe('latex_unit_splitter — \\\\mu prefix combinations', () => {
 
     test('μA (unicode mu) → \\\\μA', () => {
         assert.equal(latex_unit_splitter('μA'), '\\μA');
+    });
+});
+
+// ============================================================================
+// mu-prefix unescaped forms (mu X without backslash → \mu X)
+// These are matched atomically via the "mu X" entries added to all_units.
+// ============================================================================
+
+describe('latex_unit_splitter — unescaped mu prefix (mu X → \\\\mu X)', () => {
+    test('mu m → \\\\mu m', () => {
+        assert.equal(latex_unit_splitter('mu m'), '\\mu m');
+    });
+
+    test('mu g → \\\\mu g', () => {
+        assert.equal(latex_unit_splitter('mu g'), '\\mu g');
+    });
+
+    test('mu s → \\\\mu s', () => {
+        assert.equal(latex_unit_splitter('mu s'), '\\mu s');
+    });
+
+    test('mu A → \\\\mu A', () => {
+        assert.equal(latex_unit_splitter('mu A'), '\\mu A');
+    });
+
+    test('mu K → \\\\mu K', () => {
+        assert.equal(latex_unit_splitter('mu K'), '\\mu K');
+    });
+
+    test('mu N → \\\\mu N', () => {
+        assert.equal(latex_unit_splitter('mu N'), '\\mu N');
+    });
+
+    test('mu J → \\\\mu J', () => {
+        assert.equal(latex_unit_splitter('mu J'), '\\mu J');
+    });
+
+    test('mu C → \\\\mu C', () => {
+        assert.equal(latex_unit_splitter('mu C'), '\\mu C');
+    });
+
+    test('mu S → \\\\mu S', () => {
+        assert.equal(latex_unit_splitter('mu S'), '\\mu S');
+    });
+
+    test('mu F → \\\\mu F', () => {
+        assert.equal(latex_unit_splitter('mu F'), '\\mu F');
+    });
+
+    test('mu V → \\\\mu V', () => {
+        assert.equal(latex_unit_splitter('mu V'), '\\mu V');
+    });
+
+    test('mu W → \\\\mu W', () => {
+        assert.equal(latex_unit_splitter('mu W'), '\\mu W');
+    });
+
+    test('mu T → \\\\mu T', () => {
+        assert.equal(latex_unit_splitter('mu T'), '\\mu T');
+    });
+
+    test('mu H → \\\\mu H', () => {
+        assert.equal(latex_unit_splitter('mu H'), '\\mu H');
+    });
+
+    test('mu L → \\\\mu L', () => {
+        assert.equal(latex_unit_splitter('mu L'), '\\mu L');
+    });
+
+    test('mu cd → \\\\mu cd', () => {
+        assert.equal(latex_unit_splitter('mu cd'), '\\mu cd');
+    });
+
+    test('mu Pa → \\\\mu Pa', () => {
+        assert.equal(latex_unit_splitter('mu Pa'), '\\mu Pa');
+    });
+
+    test('mu Hz → \\\\mu Hz', () => {
+        assert.equal(latex_unit_splitter('mu Hz'), '\\mu Hz');
+    });
+
+    test('mu Wb → \\\\mu Wb', () => {
+        assert.equal(latex_unit_splitter('mu Wb'), '\\mu Wb');
+    });
+
+    test('mu eV → \\\\mu eV', () => {
+        assert.equal(latex_unit_splitter('mu eV'), '\\mu eV');
+    });
+
+    test('mu mol → \\\\mu mol', () => {
+        assert.equal(latex_unit_splitter('mu mol'), '\\mu mol');
+    });
+
+    test('mu Ohm → \\\\mu Ohm (atomic match, not split into \\\\m + Ohm)', () => {
+        assert.equal(latex_unit_splitter('mu Ohm'), '\\mu Ohm');
+    });
+
+    // Expressions with unescaped mu prefix
+    test('5 mu Ohm + 3 mu Ohm → 5 \\\\mu Ohm + 3 \\\\mu Ohm', () => {
+        assert.equal(latex_unit_splitter('5 mu Ohm + 3 mu Ohm'), '5 \\mu Ohm + 3 \\mu Ohm');
+    });
+
+    test('100 mu F → 100 \\\\mu F', () => {
+        assert.equal(latex_unit_splitter('100 mu F'), '100 \\mu F');
+    });
+
+    test('10 mu Ohm + 100 Ohm → 10 \\\\mu Ohm + 100 \\\\Ohm', () => {
+        assert.equal(latex_unit_splitter('10 mu Ohm + 100 Ohm'), '10 \\mu Ohm + 100 \\Ohm');
+    });
+
+    test('1 mu m + 1 mm → 1 \\\\mu m + 1 \\\\mm', () => {
+        assert.equal(latex_unit_splitter('1 mu m + 1 mm'), '1 \\mu m + 1 \\mm');
+    });
+
+    test('50 mu A → 50 \\\\mu A', () => {
+        assert.equal(latex_unit_splitter('50 mu A'), '50 \\mu A');
+    });
+
+    test('10 mu H → 10 \\\\mu H', () => {
+        assert.equal(latex_unit_splitter('10 mu H'), '10 \\mu H');
+    });
+
+    test('220 mu s → 220 \\\\mu s', () => {
+        assert.equal(latex_unit_splitter('220 mu s'), '220 \\mu s');
+    });
+
+    test('\\\\mu Ohm stays \\\\mu Ohm (already escaped, mu Ohm entry does not re-match)', () => {
+        assert.equal(latex_unit_splitter('\\mu Ohm'), '\\mu Ohm');
+    });
+
+    test('\\\\mu eV stays \\\\mu eV', () => {
+        assert.equal(latex_unit_splitter('\\mu eV'), '\\mu eV');
+    });
+
+    test('\\\\mu mol stays \\\\mu mol', () => {
+        assert.equal(latex_unit_splitter('\\mu mol'), '\\mu mol');
     });
 });
 
@@ -723,10 +902,8 @@ describe('latex_unit_splitter — units inside expressions', () => {
         assert.equal(latex_unit_splitter('1 MOhm + 1 kOhm'), '1 \\MOhm + 1 \\kOhm');
     });
 
-    // BUG: already-escaped compound units get sub-units re-matched.
-    // '\km' → '\k\m' so '5 \km + 3 \m' → '5 \k\m + 3 \m'
-    test('5 \\\\km + 3 \\\\m → 5 \\\\k\\\\m + 3 \\\\m [BUG: sub-unit of \\\\km re-matched]', () => {
-        assert.equal(latex_unit_splitter('5 \\km + 3 \\m'), '5 \\k\\m + 3 \\m');
+    test('5 \\\\km + 3 \\\\m stays unchanged (alpha guard prevents sub-unit re-match)', () => {
+        assert.equal(latex_unit_splitter('5 \\km + 3 \\m'), '5 \\km + 3 \\m');
     });
 
     // Omega forms in expressions
@@ -749,9 +926,8 @@ describe('latex_unit_splitter — units inside expressions', () => {
         );
     });
 
-    // BUG: 'm' and 'Ohm' matched separately in 'muOhm' → '\mu\Ohm'
-    test('micro-Ohm arithmetic expression (BUG: muOhm → \\\\mu\\\\Ohm)', () => {
-        assert.equal(latex_unit_splitter('500 muOhm + 500 muOhm'), '500 \\mu\\Ohm + 500 \\mu\\Ohm');
+    test('micro-Ohm arithmetic expression muOhm (no space) → \\\\muOhm', () => {
+        assert.equal(latex_unit_splitter('500 muOhm + 500 muOhm'), '500 \\muOhm + 500 \\muOhm');
     });
 });
 

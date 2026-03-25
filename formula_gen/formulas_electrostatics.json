@@ -1,222 +1,167 @@
 [
-    {
-        "name": "Coulomb's Law",
-        "latex": "F = k\\frac{q_1 q_2}{r^2}",
-        "variables": [
-            { "name": "F", "unit": [1, -2, 1, 0, 0, 0, 0], "description": "Electrostatic force", "constant": false },
-            { "name": "k", "unit": [3, -4, 1, -2, 0, 0, 0], "description": "Coulomb's constant", "constant": true },
-            { "name": "q_1", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "First charge", "constant": false },
-            { "name": "q_2", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Second charge", "constant": false },
-            { "name": "r", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Distance between charges", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Field from Force",
-        "latex": "E = \\frac{F}{q}",
-        "variables": [
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false },
-            { "name": "F", "unit": [1, -2, 1, 0, 0, 0, 0], "description": "Electric force", "constant": false },
-            { "name": "q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Test charge", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Field (Point Charge)",
-        "latex": "E = k\\frac{q}{r^2}",
-        "variables": [
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false },
-            { "name": "k", "unit": [3, -4, 1, -2, 0, 0, 0], "description": "Coulomb's constant", "constant": true },
-            { "name": "q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Source charge", "constant": false },
-            { "name": "r", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Distance from charge", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Potential (Point Charge)",
-        "latex": "V = k\\frac{q}{r}",
-        "variables": [
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Electric potential", "constant": false },
-            { "name": "k", "unit": [3, -4, 1, -2, 0, 0, 0], "description": "Coulomb's constant", "constant": true },
-            { "name": "q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Source charge", "constant": false },
-            { "name": "r", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Distance from charge", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Field from Potential",
-        "latex": "E = \\frac{V}{d}",
-        "variables": [
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false },
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Electric potential", "constant": false },
-            { "name": "d", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Distance", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Potential Energy",
-        "latex": "U = k\\frac{q_1 q_2}{r}",
-        "variables": [
-            { "name": "U", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Electric potential energy", "constant": false },
-            { "name": "k", "unit": [3, -4, 1, -2, 0, 0, 0], "description": "Coulomb's constant", "constant": true },
-            { "name": "q_1", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "First charge", "constant": false },
-            { "name": "q_2", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Second charge", "constant": false },
-            { "name": "r", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Distance between charges", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Flux",
-        "latex": "\\Phi_E = EA",
-        "variables": [
-            { "name": "\\Phi_E", "unit": [3, -3, 1, -1, 0, 0, 0], "description": "Electric flux", "constant": false },
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Area", "constant": false }
-        ]
-    },
-    {
-        "name": "Gauss's Law",
-        "latex": "\\Phi_E = \\frac{Q_{enc}}{\\epsilon_0}",
-        "variables": [
-            { "name": "\\Phi_E", "unit": [3, -3, 1, -1, 0, 0, 0], "description": "Electric flux", "constant": false },
-            { "name": "Q_{enc}", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Enclosed charge", "constant": false },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true }
-        ]
-    },
-    {
-        "name": "Electric Field (Infinite Plane)",
-        "latex": "E = \\frac{\\sigma}{2\\epsilon_0}",
-        "variables": [
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false },
-            { "name": "\\sigma", "unit": [-2, 1, 0, 1, 0, 0, 0], "description": "Surface charge density", "constant": false },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true }
-        ]
-    },
-    {
-        "name": "Surface Charge Density",
-        "latex": "\\sigma = \\frac{Q}{A}",
-        "variables": [
-            { "name": "\\sigma", "unit": [-2, 1, 0, 1, 0, 0, 0], "description": "Surface charge density", "constant": false },
-            { "name": "Q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Total charge", "constant": false },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Area", "constant": false }
-        ]
-    },
-    {
-        "name": "Linear Charge Density",
-        "latex": "\\lambda = \\frac{Q}{L}",
-        "variables": [
-            { "name": "\\lambda", "unit": [-1, 1, 0, 1, 0, 0, 0], "description": "Linear charge density", "constant": false },
-            { "name": "Q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Total charge", "constant": false },
-            { "name": "L", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Length", "constant": false }
-        ]
-    },
-    {
-        "name": "Volume Charge Density",
-        "latex": "\\rho_q = \\frac{Q}{V}",
-        "variables": [
-            { "name": "\\rho_q", "unit": [-3, 1, 0, 1, 0, 0, 0], "description": "Volume charge density", "constant": false },
-            { "name": "Q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Total charge", "constant": false },
-            { "name": "V", "unit": [3, 0, 0, 0, 0, 0, 0], "description": "Volume", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Dipole Moment",
-        "latex": "p = qd",
-        "variables": [
-            { "name": "p", "unit": [1, 1, 0, 1, 0, 0, 0], "description": "Electric dipole moment", "constant": false },
-            { "name": "q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge magnitude", "constant": false },
-            { "name": "d", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Separation distance", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Energy Density",
-        "latex": "u = \\frac{1}{2}\\epsilon_0 E^2",
-        "variables": [
-            { "name": "u", "unit": [-1, -2, 1, 0, 0, 0, 0], "description": "Electric energy density", "constant": false },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true },
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Field of Current Density with Resistivity",
-        "latex": "E = J \\rho",
-        "variables": [
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false },
-            { "name": "J", "unit": [-2, 0, 0, 1, 0, 0, 0], "description": "Surface charge density", "constant": false },
-            { "name": "\\rho", "unit": [3, -3, 1, -2, 0, 0, 0], "description": "Resistivity", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Field of Charged Ring on Axis",
-        "latex": "E = \\frac{kQx}{(x^2 + R^2)^{3/2}}",
-        "variables": [
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field on axis", "constant": false },
-            { "name": "k", "unit": [3, -4, 1, -2, 0, 0, 0], "description": "Coulomb's constant", "constant": true },
-            { "name": "Q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Total charge on ring", "constant": false },
-            { "name": "x", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Distance from center along axis", "constant": false },
-            { "name": "R", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Radius of ring", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Potential Energy in Uniform Field",
-        "latex": "U = qEd",
-        "variables": [
-            { "name": "U", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Electric potential energy", "constant": false },
-            { "name": "q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge", "constant": false },
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false },
-            { "name": "d", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Distance", "constant": false }
-        ]
-    },
-    {
-        "name": "Work Done by Electric Field",
-        "latex": "W = qEd",
-        "variables": [
-            { "name": "W", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Work done", "constant": false },
-            { "name": "q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge", "constant": false },
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false },
-            { "name": "d", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Distance", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Field Between Parallel Plates",
-        "latex": "E = \\frac{\\sigma}{\\epsilon_0}",
-        "variables": [
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field between plates", "constant": false },
-            { "name": "\\sigma", "unit": [-2, 1, 0, 1, 0, 0, 0], "description": "Surface charge density", "constant": false },
-            { "name": "\\epsilon_0", "unit": [-3, 4, -1, 2, 0, 0, 0], "description": "Permittivity of free space", "constant": true }
-        ]
-    },
-    {
-        "name": "Electric Potential Due to Dipole",
-        "latex": "V = \\frac{kp\\cos(\\theta)}{r^2}",
-        "variables": [
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Electric potential", "constant": false },
-            { "name": "k", "unit": [3, -4, 1, -2, 0, 0, 0], "description": "Coulomb's constant", "constant": true },
-            { "name": "p", "unit": [1, 1, 0, 1, 0, 0, 0], "description": "Electric dipole moment", "constant": false },
-            { "name": "\\theta", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Angle from dipole axis", "constant": false },
-            { "name": "r", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Distance from dipole", "constant": false }
-        ]
-    },
-    {
-        "name": "Torque on Electric Dipole",
-        "latex": "\\tau = pE",
-        "variables": [
-            { "name": "\\tau", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Torque on dipole", "constant": false },
-            { "name": "p", "unit": [1, 1, 0, 1, 0, 0, 0], "description": "Electric dipole moment", "constant": false },
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false }
-        ]
-    },
-    {
-        "name": "Potential Energy of Electric Dipole",
-        "latex": "U = pE",
-        "variables": [
-            { "name": "U", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Potential energy of dipole", "constant": false },
-            { "name": "p", "unit": [1, 1, 0, 1, 0, 0, 0], "description": "Electric dipole moment", "constant": false },
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false }
-        ]
-    },
-    {
-        "name": "Electric Field from Infinite Line Charge",
-        "latex": "E = \\frac{2k\\lambda}{r}",
-        "variables": [
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false },
-            { "name": "k", "unit": [3, -4, 1, -2, 0, 0, 0], "description": "Coulomb's constant", "constant": true },
-            { "name": "\\lambda", "unit": [-1, 1, 0, 1, 0, 0, 0], "description": "Linear charge density", "constant": false },
-            { "name": "r", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Distance from line charge", "constant": false }
-        ]
-    }
+  {
+    "name": "Coulomb's Law",
+    "latex": "F = k \\frac{q_1 q_2}{r^2}",
+    "variables": [
+      {"name": "F",   "unit": [1,-2,1,0,0,0,0],  "description": "Electrostatic force",    "constant": false},
+      {"name": "k",   "unit": [3,-4,1,-2,0,0,0], "description": "Coulomb's constant",     "constant": true},
+      {"name": "q_1", "unit": [0,1,0,1,0,0,0],   "description": "Charge 1",               "constant": false},
+      {"name": "q_2", "unit": [0,1,0,1,0,0,0],   "description": "Charge 2",               "constant": false},
+      {"name": "r",   "unit": [1,0,0,0,0,0,0],   "description": "Distance between charges","constant": false}
+    ]
+  },
+  {
+    "name": "Coulomb's Law (component)",
+    "latex": "F_x = k \\frac{q_1 q_2}{r^2} \\cos(\\theta)",
+    "variables": [
+      {"name": "F_x",    "unit": [1,-2,1,0,0,0,0],  "description": "Force component",          "constant": false},
+      {"name": "k",      "unit": [3,-4,1,-2,0,0,0], "description": "Coulomb's constant",        "constant": true},
+      {"name": "q_1",    "unit": [0,1,0,1,0,0,0],   "description": "Charge 1",                 "constant": false},
+      {"name": "q_2",    "unit": [0,1,0,1,0,0,0],   "description": "Charge 2",                 "constant": false},
+      {"name": "r",      "unit": [1,0,0,0,0,0,0],   "description": "Distance between charges",  "constant": false},
+      {"name": "\\theta","unit": [0,0,0,0,0,0,0],   "description": "Angle from axis",           "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Field from Force",
+    "latex": "E = \\frac{F}{q}",
+    "variables": [
+      {"name": "E", "unit": [1,-3,1,-1,0,0,0], "description": "Electric field magnitude","constant": false},
+      {"name": "F", "unit": [1,-2,1,0,0,0,0],  "description": "Electrostatic force",     "constant": false},
+      {"name": "q", "unit": [0,1,0,1,0,0,0],   "description": "Test charge",             "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Field (Point Charge)",
+    "latex": "E = k \\frac{q}{r^2}",
+    "variables": [
+      {"name": "E", "unit": [1,-3,1,-1,0,0,0],  "description": "Electric field magnitude","constant": false},
+      {"name": "k", "unit": [3,-4,1,-2,0,0,0],  "description": "Coulomb's constant",      "constant": true},
+      {"name": "q", "unit": [0,1,0,1,0,0,0],    "description": "Source charge",           "constant": false},
+      {"name": "r", "unit": [1,0,0,0,0,0,0],    "description": "Distance from charge",    "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Field on Axis of Charged Ring",
+    "latex": "E = \\frac{k Q x}{(x^2 + R^2)^{\\frac{3}{2}}}",
+    "variables": [
+      {"name": "E", "unit": [1,-3,1,-1,0,0,0],  "description": "Electric field on axis",   "constant": false},
+      {"name": "k", "unit": [3,-4,1,-2,0,0,0],  "description": "Coulomb's constant",       "constant": true},
+      {"name": "Q", "unit": [0,1,0,1,0,0,0],    "description": "Total charge on ring",     "constant": false},
+      {"name": "x", "unit": [1,0,0,0,0,0,0],    "description": "Axial distance from ring", "constant": false},
+      {"name": "R", "unit": [1,0,0,0,0,0,0],    "description": "Radius of ring",           "constant": false}
+    ]
+  },
+  {
+    "name": "Surface Charge Density",
+    "latex": "\\sigma = \\frac{Q}{A}",
+    "variables": [
+      {"name": "\\sigma", "unit": [-2,1,0,1,0,0,0], "description": "Surface charge density","constant": false},
+      {"name": "Q",       "unit": [0,1,0,1,0,0,0],  "description": "Total charge",          "constant": false},
+      {"name": "A",       "unit": [2,0,0,0,0,0,0],  "description": "Surface area",          "constant": false}
+    ]
+  },
+  {
+    "name": "Linear Charge Density",
+    "latex": "\\lambda = \\frac{Q}{L}",
+    "variables": [
+      {"name": "\\lambda", "unit": [-1,1,0,1,0,0,0], "description": "Linear charge density","constant": false},
+      {"name": "Q",        "unit": [0,1,0,1,0,0,0],  "description": "Total charge",         "constant": false},
+      {"name": "L",        "unit": [1,0,0,0,0,0,0],  "description": "Length",               "constant": false}
+    ]
+  },
+  {
+    "name": "Volume Charge Density",
+    "latex": "\\rho_q = \\frac{Q}{V_{vol}}",
+    "variables": [
+      {"name": "\\rho_q", "unit": [-3,1,0,1,0,0,0], "description": "Volume charge density","constant": false},
+      {"name": "Q",       "unit": [0,1,0,1,0,0,0],  "description": "Total charge",         "constant": false},
+      {"name": "V_{vol}", "unit": [3,0,0,0,0,0,0],  "description": "Volume",               "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Dipole Moment",
+    "latex": "p = q d",
+    "variables": [
+      {"name": "p", "unit": [1,1,0,1,0,0,0], "description": "Electric dipole moment",      "constant": false},
+      {"name": "q", "unit": [0,1,0,1,0,0,0], "description": "Charge magnitude",            "constant": false},
+      {"name": "d", "unit": [1,0,0,0,0,0,0], "description": "Separation between charges",  "constant": false}
+    ]
+  },
+  {
+    "name": "Torque on Electric Dipole",
+    "latex": "\\tau = p E \\sin(\\theta)",
+    "variables": [
+      {"name": "\\tau",   "unit": [2,-2,1,0,0,0,0],  "description": "Torque on dipole",      "constant": false},
+      {"name": "p",       "unit": [1,1,0,1,0,0,0],   "description": "Electric dipole moment","constant": false},
+      {"name": "E",       "unit": [1,-3,1,-1,0,0,0], "description": "Electric field",        "constant": false},
+      {"name": "\\theta", "unit": [0,0,0,0,0,0,0],   "description": "Angle between p and E", "constant": false}
+    ]
+  },
+  {
+    "name": "Potential Energy of Electric Dipole",
+    "latex": "U = -p E \\cos(\\theta)",
+    "variables": [
+      {"name": "U",       "unit": [2,-2,1,0,0,0,0],  "description": "Potential energy of dipole","constant": false},
+      {"name": "p",       "unit": [1,1,0,1,0,0,0],   "description": "Electric dipole moment",    "constant": false},
+      {"name": "E",       "unit": [1,-3,1,-1,0,0,0], "description": "Electric field",            "constant": false},
+      {"name": "\\theta", "unit": [0,0,0,0,0,0,0],   "description": "Angle between p and E",     "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Flux (general)",
+    "latex": "\\Phi_E = E A \\cos(\\theta)",
+    "variables": [
+      {"name": "\\Phi_E", "unit": [3,-3,1,-1,0,0,0], "description": "Electric flux",              "constant": false},
+      {"name": "E",       "unit": [1,-3,1,-1,0,0,0], "description": "Electric field",             "constant": false},
+      {"name": "A",       "unit": [2,0,0,0,0,0,0],   "description": "Area",                       "constant": false},
+      {"name": "\\theta", "unit": [0,0,0,0,0,0,0],   "description": "Angle between E and normal", "constant": false}
+    ]
+  },
+  {
+    "name": "Electric Flux (perpendicular)",
+    "latex": "\\Phi_E = E A",
+    "variables": [
+      {"name": "\\Phi_E", "unit": [3,-3,1,-1,0,0,0], "description": "Electric flux",     "constant": false},
+      {"name": "E",       "unit": [1,-3,1,-1,0,0,0], "description": "Electric field",    "constant": false},
+      {"name": "A",       "unit": [2,0,0,0,0,0,0],   "description": "Area",              "constant": false}
+    ]
+  },
+  {
+    "name": "Gauss's Law",
+    "latex": "\\Phi_E = \\frac{Q_{enc}}{e_0}",
+    "variables": [
+      {"name": "\\Phi_E",  "unit": [3,-3,1,-1,0,0,0], "description": "Total electric flux", "constant": false},
+      {"name": "Q_{enc}",  "unit": [0,1,0,1,0,0,0],   "description": "Enclosed charge",     "constant": false},
+      {"name": "e_0",      "unit": [-3,4,-1,2,0,0,0], "description": "Electric permittivity","constant": true}
+    ]
+  },
+  {
+    "name": "Electric Field (Infinite Plane)",
+    "latex": "E = \\frac{\\sigma}{2 e_0}",
+    "variables": [
+      {"name": "E",       "unit": [1,-3,1,-1,0,0,0],  "description": "Electric field from infinite plane","constant": false},
+      {"name": "\\sigma", "unit": [-2,1,0,1,0,0,0],   "description": "Surface charge density",            "constant": false},
+      {"name": "e_0",     "unit": [-3,4,-1,2,0,0,0],  "description": "Electric permittivity",             "constant": true}
+    ]
+  },
+  {
+    "name": "Electric Field (Conductor Surface)",
+    "latex": "E = \\frac{\\sigma}{e_0}",
+    "variables": [
+      {"name": "E",       "unit": [1,-3,1,-1,0,0,0],  "description": "Electric field at conductor surface","constant": false},
+      {"name": "\\sigma", "unit": [-2,1,0,1,0,0,0],   "description": "Surface charge density",             "constant": false},
+      {"name": "e_0",     "unit": [-3,4,-1,2,0,0,0],  "description": "Electric permittivity",              "constant": true}
+    ]
+  },
+  {
+    "name": "Electric Field (Infinite Line Charge)",
+    "latex": "E = \\frac{\\lambda}{2 \\pi e_0 r}",
+    "variables": [
+      {"name": "E",        "unit": [1,-3,1,-1,0,0,0],  "description": "Electric field from line charge","constant": false},
+      {"name": "\\lambda", "unit": [-1,1,0,1,0,0,0],   "description": "Linear charge density",         "constant": false},
+      {"name": "e_0",      "unit": [-3,4,-1,2,0,0,0],  "description": "Electric permittivity",         "constant": true},
+      {"name": "r",        "unit": [1,0,0,0,0,0,0],    "description": "Radial distance from wire",     "constant": false}
+    ]
+  }
 ]

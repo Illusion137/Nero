@@ -1,120 +1,315 @@
 [
-    {
-        "name": "Moles from Mass",
-        "latex": "n = \\frac{m}{M}",
-        "variables": [
-            { "name": "n", "unit": [0, 0, 0, 0, 0, 1, 0], "description": "Amount of substance", "constant": false },
-            { "name": "m", "unit": [0, 0, 1, 0, 0, 0, 0], "description": "Mass", "constant": false },
-            { "name": "M", "unit": [0, 0, 1, 0, 0, -1, 0], "description": "Molar mass", "constant": false }
-        ]
-    },
-    {
-        "name": "Ideal Gas Law",
-        "latex": "PV = nRT",
-        "variables": [
-            { "name": "P", "unit": [-1, -2, 1, 0, 0, 0, 0], "description": "Pressure", "constant": false },
-            { "name": "V", "unit": [3, 0, 0, 0, 0, 0, 0], "description": "Volume", "constant": false },
-            { "name": "n", "unit": [0, 0, 0, 0, 0, 1, 0], "description": "Amount of substance", "constant": false },
-            { "name": "R", "unit": [2, -2, 1, 0, -1, -1, 0], "description": "Gas constant", "constant": true },
-            { "name": "T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Temperature", "constant": false }
-        ]
-    },
-    {
-        "name": "Dilution",
-        "latex": "M_1 V_1 = M_2 V_2",
-        "variables": [
-            { "name": "M_1", "unit": [0, 0, 0, 0, 0, -3, 0], "description": "Initial molarity", "constant": false },
-            { "name": "V_1", "unit": [3, 0, 0, 0, 0, 0, 0], "description": "Initial volume", "constant": false },
-            { "name": "M_2", "unit": [0, 0, 0, 0, 0, -3, 0], "description": "Final molarity", "constant": false },
-            { "name": "V_2", "unit": [3, 0, 0, 0, 0, 0, 0], "description": "Final volume", "constant": false }
-        ]
-    },
-    {
-        "name": "Molarity",
-        "latex": "M = \\frac{n}{V}",
-        "variables": [
-            { "name": "M", "unit": [0, 0, 0, 0, 0, -3, 0], "description": "Molarity", "constant": false },
-            { "name": "n", "unit": [0, 0, 0, 0, 0, 1, 0], "description": "Moles of solute", "constant": false },
-            { "name": "V", "unit": [3, 0, 0, 0, 0, 0, 0], "description": "Volume of solution", "constant": false }
-        ]
-    },
-    {
-        "name": "pH Definition",
-        "latex": "pH = -\\log([H^+])",
-        "variables": [
-            { "name": "pH", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "pH", "constant": false },
-            { "name": "[H^+]", "unit": [0, 0, 0, 0, 0, -3, 0], "description": "Hydrogen ion concentration", "constant": false }
-        ]
-    },
-    {
-        "name": "pH + pOH",
-        "latex": "pH + pOH = 14",
-        "variables": [
-            { "name": "pH", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "pH", "constant": false },
-            { "name": "pOH", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "pOH", "constant": false }
-        ]
-    },
-    {
-        "name": "Gibbs Free Energy",
-        "latex": "\\Delta G = \\Delta H - T\\Delta S",
-        "variables": [
-            { "name": "\\Delta G", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Gibbs free energy change", "constant": false },
-            { "name": "\\Delta H", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Enthalpy change", "constant": false },
-            { "name": "T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Temperature", "constant": false },
-            { "name": "\\Delta S", "unit": [2, -2, 1, 0, -1, 0, 0], "description": "Entropy change", "constant": false }
-        ]
-    },
-    {
-        "name": "Nernst Equation",
-        "latex": "E = E^0 - \\frac{RT}{nF}\\ln(Q)",
-        "variables": [
-            { "name": "E", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Cell potential", "constant": false },
-            { "name": "E^0", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Standard cell potential", "constant": false },
-            { "name": "R", "unit": [2, -2, 1, 0, -1, -1, 0], "description": "Gas constant", "constant": true },
-            { "name": "T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Temperature", "constant": false },
-            { "name": "n", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Number of electrons transferred", "constant": false },
-            { "name": "F", "unit": [0, 1, 0, 1, 0, -1, 0], "description": "Faraday constant", "constant": true },
-            { "name": "Q", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Reaction quotient", "constant": false }
-        ]
-    },
-    {
-        "name": "Beer-Lambert Law",
-        "latex": "A = \\epsilon b c",
-        "variables": [
-            { "name": "A", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Absorbance", "constant": false },
-            { "name": "\\epsilon", "unit": [2, 0, 0, 0, 0, -1, 0], "description": "Molar absorptivity", "constant": false },
-            { "name": "b", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Path length", "constant": false },
-            { "name": "c", "unit": [-3, 0, 0, 0, 0, 1, 0], "description": "Concentration", "constant": false }
-        ]
-    },
-    {
-        "name": "Enthalpy of Reaction",
-        "latex": "q = mc\\Delta T",
-        "variables": [
-            { "name": "q", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Heat absorbed or released", "constant": false },
-            { "name": "m", "unit": [0, 0, 1, 0, 0, 0, 0], "description": "Mass", "constant": false },
-            { "name": "c", "unit": [2, -2, 0, 0, -1, 0, 0], "description": "Specific heat capacity", "constant": false },
-            { "name": "\\Delta T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Temperature change", "constant": false }
-        ]
-    },
-    {
-        "name": "First-Order Rate Law",
-        "latex": "A = A_0 e^{-kt}",
-        "variables": [
-            { "name": "A", "unit": [-3, 0, 0, 0, 0, 1, 0], "description": "Concentration at time t", "constant": false },
-            { "name": "A_0", "unit": [-3, 0, 0, 0, 0, 1, 0], "description": "Initial concentration", "constant": false },
-            { "name": "k", "unit": [0, -1, 0, 0, 0, 0, 0], "description": "Rate constant (first order)", "constant": false },
-            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false }
-        ]
-    },
-    {
-        "name": "Gibbs Free Energy and Cell Potential",
-        "latex": "\\Delta G = -nFE",
-        "variables": [
-            { "name": "\\Delta G", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Gibbs free energy change", "constant": false },
-            { "name": "n", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Number of electrons transferred", "constant": false },
-            { "name": "F", "unit": [0, 1, 0, 1, 0, -1, 0], "description": "Faraday constant", "constant": true },
-            { "name": "E", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Cell potential", "constant": false }
-        ]
-    }
+  {
+    "name": "Moles from Mass",
+    "latex": "n = \\frac{m}{M_m}",
+    "variables": [
+      {"name": "n",   "unit": [0,0,0,0,0,1,0],  "description": "Moles",       "constant": false},
+      {"name": "m",   "unit": [0,0,1,0,0,0,0],  "description": "Mass",        "constant": false},
+      {"name": "M_m", "unit": [0,0,1,0,0,-1,0], "description": "Molar mass",  "constant": false}
+    ]
+  },
+  {
+    "name": "Moles from Number of Particles",
+    "latex": "n = \\frac{N}{N_A}",
+    "variables": [
+      {"name": "n",   "unit": [0,0,0,0,0,1,0],  "description": "Moles",                 "constant": false},
+      {"name": "N",   "unit": [0,0,0,0,0,0,0],  "description": "Number of particles",   "constant": false},
+      {"name": "N_A", "unit": [0,0,0,0,0,-1,0], "description": "Avogadro's number",     "constant": true}
+    ]
+  },
+  {
+    "name": "Ideal Gas Law (chemistry)",
+    "latex": "P V = n R_g T",
+    "variables": [
+      {"name": "P",   "unit": [-1,-2,1,0,0,0,0],  "description": "Pressure",           "constant": false},
+      {"name": "V",   "unit": [3,0,0,0,0,0,0],    "description": "Volume",             "constant": false},
+      {"name": "n",   "unit": [0,0,0,0,0,1,0],    "description": "Moles",              "constant": false},
+      {"name": "R_g", "unit": [2,-2,1,0,-1,-1,0], "description": "Ideal gas constant", "constant": true},
+      {"name": "T",   "unit": [0,0,0,0,1,0,0],    "description": "Temperature",        "constant": false}
+    ]
+  },
+  {
+    "name": "Partial Pressure (Dalton's Law)",
+    "latex": "P_i = x_i P_{total}",
+    "variables": [
+      {"name": "P_i",     "unit": [-1,-2,1,0,0,0,0], "description": "Partial pressure of gas i","constant": false},
+      {"name": "x_i",     "unit": [0,0,0,0,0,0,0],   "description": "Mole fraction of gas i",  "constant": false},
+      {"name": "P_{total}","unit": [-1,-2,1,0,0,0,0],"description": "Total pressure",           "constant": false}
+    ]
+  },
+  {
+    "name": "Mole Fraction",
+    "latex": "x_i = \\frac{n_i}{n_{total}}",
+    "variables": [
+      {"name": "x_i",      "unit": [0,0,0,0,0,0,0], "description": "Mole fraction of component i","constant": false},
+      {"name": "n_i",      "unit": [0,0,0,0,0,1,0], "description": "Moles of component i",        "constant": false},
+      {"name": "n_{total}", "unit": [0,0,0,0,0,1,0], "description": "Total moles",                 "constant": false}
+    ]
+  },
+  {
+    "name": "RMS Speed",
+    "latex": "v_{rms} = \\sqrt{\\frac{3 R_g T}{M_m}}",
+    "variables": [
+      {"name": "v_{rms}", "unit": [1,-1,0,0,0,0,0],  "description": "RMS speed of gas molecules","constant": false},
+      {"name": "R_g",     "unit": [2,-2,1,0,-1,-1,0],"description": "Ideal gas constant",        "constant": true},
+      {"name": "T",       "unit": [0,0,0,0,1,0,0],   "description": "Temperature",               "constant": false},
+      {"name": "M_m",     "unit": [0,0,1,0,0,-1,0],  "description": "Molar mass",                "constant": false}
+    ]
+  },
+  {
+    "name": "Most Probable Speed",
+    "latex": "v_{mp} = \\sqrt{\\frac{2 R_g T}{M_m}}",
+    "variables": [
+      {"name": "v_{mp}", "unit": [1,-1,0,0,0,0,0],  "description": "Most probable speed",  "constant": false},
+      {"name": "R_g",    "unit": [2,-2,1,0,-1,-1,0],"description": "Ideal gas constant",   "constant": true},
+      {"name": "T",      "unit": [0,0,0,0,1,0,0],   "description": "Temperature",          "constant": false},
+      {"name": "M_m",    "unit": [0,0,1,0,0,-1,0],  "description": "Molar mass",           "constant": false}
+    ]
+  },
+  {
+    "name": "Average Kinetic Energy per Molecule",
+    "latex": "K_{avg} = \\frac{3 R_g T}{2 N_A}",
+    "variables": [
+      {"name": "K_{avg}", "unit": [2,-2,1,0,0,0,0],  "description": "Average kinetic energy per molecule","constant": false},
+      {"name": "R_g",     "unit": [2,-2,1,0,-1,-1,0],"description": "Ideal gas constant",                "constant": true},
+      {"name": "T",       "unit": [0,0,0,0,1,0,0],   "description": "Temperature",                       "constant": false},
+      {"name": "N_A",     "unit": [0,0,0,0,0,-1,0],  "description": "Avogadro's number",                 "constant": true}
+    ]
+  },
+  {
+    "name": "Heat Transfer (calorimetry)",
+    "latex": "q = m c_s \\Delta T",
+    "variables": [
+      {"name": "q",        "unit": [2,-2,1,0,0,0,0],  "description": "Heat transferred",      "constant": false},
+      {"name": "m",        "unit": [0,0,1,0,0,0,0],   "description": "Mass",                  "constant": false},
+      {"name": "c_s",      "unit": [2,-2,0,0,-1,0,0], "description": "Specific heat capacity","constant": false},
+      {"name": "\\Delta T","unit": [0,0,0,0,1,0,0],   "description": "Temperature change",    "constant": false}
+    ]
+  },
+  {
+    "name": "Heat Transfer (molar)",
+    "latex": "q = n C_m \\Delta T",
+    "variables": [
+      {"name": "q",        "unit": [2,-2,1,0,0,0,0],  "description": "Heat transferred",     "constant": false},
+      {"name": "n",        "unit": [0,0,0,0,0,1,0],   "description": "Moles",                "constant": false},
+      {"name": "C_m",      "unit": [2,-2,1,0,-1,-1,0],"description": "Molar heat capacity",  "constant": false},
+      {"name": "\\Delta T","unit": [0,0,0,0,1,0,0],   "description": "Temperature change",   "constant": false}
+    ]
+  },
+  {
+    "name": "Gibbs Free Energy",
+    "latex": "\\Delta G = \\Delta H - T \\Delta S",
+    "variables": [
+      {"name": "\\Delta G", "unit": [2,-2,1,0,0,0,0],  "description": "Gibbs free energy change","constant": false},
+      {"name": "\\Delta H", "unit": [2,-2,1,0,0,0,0],  "description": "Enthalpy change",         "constant": false},
+      {"name": "T",         "unit": [0,0,0,0,1,0,0],   "description": "Temperature",             "constant": false},
+      {"name": "\\Delta S", "unit": [2,-2,1,0,-1,0,0], "description": "Entropy change",          "constant": false}
+    ]
+  },
+  {
+    "name": "Gibbs and Electrochemistry",
+    "latex": "\\Delta G = -n_e F_a E_{cell}",
+    "variables": [
+      {"name": "\\Delta G", "unit": [2,-2,1,0,0,0,0],  "description": "Gibbs free energy change","constant": false},
+      {"name": "n_e",       "unit": [0,0,0,0,0,1,0],   "description": "Moles of electrons",      "constant": false},
+      {"name": "F_a",       "unit": [0,1,0,1,0,-1,0],  "description": "Faraday constant",        "constant": true},
+      {"name": "E_{cell}",  "unit": [2,-3,1,-1,0,0,0], "description": "Cell potential",          "constant": false}
+    ]
+  },
+  {
+    "name": "Cell Potential",
+    "latex": "E_{cell} = E_{cathode} - E_{anode}",
+    "variables": [
+      {"name": "E_{cell}",    "unit": [2,-3,1,-1,0,0,0], "description": "Standard cell potential", "constant": false},
+      {"name": "E_{cathode}", "unit": [2,-3,1,-1,0,0,0], "description": "Cathode reduction potential","constant": false},
+      {"name": "E_{anode}",   "unit": [2,-3,1,-1,0,0,0], "description": "Anode reduction potential","constant": false}
+    ]
+  },
+  {
+    "name": "Electroplating Mass",
+    "latex": "m_{dep} = \\frac{M_m I t}{n_e F_a}",
+    "variables": [
+      {"name": "m_{dep}", "unit": [0,0,1,0,0,0,0],   "description": "Mass deposited",            "constant": false},
+      {"name": "M_m",     "unit": [0,0,1,0,0,-1,0],  "description": "Molar mass of element",     "constant": false},
+      {"name": "I",       "unit": [0,0,0,1,0,0,0],   "description": "Current",                   "constant": false},
+      {"name": "t",       "unit": [0,1,0,0,0,0,0],   "description": "Time",                      "constant": false},
+      {"name": "n_e",     "unit": [0,0,0,0,0,1,0],   "description": "Moles of electrons per mol","constant": false},
+      {"name": "F_a",     "unit": [0,1,0,1,0,-1,0],  "description": "Faraday constant",          "constant": true}
+    ]
+  },
+  {
+    "name": "Moles of Electrons (electrolysis)",
+    "latex": "n_e = \\frac{I t}{F_a}",
+    "variables": [
+      {"name": "n_e", "unit": [0,0,0,0,0,1,0],  "description": "Moles of electrons transferred","constant": false},
+      {"name": "I",   "unit": [0,0,0,1,0,0,0],  "description": "Current",                        "constant": false},
+      {"name": "t",   "unit": [0,1,0,0,0,0,0],  "description": "Time",                           "constant": false},
+      {"name": "F_a", "unit": [0,1,0,1,0,-1,0], "description": "Faraday constant",               "constant": true}
+    ]
+  },
+  {
+    "name": "Boiling Point Elevation",
+    "latex": "\\Delta T_b = K_b m_{mol}",
+    "variables": [
+      {"name": "\\Delta T_b", "unit": [0,0,0,0,1,0,0],  "description": "Boiling point elevation", "constant": false},
+      {"name": "K_b",         "unit": [0,0,1,0,1,-1,0], "description": "Ebullioscopic constant",   "constant": false},
+      {"name": "m_{mol}",     "unit": [0,0,-1,0,0,1,0], "description": "Molality of solute",       "constant": false}
+    ]
+  },
+  {
+    "name": "Freezing Point Depression",
+    "latex": "\\Delta T_f = K_f m_{mol}",
+    "variables": [
+      {"name": "\\Delta T_f", "unit": [0,0,0,0,1,0,0],  "description": "Freezing point depression","constant": false},
+      {"name": "K_f",         "unit": [0,0,1,0,1,-1,0], "description": "Cryoscopic constant",       "constant": false},
+      {"name": "m_{mol}",     "unit": [0,0,-1,0,0,1,0], "description": "Molality of solute",        "constant": false}
+    ]
+  },
+  {
+    "name": "Osmotic Pressure",
+    "latex": "\\Pi = M_c R_g T",
+    "variables": [
+      {"name": "\\Pi",  "unit": [-1,-2,1,0,0,0,0],  "description": "Osmotic pressure",   "constant": false},
+      {"name": "M_c",   "unit": [-3,0,0,0,0,1,0],   "description": "Molar concentration","constant": false},
+      {"name": "R_g",   "unit": [2,-2,1,0,-1,-1,0],  "description": "Ideal gas constant","constant": true},
+      {"name": "T",     "unit": [0,0,0,0,1,0,0],    "description": "Temperature",        "constant": false}
+    ]
+  },
+  {
+    "name": "Raoult's Law (vapor pressure lowering)",
+    "latex": "\\Delta P = x_{sol} P_0",
+    "variables": [
+      {"name": "\\Delta P", "unit": [-1,-2,1,0,0,0,0], "description": "Vapor pressure lowering","constant": false},
+      {"name": "x_{sol}",   "unit": [0,0,0,0,0,0,0],   "description": "Mole fraction of solute","constant": false},
+      {"name": "P_0",       "unit": [-1,-2,1,0,0,0,0], "description": "Vapor pressure of pure solvent","constant": false}
+    ]
+  },
+  {
+    "name": "Dilution",
+    "latex": "C_1 V_1 = C_2 V_2",
+    "variables": [
+      {"name": "C_1", "unit": [-3,0,0,0,0,1,0], "description": "Initial concentration","constant": false},
+      {"name": "V_1", "unit": [3,0,0,0,0,0,0],  "description": "Initial volume",        "constant": false},
+      {"name": "C_2", "unit": [-3,0,0,0,0,1,0], "description": "Final concentration",   "constant": false},
+      {"name": "V_2", "unit": [3,0,0,0,0,0,0],  "description": "Final volume",          "constant": false}
+    ]
+  },
+  {
+    "name": "Molarity",
+    "latex": "M_c = \\frac{n}{V}",
+    "variables": [
+      {"name": "M_c", "unit": [-3,0,0,0,0,1,0], "description": "Molar concentration","constant": false},
+      {"name": "n",   "unit": [0,0,0,0,0,1,0],  "description": "Moles of solute",    "constant": false},
+      {"name": "V",   "unit": [3,0,0,0,0,0,0],  "description": "Volume of solution", "constant": false}
+    ]
+  },
+  {
+    "name": "Molality",
+    "latex": "m_{mol} = \\frac{n}{m_{solv}}",
+    "variables": [
+      {"name": "m_{mol}",  "unit": [0,0,-1,0,0,1,0], "description": "Molality",             "constant": false},
+      {"name": "n",        "unit": [0,0,0,0,0,1,0],  "description": "Moles of solute",      "constant": false},
+      {"name": "m_{solv}", "unit": [0,0,1,0,0,0,0],  "description": "Mass of solvent (kg)", "constant": false}
+    ]
+  },
+  {
+    "name": "Radioactive Decay",
+    "latex": "N = N_0 e^{-\\lambda t}",
+    "variables": [
+      {"name": "N",        "unit": [0,0,0,0,0,0,0],  "description": "Number of nuclei at time t","constant": false},
+      {"name": "N_0",      "unit": [0,0,0,0,0,0,0],  "description": "Initial number of nuclei",  "constant": false},
+      {"name": "\\lambda", "unit": [0,-1,0,0,0,0,0], "description": "Decay constant",            "constant": false},
+      {"name": "t",        "unit": [0,1,0,0,0,0,0],  "description": "Time",                      "constant": false}
+    ]
+  },
+  {
+    "name": "Activity (radioactive)",
+    "latex": "A_{act} = \\lambda N",
+    "variables": [
+      {"name": "A_{act}",  "unit": [0,-1,0,0,0,0,0], "description": "Activity (decays/s)",  "constant": false},
+      {"name": "\\lambda", "unit": [0,-1,0,0,0,0,0], "description": "Decay constant",       "constant": false},
+      {"name": "N",        "unit": [0,0,0,0,0,0,0],  "description": "Number of nuclei",     "constant": false}
+    ]
+  },
+  {
+    "name": "Half-Life",
+    "latex": "t_{1/2} = \\frac{0.693}{\\lambda}",
+    "variables": [
+      {"name": "t_{1/2}",  "unit": [0,1,0,0,0,0,0],  "description": "Half-life",      "constant": false},
+      {"name": "\\lambda", "unit": [0,-1,0,0,0,0,0],  "description": "Decay constant", "constant": false}
+    ]
+  },
+  {
+    "name": "First-Order Integrated Rate Law",
+    "latex": "\\ln(A_c) = \\ln(A_{c0}) - k_r t",
+    "variables": [
+      {"name": "A_c",    "unit": [-3,0,0,0,0,1,0],  "description": "Concentration at time t",  "constant": false},
+      {"name": "A_{c0}", "unit": [-3,0,0,0,0,1,0],  "description": "Initial concentration",    "constant": false},
+      {"name": "k_r",    "unit": [0,-1,0,0,0,0,0],  "description": "First-order rate constant","constant": false},
+      {"name": "t",      "unit": [0,1,0,0,0,0,0],   "description": "Time",                     "constant": false}
+    ]
+  },
+  {
+    "name": "First-Order Half-Life",
+    "latex": "t_{1/2} = \\frac{0.693}{k_r}",
+    "variables": [
+      {"name": "t_{1/2}", "unit": [0,1,0,0,0,0,0],  "description": "Half-life",                "constant": false},
+      {"name": "k_r",     "unit": [0,-1,0,0,0,0,0], "description": "First-order rate constant","constant": false}
+    ]
+  },
+  {
+    "name": "Arrhenius Equation (ln form)",
+    "latex": "\\ln(k_r) = \\ln(A_{arr}) - \\frac{E_a}{R_g T}",
+    "variables": [
+      {"name": "k_r",     "unit": [0,-1,0,0,0,0,0],  "description": "Rate constant",          "constant": false},
+      {"name": "A_{arr}", "unit": [0,-1,0,0,0,0,0],  "description": "Arrhenius pre-exponential factor","constant": false},
+      {"name": "E_a",     "unit": [2,-2,1,0,0,-1,0], "description": "Activation energy per mole","constant": false},
+      {"name": "R_g",     "unit": [2,-2,1,0,-1,-1,0],"description": "Ideal gas constant",      "constant": true},
+      {"name": "T",       "unit": [0,0,0,0,1,0,0],   "description": "Temperature",             "constant": false}
+    ]
+  },
+  {
+    "name": "pH Definition",
+    "latex": "pH = -\\log(H)",
+    "variables": [
+      {"name": "pH", "unit": [0,0,0,0,0,0,0],   "description": "pH",                 "constant": false},
+      {"name": "H",  "unit": [-3,0,0,0,0,1,0],  "description": "H+ concentration",  "constant": false}
+    ]
+  },
+  {
+    "name": "pOH Definition",
+    "latex": "pOH = -\\log(OH)",
+    "variables": [
+      {"name": "pOH", "unit": [0,0,0,0,0,0,0],  "description": "pOH",                "constant": false},
+      {"name": "OH",  "unit": [-3,0,0,0,0,1,0], "description": "OH- concentration",  "constant": false}
+    ]
+  },
+  {
+    "name": "pH + pOH = 14 (at 25°C)",
+    "latex": "pH + pOH = 14",
+    "variables": [
+      {"name": "pH",  "unit": [0,0,0,0,0,0,0], "description": "pH",  "constant": false},
+      {"name": "pOH", "unit": [0,0,0,0,0,0,0], "description": "pOH", "constant": false}
+    ]
+  },
+  {
+    "name": "Henderson-Hasselbalch",
+    "latex": "pH = pK_a + \\log(\\frac{A_b}{H_a})",
+    "variables": [
+      {"name": "pH",  "unit": [0,0,0,0,0,0,0],  "description": "pH of buffer",               "constant": false},
+      {"name": "pK_a","unit": [0,0,0,0,0,0,0],  "description": "Acid dissociation constant (p-scale)","constant": false},
+      {"name": "A_b", "unit": [-3,0,0,0,0,1,0], "description": "Concentration of conjugate base","constant": false},
+      {"name": "H_a", "unit": [-3,0,0,0,0,1,0], "description": "Concentration of weak acid",    "constant": false}
+    ]
+  },
+  {
+    "name": "Graham's Law of Effusion",
+    "latex": "\\frac{r_1}{r_2} = \\sqrt{\\frac{M_2}{M_1}}",
+    "variables": [
+      {"name": "r_1", "unit": [1,-1,0,0,0,0,0], "description": "Effusion rate of gas 1","constant": false},
+      {"name": "r_2", "unit": [1,-1,0,0,0,0,0], "description": "Effusion rate of gas 2","constant": false},
+      {"name": "M_1", "unit": [0,0,1,0,0,-1,0], "description": "Molar mass of gas 1",   "constant": false},
+      {"name": "M_2", "unit": [0,0,1,0,0,-1,0], "description": "Molar mass of gas 2",   "constant": false}
+    ]
+  }
 ]

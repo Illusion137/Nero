@@ -21,7 +21,8 @@ const ROOT = path.resolve(__dirname, "..");
 type Constant = [string, string, string, string, string?];
 
 const CONSTANTS: Constant[] = [
-    ["g",         "9.8",                    "\\frac{\\m}{\\s^2}",            "Gravitational acceleration"],
+    ["g",         "9.8",                    "\\frac{\\m}{\\s^2}",             "Gravitational acceleration"],
+    ["G",         "6.6743*10^{-11}",         "\\frac{\\N\\m^2}{\\kg^2}",      "Gravitational constant"],
     ["e",         "2.718281828459",          "1",                             "Euler's number"],
     ["e_c",       "1.602*10^{-19}",          "\\C",                           "Elementary charge"],
     ["e_0",       "8.854187817*10^{-12}",    "\\frac{\\F}{\\m}",              "Electric constant (permittivity of free space)"],

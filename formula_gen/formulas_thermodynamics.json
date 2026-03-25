@@ -1,108 +1,159 @@
 [
-    {
-        "name": "Ideal Gas Law",
-        "latex": "PV = nRT",
-        "variables": [
-            { "name": "P", "unit": [-1, -2, 1, 0, 0, 0, 0], "description": "Pressure", "constant": false },
-            { "name": "V", "unit": [3, 0, 0, 0, 0, 0, 0], "description": "Volume", "constant": false },
-            { "name": "n", "unit": [0, 0, 0, 0, 0, 1, 0], "description": "Amount of substance", "constant": false },
-            { "name": "R", "unit": [2, -2, 1, 0, -1, -1, 0], "description": "Ideal gas constant", "constant": true },
-            { "name": "T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Temperature", "constant": false }
-        ]
-    },
-    {
-        "name": "Heat Transfer",
-        "latex": "Q = mc\\Delta T",
-        "variables": [
-            { "name": "Q", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Heat", "constant": false },
-            { "name": "m", "unit": [0, 0, 1, 0, 0, 0, 0], "description": "Mass", "constant": false },
-            { "name": "c", "unit": [2, -2, 0, 0, -1, 0, 0], "description": "Specific heat capacity", "constant": false },
-            { "name": "\\Delta T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Temperature change", "constant": false }
-        ]
-    },
-    {
-        "name": "Latent Heat",
-        "latex": "Q = mL",
-        "variables": [
-            { "name": "Q", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Heat", "constant": false },
-            { "name": "m", "unit": [0, 0, 1, 0, 0, 0, 0], "description": "Mass", "constant": false },
-            { "name": "L", "unit": [2, -2, 0, 0, 0, 0, 0], "description": "Specific latent heat", "constant": false }
-        ]
-    },
-    {
-        "name": "Linear Thermal Expansion",
-        "latex": "\\Delta L = \\alpha L_0 \\Delta T",
-        "variables": [
-            { "name": "\\Delta L", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Change in length", "constant": false },
-            { "name": "\\alpha", "unit": [0, 0, 0, 0, -1, 0, 0], "description": "Coefficient of linear expansion", "constant": false },
-            { "name": "L_0", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Initial length", "constant": false },
-            { "name": "\\Delta T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Temperature change", "constant": false }
-        ]
-    },
-    {
-        "name": "Fourier's Law of Conduction",
-        "latex": "P = \\frac{kA\\Delta T}{d}",
-        "variables": [
-            { "name": "P", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Power (rate of heat transfer)", "constant": false },
-            { "name": "k", "unit": [1, -3, 1, 0, -1, 0, 0], "description": "Thermal conductivity", "constant": false },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Cross-sectional area", "constant": false },
-            { "name": "\\Delta T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Temperature difference", "constant": false },
-            { "name": "d", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Thickness", "constant": false }
-        ]
-    },
-    {
-        "name": "Stefan-Boltzmann Law",
-        "latex": "P = \\sigma A T^4",
-        "variables": [
-            { "name": "P", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Radiated power", "constant": false },
-            { "name": "\\sigma", "unit": [0, -3, 1, 0, -4, 0, 0], "description": "Stefan-Boltzmann constant", "constant": true },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Surface area", "constant": false },
-            { "name": "T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Absolute temperature", "constant": false }
-        ]
-    },
-    {
-        "name": "First Law of Thermodynamics",
-        "latex": "\\Delta U = Q - W",
-        "variables": [
-            { "name": "\\Delta U", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Change in internal energy", "constant": false },
-            { "name": "Q", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Heat added to system", "constant": false },
-            { "name": "W", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Work done by system", "constant": false }
-        ]
-    },
-    {
-        "name": "Carnot Efficiency",
-        "latex": "\\eta = 1 - \\frac{T_c}{T_h}",
-        "variables": [
-            { "name": "\\eta", "unit": [0, 0, 0, 0, 0, 0, 0], "description": "Carnot efficiency", "constant": false },
-            { "name": "T_c", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Cold reservoir temperature", "constant": false },
-            { "name": "T_h", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Hot reservoir temperature", "constant": false }
-        ]
-    },
-    {
-        "name": "Entropy Change",
-        "latex": "\\Delta S = \\frac{Q}{T}",
-        "variables": [
-            { "name": "\\Delta S", "unit": [2, -2, 1, 0, -1, 0, 0], "description": "Entropy change", "constant": false },
-            { "name": "Q", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Heat transferred", "constant": false },
-            { "name": "T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Absolute temperature", "constant": false }
-        ]
-    },
-    {
-        "name": "Work by Gas (Isobaric)",
-        "latex": "W = P\\Delta V",
-        "variables": [
-            { "name": "W", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Work done by gas", "constant": false },
-            { "name": "P", "unit": [-1, -2, 1, 0, 0, 0, 0], "description": "Pressure", "constant": false },
-            { "name": "\\Delta V", "unit": [3, 0, 0, 0, 0, 0, 0], "description": "Change in volume", "constant": false }
-        ]
-    },
-    {
-        "name": "Boltzmann Average Kinetic Energy",
-        "latex": "KE = \\frac{3}{2}k_B T",
-        "variables": [
-            { "name": "KE", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Average kinetic energy", "constant": false },
-            { "name": "k_B", "unit": [2, -2, 1, 0, -1, 0, 0], "description": "Boltzmann constant", "constant": true },
-            { "name": "T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Absolute temperature", "constant": false }
-        ]
-    }
+  {
+    "name": "Ideal Gas Law",
+    "latex": "P V = n R_g T",
+    "variables": [
+      {"name": "P",   "unit": [-1,-2,1,0,0,0,0],  "description": "Pressure",       "constant": false},
+      {"name": "V",   "unit": [3,0,0,0,0,0,0],    "description": "Volume",         "constant": false},
+      {"name": "n",   "unit": [0,0,0,0,0,1,0],    "description": "Moles of gas",   "constant": false},
+      {"name": "R_g", "unit": [2,-2,1,0,-1,-1,0], "description": "Ideal gas constant","constant": true},
+      {"name": "T",   "unit": [0,0,0,0,1,0,0],    "description": "Temperature",    "constant": false}
+    ]
+  },
+  {
+    "name": "Boyle's Law",
+    "latex": "P_1 V_1 = P_2 V_2",
+    "variables": [
+      {"name": "P_1", "unit": [-1,-2,1,0,0,0,0], "description": "Initial pressure", "constant": false},
+      {"name": "V_1", "unit": [3,0,0,0,0,0,0],   "description": "Initial volume",   "constant": false},
+      {"name": "P_2", "unit": [-1,-2,1,0,0,0,0], "description": "Final pressure",   "constant": false},
+      {"name": "V_2", "unit": [3,0,0,0,0,0,0],   "description": "Final volume",     "constant": false}
+    ]
+  },
+  {
+    "name": "Charles's Law",
+    "latex": "\\frac{V_1}{T_1} = \\frac{V_2}{T_2}",
+    "variables": [
+      {"name": "V_1", "unit": [3,0,0,0,0,0,0],  "description": "Initial volume",     "constant": false},
+      {"name": "T_1", "unit": [0,0,0,0,1,0,0],  "description": "Initial temperature","constant": false},
+      {"name": "V_2", "unit": [3,0,0,0,0,0,0],  "description": "Final volume",       "constant": false},
+      {"name": "T_2", "unit": [0,0,0,0,1,0,0],  "description": "Final temperature",  "constant": false}
+    ]
+  },
+  {
+    "name": "Gay-Lussac's Law",
+    "latex": "\\frac{P_1}{T_1} = \\frac{P_2}{T_2}",
+    "variables": [
+      {"name": "P_1", "unit": [-1,-2,1,0,0,0,0], "description": "Initial pressure",    "constant": false},
+      {"name": "T_1", "unit": [0,0,0,0,1,0,0],   "description": "Initial temperature", "constant": false},
+      {"name": "P_2", "unit": [-1,-2,1,0,0,0,0], "description": "Final pressure",      "constant": false},
+      {"name": "T_2", "unit": [0,0,0,0,1,0,0],   "description": "Final temperature",   "constant": false}
+    ]
+  },
+  {
+    "name": "Combined Gas Law",
+    "latex": "\\frac{P_1 V_1}{T_1} = \\frac{P_2 V_2}{T_2}",
+    "variables": [
+      {"name": "P_1", "unit": [-1,-2,1,0,0,0,0], "description": "Initial pressure",    "constant": false},
+      {"name": "V_1", "unit": [3,0,0,0,0,0,0],   "description": "Initial volume",      "constant": false},
+      {"name": "T_1", "unit": [0,0,0,0,1,0,0],   "description": "Initial temperature", "constant": false},
+      {"name": "P_2", "unit": [-1,-2,1,0,0,0,0], "description": "Final pressure",      "constant": false},
+      {"name": "V_2", "unit": [3,0,0,0,0,0,0],   "description": "Final volume",        "constant": false},
+      {"name": "T_2", "unit": [0,0,0,0,1,0,0],   "description": "Final temperature",   "constant": false}
+    ]
+  },
+  {
+    "name": "Internal Energy (Monatomic Ideal Gas)",
+    "latex": "U = \\frac{3}{2} n R_g T",
+    "variables": [
+      {"name": "U",   "unit": [2,-2,1,0,0,0,0],  "description": "Internal energy",     "constant": false},
+      {"name": "n",   "unit": [0,0,0,0,0,1,0],   "description": "Moles of gas",        "constant": false},
+      {"name": "R_g", "unit": [2,-2,1,0,-1,-1,0],"description": "Ideal gas constant",  "constant": true},
+      {"name": "T",   "unit": [0,0,0,0,1,0,0],   "description": "Temperature",         "constant": false}
+    ]
+  },
+  {
+    "name": "Heat (mass and specific heat)",
+    "latex": "Q = m c_s \\Delta T",
+    "variables": [
+      {"name": "Q",        "unit": [2,-2,1,0,0,0,0],  "description": "Heat transferred",    "constant": false},
+      {"name": "m",        "unit": [0,0,1,0,0,0,0],   "description": "Mass",                "constant": false},
+      {"name": "c_s",      "unit": [2,-2,0,0,-1,0,0], "description": "Specific heat capacity","constant": false},
+      {"name": "\\Delta T","unit": [0,0,0,0,1,0,0],   "description": "Temperature change",   "constant": false}
+    ]
+  },
+  {
+    "name": "Heat (moles and molar heat capacity)",
+    "latex": "Q = n C_m \\Delta T",
+    "variables": [
+      {"name": "Q",        "unit": [2,-2,1,0,0,0,0],  "description": "Heat transferred",     "constant": false},
+      {"name": "n",        "unit": [0,0,0,0,0,1,0],   "description": "Moles",                "constant": false},
+      {"name": "C_m",      "unit": [2,-2,1,0,-1,-1,0],"description": "Molar heat capacity",  "constant": false},
+      {"name": "\\Delta T","unit": [0,0,0,0,1,0,0],   "description": "Temperature change",   "constant": false}
+    ]
+  },
+  {
+    "name": "First Law of Thermodynamics",
+    "latex": "\\Delta U = Q - W",
+    "variables": [
+      {"name": "\\Delta U", "unit": [2,-2,1,0,0,0,0], "description": "Change in internal energy","constant": false},
+      {"name": "Q",         "unit": [2,-2,1,0,0,0,0], "description": "Heat added to system",     "constant": false},
+      {"name": "W",         "unit": [2,-2,1,0,0,0,0], "description": "Work done by system",      "constant": false}
+    ]
+  },
+  {
+    "name": "Work Done by Gas",
+    "latex": "W = P \\Delta V",
+    "variables": [
+      {"name": "W",        "unit": [2,-2,1,0,0,0,0],  "description": "Work done by gas",  "constant": false},
+      {"name": "P",        "unit": [-1,-2,1,0,0,0,0], "description": "Pressure",          "constant": false},
+      {"name": "\\Delta V","unit": [3,0,0,0,0,0,0],   "description": "Volume change",     "constant": false}
+    ]
+  },
+  {
+    "name": "Thermal Efficiency",
+    "latex": "e = \\frac{W}{Q_H}",
+    "variables": [
+      {"name": "e",   "unit": [0,0,0,0,0,0,0],  "description": "Thermal efficiency",       "constant": false},
+      {"name": "W",   "unit": [2,-2,1,0,0,0,0], "description": "Net work output",          "constant": false},
+      {"name": "Q_H", "unit": [2,-2,1,0,0,0,0], "description": "Heat absorbed from hot reservoir","constant": false}
+    ]
+  },
+  {
+    "name": "Carnot Efficiency",
+    "latex": "e_{Carnot} = 1 - \\frac{T_C}{T_H}",
+    "variables": [
+      {"name": "e_{Carnot}", "unit": [0,0,0,0,0,0,0],  "description": "Carnot efficiency",           "constant": false},
+      {"name": "T_C",        "unit": [0,0,0,0,1,0,0],  "description": "Cold reservoir temperature",  "constant": false},
+      {"name": "T_H",        "unit": [0,0,0,0,1,0,0],  "description": "Hot reservoir temperature",   "constant": false}
+    ]
+  },
+  {
+    "name": "Energy Conservation (heat engine)",
+    "latex": "W = Q_H - Q_C",
+    "variables": [
+      {"name": "W",   "unit": [2,-2,1,0,0,0,0], "description": "Net work output",          "constant": false},
+      {"name": "Q_H", "unit": [2,-2,1,0,0,0,0], "description": "Heat absorbed from hot reservoir","constant": false},
+      {"name": "Q_C", "unit": [2,-2,1,0,0,0,0], "description": "Heat rejected to cold reservoir","constant": false}
+    ]
+  },
+  {
+    "name": "Coefficient of Performance (refrigerator)",
+    "latex": "COP = \\frac{Q_C}{W}",
+    "variables": [
+      {"name": "COP", "unit": [0,0,0,0,0,0,0],  "description": "Coefficient of performance","constant": false},
+      {"name": "Q_C", "unit": [2,-2,1,0,0,0,0], "description": "Heat removed from cold reservoir","constant": false},
+      {"name": "W",   "unit": [2,-2,1,0,0,0,0], "description": "Work input",                "constant": false}
+    ]
+  },
+  {
+    "name": "Entropy Change",
+    "latex": "\\Delta S = \\frac{Q}{T}",
+    "variables": [
+      {"name": "\\Delta S", "unit": [2,-2,1,0,-1,0,0], "description": "Entropy change",   "constant": false},
+      {"name": "Q",         "unit": [2,-2,1,0,0,0,0],  "description": "Heat transferred", "constant": false},
+      {"name": "T",         "unit": [0,0,0,0,1,0,0],   "description": "Temperature",      "constant": false}
+    ]
+  },
+  {
+    "name": "Pressure from kinetic theory",
+    "latex": "P = \\frac{n R_g T}{V}",
+    "variables": [
+      {"name": "P",   "unit": [-1,-2,1,0,0,0,0],  "description": "Pressure",           "constant": false},
+      {"name": "n",   "unit": [0,0,0,0,0,1,0],    "description": "Moles of gas",       "constant": false},
+      {"name": "R_g", "unit": [2,-2,1,0,-1,-1,0], "description": "Ideal gas constant", "constant": true},
+      {"name": "T",   "unit": [0,0,0,0,1,0,0],    "description": "Temperature",        "constant": false},
+      {"name": "V",   "unit": [3,0,0,0,0,0,0],    "description": "Volume",             "constant": false}
+    ]
+  }
 ]

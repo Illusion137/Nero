@@ -1,142 +1,86 @@
 [
-    {
-        "name": "Ohm's Law",
-        "latex": "V = IR",
-        "variables": [
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false },
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false },
-            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false }
-        ]
-    },
-    {
-        "name": "Resistance from Resistivity",
-        "latex": "R = \\frac{\\rho L}{A}",
-        "variables": [
-            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false },
-            { "name": "\\rho", "unit": [3, -3, 1, -2, 0, 0, 0], "description": "Resistivity", "constant": false },
-            { "name": "L", "unit": [1, 0, 0, 0, 0, 0, 0], "description": "Length", "constant": false },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Cross-sectional area", "constant": false }
-        ]
-    },
-    {
-        "name": "Current",
-        "latex": "I = \\frac{Q}{t}",
-        "variables": [
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false },
-            { "name": "Q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge", "constant": false },
-            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false }
-        ]
-    },
-    {
-        "name": "Current Density",
-        "latex": "J = \\frac{I}{A}",
-        "variables": [
-            { "name": "J", "unit": [-2, 0, 0, 1, 0, 0, 0], "description": "Current density", "constant": false },
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Cross-sectional area", "constant": false }
-        ]
-    },
-    {
-        "name": "Drift Velocity",
-        "latex": "v_d = \\frac{J}{ne}",
-        "variables": [
-            { "name": "v_d", "unit": [1, -1, 0, 0, 0, 0, 0], "description": "Drift velocity", "constant": false },
-            { "name": "J", "unit": [-2, 0, 0, 1, 0, 0, 0], "description": "Current density", "constant": false },
-            { "name": "n", "unit": [-3, 0, 0, 0, 0, 0, 0], "description": "Number density of charge carriers", "constant": false },
-            { "name": "e", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Elementary charge", "constant": true }
-        ]
-    },
-    {
-        "name": "Electrical Power (IV)",
-        "latex": "P = IV",
-        "variables": [
-            { "name": "P", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Power", "constant": false },
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false },
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false }
-        ]
-    },
-    {
-        "name": "Electrical Power (I²R)",
-        "latex": "P = I^2 R",
-        "variables": [
-            { "name": "P", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Power", "constant": false },
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false },
-            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false }
-        ]
-    },
-    {
-        "name": "Electrical Power (V²/R)",
-        "latex": "P = \\frac{V^2}{R}",
-        "variables": [
-            { "name": "P", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Power", "constant": false },
-            { "name": "V", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Voltage", "constant": false },
-            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance", "constant": false }
-        ]
-    },
-    {
-        "name": "Conductivity",
-        "latex": "\\sigma = \\frac{1}{\\rho}",
-        "variables": [
-            { "name": "\\sigma", "unit": [-3, 3, -1, 2, 0, 0, 0], "description": "Conductivity", "constant": false },
-            { "name": "\\rho", "unit": [3, -3, 1, -2, 0, 0, 0], "description": "Resistivity", "constant": false }
-        ]
-    },
-    {
-        "name": "Temperature Dependence of Resistance",
-        "latex": "R = R_0(1 + \\alpha\\Delta T)",
-        "variables": [
-            { "name": "R", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance at temperature T", "constant": false },
-            { "name": "R_0", "unit": [2, -3, 1, -2, 0, 0, 0], "description": "Resistance at reference temperature", "constant": false },
-            { "name": "\\alpha", "unit": [0, 0, 0, 0, -1, 0, 0], "description": "Temperature coefficient of resistance", "constant": false },
-            { "name": "\\Delta T", "unit": [0, 0, 0, 0, 1, 0, 0], "description": "Temperature change", "constant": false }
-        ]
-    },
-    {
-        "name": "Current Density from Electric Field",
-        "latex": "J = \\sigma E",
-        "variables": [
-            { "name": "J", "unit": [-2, 0, 0, 1, 0, 0, 0], "description": "Current density", "constant": false },
-            { "name": "\\sigma", "unit": [-3, 3, -1, 2, 0, 0, 0], "description": "Conductivity", "constant": false },
-            { "name": "E", "unit": [1, -3, 1, -1, 0, 0, 0], "description": "Electric field", "constant": false }
-        ]
-    },
-    {
-        "name": "Drift Velocity (Direct)",
-        "latex": "v_d = \\frac{I}{nAe}",
-        "variables": [
-            { "name": "v_d", "unit": [1, -1, 0, 0, 0, 0, 0], "description": "Drift velocity", "constant": false },
-            { "name": "I", "unit": [0, 0, 0, 1, 0, 0, 0], "description": "Current", "constant": false },
-            { "name": "n", "unit": [-3, 0, 0, 0, 0, 0, 0], "description": "Number density of charge carriers", "constant": false },
-            { "name": "A", "unit": [2, 0, 0, 0, 0, 0, 0], "description": "Cross-sectional area", "constant": false },
-            { "name": "e", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Elementary charge", "constant": true }
-        ]
-    },
-    {
-        "name": "Energy Dissipated",
-        "latex": "E = Pt",
-        "variables": [
-            { "name": "E", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Energy dissipated", "constant": false },
-            { "name": "P", "unit": [2, -3, 1, 0, 0, 0, 0], "description": "Power", "constant": false },
-            { "name": "t", "unit": [0, 1, 0, 0, 0, 0, 0], "description": "Time", "constant": false }
-        ]
-    },
-    {
-        "name": "EMF as Work per Charge",
-        "latex": "E = \\frac{W}{q}",
-        "variables": [
-            { "name": "E", "unit": [2, -3, 1, -1, 0, 0, 0], "description": "Electromotive force", "constant": false },
-            { "name": "W", "unit": [2, -2, 1, 0, 0, 0, 0], "description": "Work done", "constant": false },
-            { "name": "q", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Charge", "constant": false }
-        ]
-    },
-    {
-        "name": "Current Density from Drift Velocity",
-        "latex": "J = nev_d",
-        "variables": [
-            { "name": "J", "unit": [-2, 0, 0, 1, 0, 0, 0], "description": "Current density", "constant": false },
-            { "name": "n", "unit": [-3, 0, 0, 0, 0, 0, 0], "description": "Number density of charge carriers", "constant": false },
-            { "name": "e", "unit": [0, 1, 0, 1, 0, 0, 0], "description": "Elementary charge", "constant": true },
-            { "name": "v_d", "unit": [1, -1, 0, 0, 0, 0, 0], "description": "Drift velocity", "constant": false }
-        ]
-    }
+  {
+    "name": "Average Current",
+    "latex": "I = \\frac{Q}{t}",
+    "variables": [
+      {"name": "I", "unit": [0,0,0,1,0,0,0],  "description": "Average current","constant": false},
+      {"name": "Q", "unit": [0,1,0,1,0,0,0],  "description": "Charge",         "constant": false},
+      {"name": "t", "unit": [0,1,0,0,0,0,0],  "description": "Time interval",  "constant": false}
+    ]
+  },
+  {
+    "name": "Current Density",
+    "latex": "J = \\frac{I}{A}",
+    "variables": [
+      {"name": "J", "unit": [-2,0,0,1,0,0,0], "description": "Current density","constant": false},
+      {"name": "I", "unit": [0,0,0,1,0,0,0],  "description": "Current",        "constant": false},
+      {"name": "A", "unit": [2,0,0,0,0,0,0],  "description": "Cross-sectional area","constant": false}
+    ]
+  },
+  {
+    "name": "Current Density (drift velocity)",
+    "latex": "J = n q v_d",
+    "variables": [
+      {"name": "J",   "unit": [-2,0,0,1,0,0,0], "description": "Current density",       "constant": false},
+      {"name": "n",   "unit": [-3,0,0,0,0,0,0], "description": "Carrier number density","constant": false},
+      {"name": "q",   "unit": [0,1,0,1,0,0,0],  "description": "Carrier charge",        "constant": false},
+      {"name": "v_d", "unit": [1,-1,0,0,0,0,0], "description": "Drift velocity",        "constant": false}
+    ]
+  },
+  {
+    "name": "Resistance",
+    "latex": "R = \\frac{\\rho_r L}{A}",
+    "variables": [
+      {"name": "R",       "unit": [2,-3,1,-2,0,0,0],  "description": "Resistance",       "constant": false},
+      {"name": "\\rho_r", "unit": [3,-3,1,-2,0,0,0],  "description": "Resistivity",      "constant": false},
+      {"name": "L",       "unit": [1,0,0,0,0,0,0],    "description": "Length of conductor","constant": false},
+      {"name": "A",       "unit": [2,0,0,0,0,0,0],    "description": "Cross-sectional area","constant": false}
+    ]
+  },
+  {
+    "name": "Ohm's Law",
+    "latex": "V = I R",
+    "variables": [
+      {"name": "V", "unit": [2,-3,1,-1,0,0,0],  "description": "Voltage",    "constant": false},
+      {"name": "I", "unit": [0,0,0,1,0,0,0],    "description": "Current",    "constant": false},
+      {"name": "R", "unit": [2,-3,1,-2,0,0,0],  "description": "Resistance", "constant": false}
+    ]
+  },
+  {
+    "name": "Resistivity Temperature Dependence",
+    "latex": "\\rho_r = \\rho_0 (1 + \\alpha \\Delta T)",
+    "variables": [
+      {"name": "\\rho_r", "unit": [3,-3,1,-2,0,0,0],  "description": "Resistivity at temperature T","constant": false},
+      {"name": "\\rho_0", "unit": [3,-3,1,-2,0,0,0],  "description": "Resistivity at reference temp","constant": false},
+      {"name": "\\alpha", "unit": [0,0,0,0,-1,0,0],   "description": "Temperature coefficient",      "constant": false},
+      {"name": "\\Delta T","unit": [0,0,0,0,1,0,0],   "description": "Temperature change",           "constant": false}
+    ]
+  },
+  {
+    "name": "Power (current and voltage)",
+    "latex": "P = I V",
+    "variables": [
+      {"name": "P", "unit": [2,-3,1,0,0,0,0],  "description": "Power dissipated","constant": false},
+      {"name": "I", "unit": [0,0,0,1,0,0,0],   "description": "Current",          "constant": false},
+      {"name": "V", "unit": [2,-3,1,-1,0,0,0], "description": "Voltage",          "constant": false}
+    ]
+  },
+  {
+    "name": "Power (current and resistance)",
+    "latex": "P = I^2 R",
+    "variables": [
+      {"name": "P", "unit": [2,-3,1,0,0,0,0],  "description": "Power dissipated","constant": false},
+      {"name": "I", "unit": [0,0,0,1,0,0,0],   "description": "Current",          "constant": false},
+      {"name": "R", "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",       "constant": false}
+    ]
+  },
+  {
+    "name": "Power (voltage and resistance)",
+    "latex": "P = \\frac{V^2}{R}",
+    "variables": [
+      {"name": "P", "unit": [2,-3,1,0,0,0,0],  "description": "Power dissipated","constant": false},
+      {"name": "V", "unit": [2,-3,1,-1,0,0,0], "description": "Voltage",          "constant": false},
+      {"name": "R", "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",       "constant": false}
+    ]
+  }
 ]

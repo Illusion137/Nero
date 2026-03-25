@@ -64,6 +64,7 @@ const derived_units_map: Record<string, BASE_UNIT> = {
     "H": "DIM_HENRY",
     "L": "DIM_LITER",
     "eV": "DIM_JOULE",
+    "G": "DIM_TESLA"
 } as const;
 
 const units_map: Record<string, BASE_UNIT> = { ...base_units_map, ...derived_units_map };
@@ -98,6 +99,8 @@ const get_unit_case = (unit_name: string, exponent_str: string|number, unit_valu
 for(const [suffix, unit_value] of Object.entries(units_map)){
     for(let [prefix, prefix_exponent] of Object.entries(units_prefixes)) {
         if(suffix === 'g' || suffix === 'L') prefix_exponent -= 3;
+        if(suffix === 'G') prefix_exponent -= 4;
+
         if(suffix === "eV") prefix_exponent -= 19;
         const exponent_str = suffix === "eV" ? (prefix_exponent === 0 ? '1.60218e-19' : prefix_exponent > 0 ? `1.60218e+${prefix_exponent}` : `1.60218e${prefix_exponent}`)
             : (prefix_exponent === 0 ? '1' : prefix_exponent > 0 ? `1e+${prefix_exponent}` : `1e${prefix_exponent}`);
@@ -161,8 +164,7 @@ push_singleton("hour", 60 * 60, "DIM_SECOND");
 push_singleton("day", 60 * 60 * 24, "DIM_SECOND");
 push_singleton("month", 60 * 60 * 24 * 30, "DIM_SECOND");
 push_singleton("year", 60 * 60 * 364, "DIM_SECOND");
-push_singleton("ATM", 101325, "DIM_PASCAL");
-push_singleton("gauss", 1e-4, "DIM_TESLA");
+push_singleton("atm", 101325, "DIM_PASCAL");
 
 let file_str = auto_generated_header;
 file_str += `

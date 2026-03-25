@@ -1,0 +1,348 @@
+[
+  {
+    "name": "Velocity (kinematics)",
+    "latex": "v = v_0 + a t",
+    "variables": [
+      {"name": "v",   "unit": [1,-1,0,0,0,0,0], "description": "Final velocity",   "constant": false},
+      {"name": "v_0", "unit": [1,-1,0,0,0,0,0], "description": "Initial velocity",  "constant": false},
+      {"name": "a",   "unit": [1,-2,0,0,0,0,0], "description": "Acceleration",      "constant": false},
+      {"name": "t",   "unit": [0,1,0,0,0,0,0],  "description": "Time",              "constant": false}
+    ]
+  },
+  {
+    "name": "Displacement (kinematics)",
+    "latex": "\\Delta x = v_0 t + \\frac{1}{2} a t^2",
+    "variables": [
+      {"name": "\\Delta x", "unit": [1,0,0,0,0,0,0],  "description": "Displacement",   "constant": false},
+      {"name": "v_0",       "unit": [1,-1,0,0,0,0,0], "description": "Initial velocity","constant": false},
+      {"name": "t",         "unit": [0,1,0,0,0,0,0],  "description": "Time",            "constant": false},
+      {"name": "a",         "unit": [1,-2,0,0,0,0,0], "description": "Acceleration",    "constant": false}
+    ]
+  },
+  {
+    "name": "Velocity squared (kinematics)",
+    "latex": "v^2 = v_0^2 + 2 a \\Delta x",
+    "variables": [
+      {"name": "v",         "unit": [1,-1,0,0,0,0,0], "description": "Final velocity",  "constant": false},
+      {"name": "v_0",       "unit": [1,-1,0,0,0,0,0], "description": "Initial velocity","constant": false},
+      {"name": "a",         "unit": [1,-2,0,0,0,0,0], "description": "Acceleration",    "constant": false},
+      {"name": "\\Delta x", "unit": [1,0,0,0,0,0,0],  "description": "Displacement",   "constant": false}
+    ]
+  },
+  {
+    "name": "Average velocity displacement",
+    "latex": "\\Delta x = \\frac{v + v_0}{2} t",
+    "variables": [
+      {"name": "\\Delta x", "unit": [1,0,0,0,0,0,0],  "description": "Displacement",    "constant": false},
+      {"name": "v",         "unit": [1,-1,0,0,0,0,0], "description": "Final velocity",  "constant": false},
+      {"name": "v_0",       "unit": [1,-1,0,0,0,0,0], "description": "Initial velocity","constant": false},
+      {"name": "t",         "unit": [0,1,0,0,0,0,0],  "description": "Time",            "constant": false}
+    ]
+  },
+  {
+    "name": "Newton's Second Law",
+    "latex": "F = m a",
+    "variables": [
+      {"name": "F", "unit": [1,-2,1,0,0,0,0], "description": "Net force",   "constant": false},
+      {"name": "m", "unit": [0,0,1,0,0,0,0],  "description": "Mass",        "constant": false},
+      {"name": "a", "unit": [1,-2,0,0,0,0,0], "description": "Acceleration","constant": false}
+    ]
+  },
+  {
+    "name": "Weight",
+    "latex": "W_g = m g",
+    "variables": [
+      {"name": "W_g", "unit": [1,-2,1,0,0,0,0], "description": "Weight (gravitational force)", "constant": false},
+      {"name": "m",   "unit": [0,0,1,0,0,0,0],  "description": "Mass",                         "constant": false},
+      {"name": "g",   "unit": [1,-2,0,0,0,0,0], "description": "Gravitational acceleration",   "constant": true}
+    ]
+  },
+  {
+    "name": "Kinetic Friction",
+    "latex": "f_k = \\mu_k N",
+    "variables": [
+      {"name": "f_k",     "unit": [1,-2,1,0,0,0,0], "description": "Kinetic friction force", "constant": false},
+      {"name": "\\mu_k",  "unit": [0,0,0,0,0,0,0],  "description": "Kinetic friction coefficient", "constant": false},
+      {"name": "N",       "unit": [1,-2,1,0,0,0,0], "description": "Normal force",           "constant": false}
+    ]
+  },
+  {
+    "name": "Static Friction (maximum)",
+    "latex": "f_s = \\mu_s N",
+    "variables": [
+      {"name": "f_s",    "unit": [1,-2,1,0,0,0,0], "description": "Maximum static friction force", "constant": false},
+      {"name": "\\mu_s", "unit": [0,0,0,0,0,0,0],  "description": "Static friction coefficient",   "constant": false},
+      {"name": "N",      "unit": [1,-2,1,0,0,0,0], "description": "Normal force",                  "constant": false}
+    ]
+  },
+  {
+    "name": "Hooke's Law",
+    "latex": "F_s = k_s x",
+    "variables": [
+      {"name": "F_s", "unit": [1,-2,1,0,0,0,0], "description": "Spring (restoring) force","constant": false},
+      {"name": "k_s", "unit": [0,-2,1,0,0,0,0], "description": "Spring constant",          "constant": false},
+      {"name": "x",   "unit": [1,0,0,0,0,0,0],  "description": "Displacement from equilibrium", "constant": false}
+    ]
+  },
+  {
+    "name": "Spring Potential Energy",
+    "latex": "U_s = \\frac{1}{2} k_s x^2",
+    "variables": [
+      {"name": "U_s", "unit": [2,-2,1,0,0,0,0], "description": "Spring potential energy", "constant": false},
+      {"name": "k_s", "unit": [0,-2,1,0,0,0,0], "description": "Spring constant",         "constant": false},
+      {"name": "x",   "unit": [1,0,0,0,0,0,0],  "description": "Displacement from equilibrium","constant": false}
+    ]
+  },
+  {
+    "name": "Work",
+    "latex": "W = F d",
+    "variables": [
+      {"name": "W", "unit": [2,-2,1,0,0,0,0], "description": "Work done",  "constant": false},
+      {"name": "F", "unit": [1,-2,1,0,0,0,0], "description": "Force",      "constant": false},
+      {"name": "d", "unit": [1,0,0,0,0,0,0],  "description": "Displacement","constant": false}
+    ]
+  },
+  {
+    "name": "Work (with angle)",
+    "latex": "W = F d \\cos(\\theta)",
+    "variables": [
+      {"name": "W",       "unit": [2,-2,1,0,0,0,0], "description": "Work done",            "constant": false},
+      {"name": "F",       "unit": [1,-2,1,0,0,0,0], "description": "Applied force",        "constant": false},
+      {"name": "d",       "unit": [1,0,0,0,0,0,0],  "description": "Displacement",         "constant": false},
+      {"name": "\\theta", "unit": [0,0,0,0,0,0,0],  "description": "Angle between F and d","constant": false}
+    ]
+  },
+  {
+    "name": "Kinetic Energy",
+    "latex": "K = \\frac{1}{2} m v^2",
+    "variables": [
+      {"name": "K", "unit": [2,-2,1,0,0,0,0], "description": "Kinetic energy","constant": false},
+      {"name": "m", "unit": [0,0,1,0,0,0,0],  "description": "Mass",           "constant": false},
+      {"name": "v", "unit": [1,-1,0,0,0,0,0], "description": "Speed",          "constant": false}
+    ]
+  },
+  {
+    "name": "Gravitational Potential Energy",
+    "latex": "U_g = m g H",
+    "variables": [
+      {"name": "U_g", "unit": [2,-2,1,0,0,0,0], "description": "Gravitational potential energy","constant": false},
+      {"name": "m",   "unit": [0,0,1,0,0,0,0],  "description": "Mass",                          "constant": false},
+      {"name": "g",   "unit": [1,-2,0,0,0,0,0], "description": "Gravitational acceleration",    "constant": true},
+      {"name": "H",   "unit": [1,0,0,0,0,0,0],  "description": "Height",                        "constant": false}
+    ]
+  },
+  {
+    "name": "Work-Energy Theorem",
+    "latex": "W_{net} = K_f - K_i",
+    "variables": [
+      {"name": "W_{net}", "unit": [2,-2,1,0,0,0,0], "description": "Net work",              "constant": false},
+      {"name": "K_f",     "unit": [2,-2,1,0,0,0,0], "description": "Final kinetic energy",  "constant": false},
+      {"name": "K_i",     "unit": [2,-2,1,0,0,0,0], "description": "Initial kinetic energy","constant": false}
+    ]
+  },
+  {
+    "name": "Power",
+    "latex": "P = \\frac{W}{t}",
+    "variables": [
+      {"name": "P", "unit": [2,-3,1,0,0,0,0], "description": "Power",    "constant": false},
+      {"name": "W", "unit": [2,-2,1,0,0,0,0], "description": "Work done","constant": false},
+      {"name": "t", "unit": [0,1,0,0,0,0,0],  "description": "Time",     "constant": false}
+    ]
+  },
+  {
+    "name": "Power (instantaneous)",
+    "latex": "P = F v",
+    "variables": [
+      {"name": "P", "unit": [2,-3,1,0,0,0,0], "description": "Power",    "constant": false},
+      {"name": "F", "unit": [1,-2,1,0,0,0,0], "description": "Force",    "constant": false},
+      {"name": "v", "unit": [1,-1,0,0,0,0,0], "description": "Velocity", "constant": false}
+    ]
+  },
+  {
+    "name": "Power (with angle)",
+    "latex": "P = F v \\cos(\\theta)",
+    "variables": [
+      {"name": "P",       "unit": [2,-3,1,0,0,0,0], "description": "Power",                  "constant": false},
+      {"name": "F",       "unit": [1,-2,1,0,0,0,0], "description": "Force",                  "constant": false},
+      {"name": "v",       "unit": [1,-1,0,0,0,0,0], "description": "Velocity",               "constant": false},
+      {"name": "\\theta", "unit": [0,0,0,0,0,0,0],  "description": "Angle between F and v",  "constant": false}
+    ]
+  },
+  {
+    "name": "Linear Momentum",
+    "latex": "p = m v",
+    "variables": [
+      {"name": "p", "unit": [1,-1,1,0,0,0,0], "description": "Linear momentum","constant": false},
+      {"name": "m", "unit": [0,0,1,0,0,0,0],  "description": "Mass",            "constant": false},
+      {"name": "v", "unit": [1,-1,0,0,0,0,0], "description": "Velocity",        "constant": false}
+    ]
+  },
+  {
+    "name": "Impulse",
+    "latex": "J = F \\Delta t",
+    "variables": [
+      {"name": "J",        "unit": [1,-1,1,0,0,0,0], "description": "Impulse",            "constant": false},
+      {"name": "F",        "unit": [1,-2,1,0,0,0,0], "description": "Net force",          "constant": false},
+      {"name": "\\Delta t","unit": [0,1,0,0,0,0,0],  "description": "Time interval",      "constant": false}
+    ]
+  },
+  {
+    "name": "Impulse-Momentum Theorem",
+    "latex": "J = \\Delta p",
+    "variables": [
+      {"name": "J",        "unit": [1,-1,1,0,0,0,0], "description": "Impulse",             "constant": false},
+      {"name": "\\Delta p","unit": [1,-1,1,0,0,0,0], "description": "Change in momentum",  "constant": false}
+    ]
+  },
+  {
+    "name": "Universal Gravitation",
+    "latex": "F_g = G \\frac{m_1 m_2}{r^2}",
+    "variables": [
+      {"name": "F_g", "unit": [1,-2,1,0,0,0,0],  "description": "Gravitational force",      "constant": false},
+      {"name": "G",   "unit": [3,-2,-1,0,0,0,0], "description": "Gravitational constant",   "constant": true},
+      {"name": "m_1", "unit": [0,0,1,0,0,0,0],   "description": "Mass of object 1",         "constant": false},
+      {"name": "m_2", "unit": [0,0,1,0,0,0,0],   "description": "Mass of object 2",         "constant": false},
+      {"name": "r",   "unit": [1,0,0,0,0,0,0],   "description": "Distance between centers", "constant": false}
+    ]
+  },
+  {
+    "name": "Surface Gravity",
+    "latex": "g_s = G \\frac{m}{r^2}",
+    "variables": [
+      {"name": "g_s", "unit": [1,-2,0,0,0,0,0],  "description": "Surface gravitational acceleration","constant": false},
+      {"name": "G",   "unit": [3,-2,-1,0,0,0,0], "description": "Gravitational constant",             "constant": true},
+      {"name": "m",   "unit": [0,0,1,0,0,0,0],   "description": "Mass of body",                      "constant": false},
+      {"name": "r",   "unit": [1,0,0,0,0,0,0],   "description": "Radius of body",                    "constant": false}
+    ]
+  },
+  {
+    "name": "Centripetal Acceleration",
+    "latex": "a_c = \\frac{v^2}{r}",
+    "variables": [
+      {"name": "a_c", "unit": [1,-2,0,0,0,0,0], "description": "Centripetal acceleration","constant": false},
+      {"name": "v",   "unit": [1,-1,0,0,0,0,0], "description": "Speed",                   "constant": false},
+      {"name": "r",   "unit": [1,0,0,0,0,0,0],  "description": "Radius of circular path", "constant": false}
+    ]
+  },
+  {
+    "name": "Centripetal Force",
+    "latex": "F_c = \\frac{m v^2}{r}",
+    "variables": [
+      {"name": "F_c", "unit": [1,-2,1,0,0,0,0], "description": "Centripetal force",       "constant": false},
+      {"name": "m",   "unit": [0,0,1,0,0,0,0],  "description": "Mass",                    "constant": false},
+      {"name": "v",   "unit": [1,-1,0,0,0,0,0], "description": "Speed",                   "constant": false},
+      {"name": "r",   "unit": [1,0,0,0,0,0,0],  "description": "Radius of circular path", "constant": false}
+    ]
+  },
+  {
+    "name": "Circular Speed",
+    "latex": "v = \\frac{2 \\pi r}{T}",
+    "variables": [
+      {"name": "v", "unit": [1,-1,0,0,0,0,0], "description": "Orbital speed",     "constant": false},
+      {"name": "r", "unit": [1,0,0,0,0,0,0],  "description": "Radius",            "constant": false},
+      {"name": "T", "unit": [0,1,0,0,0,0,0],  "description": "Period",            "constant": false}
+    ]
+  },
+  {
+    "name": "Period and Frequency",
+    "latex": "f = \\frac{1}{T}",
+    "variables": [
+      {"name": "f", "unit": [0,-1,0,0,0,0,0], "description": "Frequency","constant": false},
+      {"name": "T", "unit": [0,1,0,0,0,0,0],  "description": "Period",   "constant": false}
+    ]
+  },
+  {
+    "name": "Torque",
+    "latex": "\\tau = r F \\sin(\\theta)",
+    "variables": [
+      {"name": "\\tau",   "unit": [2,-2,1,0,0,0,0], "description": "Torque",                       "constant": false},
+      {"name": "r",       "unit": [1,0,0,0,0,0,0],  "description": "Moment arm (distance)",        "constant": false},
+      {"name": "F",       "unit": [1,-2,1,0,0,0,0], "description": "Applied force",               "constant": false},
+      {"name": "\\theta", "unit": [0,0,0,0,0,0,0],  "description": "Angle between r and F",        "constant": false}
+    ]
+  },
+  {
+    "name": "Torque (perpendicular)",
+    "latex": "\\tau = r F",
+    "variables": [
+      {"name": "\\tau", "unit": [2,-2,1,0,0,0,0], "description": "Torque",                     "constant": false},
+      {"name": "r",     "unit": [1,0,0,0,0,0,0],  "description": "Moment arm (distance)",      "constant": false},
+      {"name": "F",     "unit": [1,-2,1,0,0,0,0], "description": "Perpendicular force",        "constant": false}
+    ]
+  },
+  {
+    "name": "Angular Velocity (kinematics)",
+    "latex": "\\omega = \\omega_0 + \\alpha t",
+    "variables": [
+      {"name": "\\omega",   "unit": [0,-1,0,0,0,0,0], "description": "Final angular velocity",  "constant": false},
+      {"name": "\\omega_0", "unit": [0,-1,0,0,0,0,0], "description": "Initial angular velocity","constant": false},
+      {"name": "\\alpha",   "unit": [0,-2,0,0,0,0,0], "description": "Angular acceleration",    "constant": false},
+      {"name": "t",         "unit": [0,1,0,0,0,0,0],  "description": "Time",                    "constant": false}
+    ]
+  },
+  {
+    "name": "Angular Displacement (kinematics)",
+    "latex": "\\theta = \\omega_0 t + \\frac{1}{2} \\alpha t^2",
+    "variables": [
+      {"name": "\\theta",   "unit": [0,0,0,0,0,0,0],  "description": "Angular displacement",   "constant": false},
+      {"name": "\\omega_0", "unit": [0,-1,0,0,0,0,0], "description": "Initial angular velocity","constant": false},
+      {"name": "t",         "unit": [0,1,0,0,0,0,0],  "description": "Time",                   "constant": false},
+      {"name": "\\alpha",   "unit": [0,-2,0,0,0,0,0], "description": "Angular acceleration",   "constant": false}
+    ]
+  },
+  {
+    "name": "Angular velocity squared (kinematics)",
+    "latex": "\\omega^2 = \\omega_0^2 + 2 \\alpha \\theta",
+    "variables": [
+      {"name": "\\omega",   "unit": [0,-1,0,0,0,0,0], "description": "Final angular velocity",  "constant": false},
+      {"name": "\\omega_0", "unit": [0,-1,0,0,0,0,0], "description": "Initial angular velocity","constant": false},
+      {"name": "\\alpha",   "unit": [0,-2,0,0,0,0,0], "description": "Angular acceleration",    "constant": false},
+      {"name": "\\theta",   "unit": [0,0,0,0,0,0,0],  "description": "Angular displacement",    "constant": false}
+    ]
+  },
+  {
+    "name": "Rotational Kinetic Energy",
+    "latex": "K_{rot} = \\frac{1}{2} I \\omega^2",
+    "variables": [
+      {"name": "K_{rot}", "unit": [2,-2,1,0,0,0,0], "description": "Rotational kinetic energy","constant": false},
+      {"name": "I",       "unit": [2,0,1,0,0,0,0],  "description": "Moment of inertia",        "constant": false},
+      {"name": "\\omega", "unit": [0,-1,0,0,0,0,0], "description": "Angular velocity",         "constant": false}
+    ]
+  },
+  {
+    "name": "Angular Momentum",
+    "latex": "L = I \\omega",
+    "variables": [
+      {"name": "L",       "unit": [2,-1,1,0,0,0,0], "description": "Angular momentum", "constant": false},
+      {"name": "I",       "unit": [2,0,1,0,0,0,0],  "description": "Moment of inertia","constant": false},
+      {"name": "\\omega", "unit": [0,-1,0,0,0,0,0], "description": "Angular velocity", "constant": false}
+    ]
+  },
+  {
+    "name": "Newton's Second Law (rotational)",
+    "latex": "\\tau = I \\alpha",
+    "variables": [
+      {"name": "\\tau",   "unit": [2,-2,1,0,0,0,0], "description": "Net torque",         "constant": false},
+      {"name": "I",       "unit": [2,0,1,0,0,0,0],  "description": "Moment of inertia",  "constant": false},
+      {"name": "\\alpha", "unit": [0,-2,0,0,0,0,0], "description": "Angular acceleration","constant": false}
+    ]
+  },
+  {
+    "name": "Linear-Angular Velocity Relation",
+    "latex": "v = \\omega r",
+    "variables": [
+      {"name": "v",       "unit": [1,-1,0,0,0,0,0], "description": "Linear speed",    "constant": false},
+      {"name": "\\omega", "unit": [0,-1,0,0,0,0,0], "description": "Angular velocity","constant": false},
+      {"name": "r",       "unit": [1,0,0,0,0,0,0],  "description": "Radius",          "constant": false}
+    ]
+  },
+  {
+    "name": "Tangential Acceleration",
+    "latex": "a_t = \\alpha r",
+    "variables": [
+      {"name": "a_t",     "unit": [1,-2,0,0,0,0,0], "description": "Tangential acceleration","constant": false},
+      {"name": "\\alpha", "unit": [0,-2,0,0,0,0,0], "description": "Angular acceleration",   "constant": false},
+      {"name": "r",       "unit": [1,0,0,0,0,0,0],  "description": "Radius",                 "constant": false}
+    ]
+  }
+]

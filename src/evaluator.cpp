@@ -37,6 +37,7 @@ nero::Evaluator::Evaluator(){
     std::vector<nero::AssignExpression> const_expressions = {
     // CONSTANTS_GENERATED_START
         {"g", "9.8", "\\frac{\\m}{\\s^2}"},
+        {"G", "6.6743*10^{-11}", "\\frac{\\N\\m^2}{\\kg^2}"},
         {"e", "2.718281828459", "1"},
         {"e_c", "1.602*10^{-19}", "\\C"},
         {"e_0", "8.854187817*10^{-12}", "\\frac{\\F}{\\m}"},
