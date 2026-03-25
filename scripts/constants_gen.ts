@@ -36,7 +36,7 @@ const CONSTANTS: Constant[] = [
     ["m_n",       "1.674927*10^{-27}",       "\\kg",                          "Neutron mass"],
 
     ["R_g",       "8.31446",                 "\\J\\K^{-1}\\mol^{-1}",         "Ideal gas constant"],
-    ["R_a",       "0.0821",                  "\\ATM\\L\\K^{-1}\\mol^{-1}",    "Ideal gas constant (atm units)"],
+    ["R_a",       "0.0821",                  "\\atm\\L\\K^{-1}\\mol^{-1}",    "Ideal gas constant (atm units)"],
     ["C_K",       "273.15",                  "\\K",                           "Celsius->Kelvin offset"],
     ["h",         "6.62607015*10^{-34}",     "\\J\\s",                        "Planck constant"],
     ["a_0",       "5.291772*10^{-11}",       "\\m",                           "Bohr radius"],
