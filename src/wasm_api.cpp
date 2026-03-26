@@ -215,47 +215,59 @@ int nero_get_constant_count() {
 
 JsResult nero_eval(const std::string& value_expr, const std::string& unit_expr) {
     if (!g_eval) return make_error_result("Evaluator not initialized");
+    try {
+        auto results = g_eval->evaluate_expression(
+            {Expression{value_expr, unit_expr}});
 
-    auto results = g_eval->evaluate_expression(
-        {Expression{value_expr, unit_expr}});
+        if (results)
+            return evalue_to_js_result(results.value());
 
-    if (results)
-        return evalue_to_js_result(results.value());
-
-    return make_error_result(results.error());
+        return make_error_result(results.error());
+    } catch (const std::exception& e) {
+        return make_error_result(std::string("internal error: ") + e.what());
+    } catch (...) {
+        return make_error_result("internal error");
+    }
 }
 
 std::vector<JsResult> nero_eval_batch(const std::vector<std::string>& value_exprs,
                                      const std::vector<std::string>& unit_exprs,
                                      const std::vector<std::string>& conversion_unit_exprs) {
     if (!g_eval) return {};
-
-    std::vector<Expression> exprs;
-    exprs.reserve(value_exprs.size());
-    for (size_t i = 0; i < value_exprs.size(); i++) {
-        std::string unit = (i < unit_exprs.size()) ? unit_exprs[i] : "";
-        std::string conv = (i < conversion_unit_exprs.size()) ? conversion_unit_exprs[i] : "";
-        exprs.push_back(Expression{value_exprs[i], unit, conv});
-    }
-
-    auto results = g_eval->evaluate_expression_list(exprs);
-
-    std::vector<JsResult> out;
-    out.reserve(results.size());
-    for (size_t i = 0; i < results.size(); i++) {
-        const auto& r = results[i];
-        if (r) {
-            JsResult jr = evalue_to_js_result(r.value());
-            // Override unit_latex with the conversion unit string if conversion was applied
-            if (i < conversion_unit_exprs.size() && !conversion_unit_exprs[i].empty() && jr.success) {
-                jr.unit_latex = conversion_unit_exprs[i];
-            }
-            out.push_back(std::move(jr));
-        } else {
-            out.push_back(make_error_result(r.error()));
+    try {
+        std::vector<Expression> exprs;
+        exprs.reserve(value_exprs.size());
+        for (size_t i = 0; i < value_exprs.size(); i++) {
+            std::string unit = (i < unit_exprs.size()) ? unit_exprs[i] : "";
+            std::string conv = (i < conversion_unit_exprs.size()) ? conversion_unit_exprs[i] : "";
+            exprs.push_back(Expression{value_exprs[i], unit, conv});
         }
+
+        auto results = g_eval->evaluate_expression_list(exprs);
+
+        std::vector<JsResult> out;
+        out.reserve(results.size());
+        for (size_t i = 0; i < results.size(); i++) {
+            const auto& r = results[i];
+            if (r) {
+                JsResult jr = evalue_to_js_result(r.value());
+                // Override unit_latex with the conversion unit string if conversion was applied
+                if (i < conversion_unit_exprs.size() && !conversion_unit_exprs[i].empty() && jr.success) {
+                    jr.unit_latex = conversion_unit_exprs[i];
+                }
+                out.push_back(std::move(jr));
+            } else {
+                out.push_back(make_error_result(r.error()));
+            }
+        }
+        return out;
+    } catch (const std::exception& e) {
+        std::vector<JsResult> out(value_exprs.size(), make_error_result(std::string("internal error: ") + e.what()));
+        return out;
+    } catch (...) {
+        std::vector<JsResult> out(value_exprs.size(), make_error_result("internal error"));
+        return out;
     }
-    return out;
 }
 
 // ============================================================================

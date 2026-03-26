@@ -1145,6 +1145,93 @@ int main(){
         overall_success &= (sym_passed == sym_total);
     }
 
+    // Bad-lex / malformed-input robustness tests
+    // Every entry must produce an error (not crash). All should gracefully fail.
+    {
+        static const std::vector<std::string> BAD_INPUTS = {
+            // Truncated backslash sequences
+            "\\",
+            "1 + \\",
+            "\\f",
+            "\\fr",
+            "\\fra",
+            // Unterminated environments
+            "\\begin{",
+            "\\begin{}",
+            "\\begin{cases",
+            "\\end{",
+            "\\end{}",
+            // Unterminated operatorname
+            "\\operatorname{",
+            "\\operatorname{}",
+            // Unterminated subscript/curly
+            "x_{",
+            "x_{}",
+            "\\frac{1}{",
+            "\\frac{",
+            // Bad numeric literals
+            "1..2",
+            "..",
+            // Colon at end (used to scan peek_next past boundary)
+            ":",
+            "1 + :",
+            // Underscore at end
+            "_",
+            "x_",
+            // Hat with empty or bad content
+            "\\hat{}",
+            "\\hat{",
+            // Lone operators / unbalanced
+            "+",
+            "* 2",
+            "^2",
+            // Empty operatorname body
+            "\\operatorname{unknown_fn}(1)",
+            // Deeply nested unclosed
+            "((((1+2)",
+            // Very long unrecognized backslash identifier
+            "\\abcdefghijklmnopqrstuvwxyz",
+            // Text with unclosed brace
+            "\\text{hello",
+            // Null-like / whitespace only inputs
+            "   ",
+            "",
+        };
+
+        int bad_passed = 0;
+        nero_println("\n--- Bad-lex robustness tests ---");
+        for (const auto& input : BAD_INPUTS) {
+            nero::Evaluator evaluator{};
+            nero::Expression expr{.value_expr = input};
+            // Must not throw or crash; either an error or a value is acceptable,
+            // but we specifically expect an error for most of these.
+            bool threw = false;
+            bool got_error = false;
+            try {
+                auto result = evaluator.evaluate_expression(expr);
+                got_error = !result.has_value();
+            } catch (...) {
+                threw = true;
+            }
+            if (threw) {
+                overall_success = false;
+                nero_println("\033[31m[FAIL] threw exception for: \"{}\"\033[0m", input);
+            } else {
+                bad_passed++;
+                if (got_error) {
+                    nero_println("\033[0;32m[PASS] error (safe) for: \"{}\"\033[0m", input.empty() ? "<empty>" : input);
+                } else {
+                    nero_println("\033[0;33m[PASS] no-error for: \"{}\"\033[0m", input.empty() ? "<empty>" : input);
+                }
+            }
+        }
+        if (bad_passed == (int)BAD_INPUTS.size()) {
+            nero_println("\033[0;32m[BAD-LEX PASSED] {}\033[0m", bad_passed);
+        } else {
+            nero_println("\033[31m[BAD-LEX FAILED] {} threw\033[0m", (int)BAD_INPUTS.size() - bad_passed);
+        }
+    }
+
     // Quick formula chain check
     {
         std::vector<nero::Expression> ex = {

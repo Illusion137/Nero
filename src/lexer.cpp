@@ -272,7 +272,7 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
         }
     }
     if(remaining_length() >= 4) {
-        switch(*(std::uint32_t*)it) {
+        switch(strint_fn(it, 4)) {
             case strint<"sqrt">(): return advance_with_token(TokenType::BUILTIN_FUNC_SQRT, 4);
             case strint<"ceil">(): return advance_with_token(TokenType::BUILTIN_FUNC_CEIL, 4);
             case strint<"fact">(): return advance_with_token(TokenType::BUILTIN_FUNC_FACT, 4);
@@ -377,7 +377,7 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
         }
     }
     if(remaining_length() >= 2) {
-        switch(*(std::uint16_t*)it) {
+        switch(strint_fn(it, 2)) {
             case strint<"pi">(): return advance_with_token(M_PI, 2);
             case strint<"ln">(): return advance_with_token(TokenType::BUILTIN_FUNC_LN, 2);
             case strint<"pm">(): return advance_with_token(TokenType::PLUS_MINUS, 2);
@@ -430,7 +430,7 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
                 }
             }
             if(write >= 4) {
-                switch(*(std::uint32_t*)buffer.data()) {
+                switch(strint_fn(buffer.data(), 4)) {
                     case strint<"ceil">(): return advance_with_token(TokenType::BUILTIN_FUNC_CEIL, 0);
                     case strint<"fact">(): return advance_with_token(TokenType::BUILTIN_FUNC_FACT, 0);
                     case strint<"unit">(): return advance_with_token(TokenType::BUILTIN_FUNC_UNIT, 0);
@@ -471,7 +471,7 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
                 }
             }
             if(write >= 2) {
-                switch(*(std::uint16_t*)buffer.data()) {
+                switch(strint_fn(buffer.data(), 2)) {
                     case strint<"tr">(): return advance_with_token(TokenType::BUILTIN_FUNC_TRACE, 0);
                     default: break;
                 }
