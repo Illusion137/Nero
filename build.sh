@@ -10,6 +10,9 @@ export CMAKE_BUILD_PARALLEL_LEVEL=8
 # emcmake cmake -B build-wasm -S .
 emcmake cmake -S . -B build-wasm
 cmake --build build-wasm --parallel
+
+cp build-wasm/Nero.d.ts ./Nero.d.ts
+
 rm -f $EVERETT_PATH/public/wasm/Nero.js
 rm -f $EVERETT_PATH/public/wasm/Nero.wasm
 rm -f $EVERETT_PATH/src/nero_wasm_interface.ts

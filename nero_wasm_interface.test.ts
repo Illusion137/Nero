@@ -1,12 +1,27 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { latex_unit_splitter, array_empty } from './nero_wasm_interface.ts';
+import { latex_unit_splitter, array_empty, AUTO_COMMANDS, AUTO_OPERATOR_NAMES } from './nero_wasm_interface.ts';
 
 // ============================================================================
 // array_empty
 // ============================================================================
 
 describe('array_empty', () => {
+    test("AUTO_COMMANDS no duplicates", () => {
+        const auto_commands_set = new Set(AUTO_COMMANDS.split(' '));
+        assert.equal(auto_commands_set.size, AUTO_COMMANDS.split(' ').length);
+    })
+        test("AUTO_OPERATOR_NAMES no duplicates", () => {
+        const auto_operators_set = new Set(AUTO_OPERATOR_NAMES.split(' '));
+        assert.equal(auto_operators_set.size, AUTO_OPERATOR_NAMES.split(' ').length);
+    })
+    test("AUTO_COMMANDS not in AUTO_OPERATOR_NAMES <->", () => {
+        const auto_commands_set = new Set(AUTO_COMMANDS.split(' '));
+        const auto_operators_set = new Set(AUTO_OPERATOR_NAMES.split(' '));
+        const intersection = auto_commands_set.intersection(auto_operators_set);
+        assert.equal(intersection.size, 0);
+    })
+
     test('empty array → true', () => {
         assert.equal(array_empty([]), true);
     });

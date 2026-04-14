@@ -234,13 +234,16 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
     }
     if(remaining_length() >= 6) {
         switch(strint_fn(it, 6)) {
-            case strint<"arcsin">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSIN, 6);
-            case strint<"arccos">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOS, 6);
-            case strint<"arctan">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCTAN, 6);
-            case strint<"median">(): return advance_with_token(TokenType::BUILTIN_FUNC_MEDIAN, 6);
             case strint<"right)">(): return advance_with_token(TokenType::RIGHT_PAREN, 6);
             case strint<"right|">(): return advance_with_token(TokenType::RIGHT_ABSOLUTE_BAR, 6);
             case strint<"right]">(): return advance_with_token(TokenType::RIGHT_BRACKET, 6);
+            case strint<"arcsin">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSIN, 6);
+            case strint<"arccos">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOS, 6);
+            case strint<"arctan">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCTAN, 6);
+            case strint<"arcsec">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSEC, 6);
+            case strint<"arccsc">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCSC, 6);
+            case strint<"arccot">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOT, 6);
+            case strint<"median">(): return advance_with_token(TokenType::BUILTIN_FUNC_MEDIAN, 6);
             default: break;
         }
     }
@@ -248,11 +251,14 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
         switch(strint_fn(it, 5)) {
             case strint<"infty">(): return advance_with_token(INFINITY, 5);
             case strint<"nless">(): return advance_with_token(TokenType::GREATER_EQUAL, 5);
-            case strint<"floor">(): return advance_with_token(TokenType::BUILTIN_FUNC_FLOOR, 5);
-            case strint<"round">(): return advance_with_token(TokenType::BUILTIN_FUNC_ROUND, 5);
-            case strint<"clamp">(): return advance_with_token(TokenType::BUILTIN_FUNC_CLAMP, 5);
             case strint<"cross">(): return advance_with_token(TokenType::BUILTIN_FUNC_CROSS_ARRAY, 5);
             case strint<"times">(): return advance_with_token(TokenType::TIMES, 5);
+            case strint<"floor">(): return advance_with_token(TokenType::BUILTIN_FUNC_FLOOR, 5);
+            case strint<"round">(): return advance_with_token(TokenType::BUILTIN_FUNC_ROUND, 5);
+            case strint<"trace">(): return advance_with_token(TokenType::BUILTIN_FUNC_TRACE, 5);
+            case strint<"FahrC">(): return advance_with_token(TokenType::BUILTIN_FUNC_FAHRC, 5);
+            case strint<"FahrK">(): return advance_with_token(TokenType::BUILTIN_FUNC_FAHRK, 5);
+            case strint<"clamp">(): return advance_with_token(TokenType::BUILTIN_FUNC_CLAMP, 5);
             case strint<"left(">(): return advance_with_token(TokenType::LEFT_PAREN, 5);
             case strint<"left|">(): return advance_with_token(TokenType::LEFT_ABSOLUTE_BAR, 5);
             case strint<"left[">(): return advance_with_token(TokenType::LEFT_BRACKET, 5);
@@ -274,13 +280,17 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
     if(remaining_length() >= 4) {
         switch(strint_fn(it, 4)) {
             case strint<"sqrt">(): return advance_with_token(TokenType::BUILTIN_FUNC_SQRT, 4);
-            case strint<"ceil">(): return advance_with_token(TokenType::BUILTIN_FUNC_CEIL, 4);
-            case strint<"fact">(): return advance_with_token(TokenType::BUILTIN_FUNC_FACT, 4);
             case strint<"frac">(): return advance_with_token(TokenType::FRACTION, 4);
             case strint<"cdot">(): return advance_with_token(TokenType::DOT_PRODUCT, 4);
             case strint<"prod">(): return advance_with_token(TokenType::BUILTIN_FUNC_PROD, 4);
             case strint<"lnot">(): return advance_with_token(TokenType::LOGICAL_NOT, 4);
             case strint<"land">(): return advance_with_token(TokenType::LOGICAL_AND, 4);
+            case strint<"ceil">(): return advance_with_token(TokenType::BUILTIN_FUNC_CEIL, 4);
+            case strint<"fact">(): return advance_with_token(TokenType::BUILTIN_FUNC_FACT, 4);
+            case strint<"unit">(): return advance_with_token(TokenType::BUILTIN_FUNC_UNIT, 4);
+            case strint<"conj">(): return advance_with_token(TokenType::BUILTIN_FUNC_CONJ, 4);
+            case strint<"CelK">(): return advance_with_token(TokenType::BUILTIN_FUNC_CELK, 4);
+            case strint<"CelF">(): return advance_with_token(TokenType::BUILTIN_FUNC_CELF, 4);
             case strint<"sinh">(): return advance_with_token(TokenType::BUILTIN_FUNC_SINH, 4);
             case strint<"cosh">(): return advance_with_token(TokenType::BUILTIN_FUNC_COSH, 4);
             case strint<"tanh">(): return advance_with_token(TokenType::BUILTIN_FUNC_TANH, 4);
@@ -301,7 +311,6 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
                 if(text_content == "otherwise") return {TokenType::TEXT_OTHERWISE, "otherwise"};
                 return {TokenType::IDENTIFIER, text_content};
             }
-            case strint<"conj">(): return advance_with_token(TokenType::BUILTIN_FUNC_CONJ, 4);
             case strint<"Torr">(): {
                 UnitValue uv{1.0L, UnitVector{DIM_PASCAL}};
                 uv.display_unit = "Torr"; uv.display_scale = 1.0L;
@@ -340,18 +349,19 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
             case strint<"abs">(): return advance_with_token(TokenType::BUILTIN_FUNC_ABS, 3);
             case strint<"nCr">(): return advance_with_token(TokenType::BUILTIN_FUNC_NCR, 3);
             case strint<"nPr">(): return advance_with_token(TokenType::BUILTIN_FUNC_NPR, 3);
-            case strint<"log">(): return advance_with_token(TokenType::BUILTIN_FUNC_LOG, 3);
-            case strint<"sum">(): return advance_with_token(TokenType::BUILTIN_FUNC_SUM, 3);
-            case strint<"int">(): return advance_with_token(TokenType::BUILTIN_FUNC_INT, 3);
-            case strint<"min">(): return advance_with_token(TokenType::BUILTIN_FUNC_MIN, 3);
+            case strint<"sig">(): return advance_with_token(TokenType::BUILTIN_FUNC_SIG, 3);
+            case strint<"val">(): return advance_with_token(TokenType::BUILTIN_FUNC_VALUE, 3);
             case strint<"max">(): return advance_with_token(TokenType::BUILTIN_FUNC_MAX, 3);
             case strint<"gcd">(): return advance_with_token(TokenType::BUILTIN_FUNC_GCD, 3);
             case strint<"lcm">(): return advance_with_token(TokenType::BUILTIN_FUNC_LCM, 3);
-            case strint<"sig">(): return advance_with_token(TokenType::BUILTIN_FUNC_SIG, 3);
             case strint<"det">(): return advance_with_token(TokenType::BUILTIN_FUNC_DET, 3);
             case strint<"std">(): return advance_with_token(TokenType::BUILTIN_FUNC_STD, 3);
             case strint<"var">(): return advance_with_token(TokenType::BUILTIN_FUNC_VAR, 3);
             case strint<"dot">(): return advance_with_token(TokenType::BUILTIN_FUNC_DOT_ARRAY, 3);
+            case strint<"ans">(): return Token{TokenType::IDENTIFIER, "ans"};
+            case strint<"log">(): return advance_with_token(TokenType::BUILTIN_FUNC_LOG, 3);
+            case strint<"sum">(): return advance_with_token(TokenType::BUILTIN_FUNC_SUM, 3);
+            case strint<"int">(): return advance_with_token(TokenType::BUILTIN_FUNC_INT, 3);
             case strint<"lor">(): return advance_with_token(TokenType::LOGICAL_OR, 3);
             case strint<"leq">(): return advance_with_token(TokenType::LESS_EQUAL, 3);
             case strint<"geq">(): return advance_with_token(TokenType::GREATER_EQUAL, 3);
@@ -384,6 +394,7 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
             case strint<"mp">(): return advance_with_token(TokenType::MINUS_PLUS, 2);
             case strint<"Re">(): return advance_with_token(TokenType::BUILTIN_FUNC_RE, 2);
             case strint<"Im">(): return advance_with_token(TokenType::BUILTIN_FUNC_IM, 2);
+            case strint<"tr">(): return advance_with_token(TokenType::BUILTIN_FUNC_TRACE, 2);
             case strint<"pH">(): {
                 UnitValue uv{1.0L, UnitVector{DIMENSIONLESS_VEC}};
                 uv.display_unit = "pH"; uv.display_scale = 1.0L;
@@ -414,6 +425,9 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
                     case strint<"arcsec">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSEC, 0);
                     case strint<"arccsc">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCSC, 0);
                     case strint<"arccot">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOT, 0);
+                    case strint<"arcsin">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCSIN, 0);
+                    case strint<"arccos">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCCOS, 0);
+                    case strint<"arctan">(): return advance_with_token(TokenType::BUILTIN_FUNC_ARCTAN, 0);
                     case strint<"median">(): return advance_with_token(TokenType::BUILTIN_FUNC_MEDIAN, 0);
                 }
             }
@@ -455,7 +469,6 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
                     case strint<"nCr">(): return advance_with_token(TokenType::BUILTIN_FUNC_NCR, 0);
                     case strint<"nPr">(): return advance_with_token(TokenType::BUILTIN_FUNC_NPR, 0);
                     case strint<"val">(): return advance_with_token(TokenType::BUILTIN_FUNC_VALUE, 0);
-                    case strint<"min">(): return advance_with_token(TokenType::BUILTIN_FUNC_MIN, 0);
                     case strint<"max">(): return advance_with_token(TokenType::BUILTIN_FUNC_MAX, 0);
                     case strint<"gcd">(): return advance_with_token(TokenType::BUILTIN_FUNC_GCD, 0);
                     case strint<"lcm">(): return advance_with_token(TokenType::BUILTIN_FUNC_LCM, 0);

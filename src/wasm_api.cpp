@@ -55,7 +55,7 @@ static JsResult make_error_result(const std::string& msg) {
 }
 
 static JsResult evalue_to_js_result(const EValue& ev) {
-    JsResult r;
+    JsResult r{};
     r.success = true;
     r.sig_figs = 0;
     r.unit.resize(7, 0);
@@ -192,21 +192,30 @@ bool nero_is_initialized() {
 
 bool nero_set_constant(const std::string& name, const std::string& value_expr, const std::string& unit_expr) {
     if (!g_eval) return false;
-    g_eval->insert_constant(name, Expression{value_expr, unit_expr});
-    return true;
+    try {
+        g_eval->insert_constant(name, Expression{value_expr, unit_expr});
+        return true;
+    } catch (const std::exception&) { return false; }
+      catch (...) { return false; }
 }
 
 bool nero_remove_constant(const std::string& name) {
     if (!g_eval) return false;
-    return g_eval->fixed_constants.erase(name) > 0;
+    try {
+        return g_eval->fixed_constants.erase(name) > 0;
+    } catch (...) { return false; }
 }
 
 void nero_clear_constants() {
-    if (g_eval) g_eval->fixed_constants.clear();
+    if (!g_eval) return;
+    try { g_eval->fixed_constants.clear(); } catch (...) {}
 }
 
 int nero_get_constant_count() {
-    return g_eval ? static_cast<int>(g_eval->fixed_constants.size()) : 0;
+    if (!g_eval) return 0;
+    try {
+        return static_cast<int>(g_eval->fixed_constants.size());
+    } catch (...) { return 0; }
 }
 
 // ============================================================================
@@ -276,42 +285,43 @@ std::vector<JsResult> nero_eval_batch(const std::vector<std::string>& value_expr
 
 std::vector<JsFormula> nero_get_available_formulas(const std::vector<int>& target_unit_vec) {
     if (!g_eval || target_unit_vec.size() != 7) return {};
-
-    UnitVector target;
-    for (int i = 0; i < 7; i++)
-        target.vec[i] = static_cast<int8_t>(target_unit_vec[i]);
-
-    auto formulas = g_eval->get_available_formulas(target, false);
-    std::vector<JsFormula> out;
-    out.reserve(formulas.size());
-    for (const auto& f : formulas)
-        out.push_back(physics_formula_to_js(f));
-    return out;
+    try {
+        UnitVector target;
+        for (int i = 0; i < 7; i++)
+            target.vec[i] = static_cast<int8_t>(target_unit_vec[i]);
+        auto formulas = g_eval->get_available_formulas(target, false);
+        std::vector<JsFormula> out;
+        out.reserve(formulas.size());
+        for (const auto& f : formulas)
+            out.push_back(physics_formula_to_js(f));
+        return out;
+    } catch (...) { return {}; }
 }
 
 std::vector<JsFormula> nero_get_available_formulas_filtered(const std::vector<int>& target_unit_vec) {
     if (!g_eval || target_unit_vec.size() != 7) return {};
-
-    UnitVector target;
-    for (int i = 0; i < 7; i++)
-        target.vec[i] = static_cast<int8_t>(target_unit_vec[i]);
-
-    auto formulas = g_eval->get_available_formulas(target, true);
-    std::vector<JsFormula> out;
-    out.reserve(formulas.size());
-    for (const auto& f : formulas)
-        out.push_back(physics_formula_to_js(f));
-    return out;
+    try {
+        UnitVector target;
+        for (int i = 0; i < 7; i++)
+            target.vec[i] = static_cast<int8_t>(target_unit_vec[i]);
+        auto formulas = g_eval->get_available_formulas(target, true);
+        std::vector<JsFormula> out;
+        out.reserve(formulas.size());
+        for (const auto& f : formulas)
+            out.push_back(physics_formula_to_js(f));
+        return out;
+    } catch (...) { return {}; }
 }
 
 std::vector<JsFormula> nero_get_last_formula_results() {
     if (!g_eval) return {};
-
-    std::vector<JsFormula> out;
-    out.reserve(g_eval->last_formula_results.size());
-    for (const auto& f : g_eval->last_formula_results)
-        out.push_back(physics_formula_to_js(f));
-    return out;
+    try {
+        std::vector<JsFormula> out;
+        out.reserve(g_eval->last_formula_results.size());
+        for (const auto& f : g_eval->last_formula_results)
+            out.push_back(physics_formula_to_js(f));
+        return out;
+    } catch (...) { return {}; }
 }
 
 // ============================================================================
@@ -320,19 +330,25 @@ std::vector<JsFormula> nero_get_last_formula_results() {
 
 val nero_get_variable(const std::string& name) {
     if (!g_eval) return val::null();
-    auto it = g_eval->evaluated_variables.find(name);
-    if (it == g_eval->evaluated_variables.end()) return val::null();
-    if (const auto* uv = std::get_if<nero::UnitValue>(&it->second))
-        return val((double)uv->value);
-    return val::null();
+    try {
+        auto it = g_eval->evaluated_variables.find(name);
+        if (it == g_eval->evaluated_variables.end()) return val::null();
+        if (const auto* uv = std::get_if<nero::UnitValue>(&it->second))
+            return val((double)uv->value);
+        return val::null();
+    } catch (...) { return val::null(); }
 }
 
 void nero_clear_variables() {
-    if (g_eval) g_eval->evaluated_variables.clear();
+    if (!g_eval) return;
+    try { g_eval->evaluated_variables.clear(); } catch (...) {}
 }
 
 int nero_get_variable_count() {
-    return g_eval ? static_cast<int>(g_eval->evaluated_variables.size()) : 0;
+    if (!g_eval) return 0;
+    try {
+        return static_cast<int>(g_eval->evaluated_variables.size());
+    } catch (...) { return 0; }
 }
 
 // ============================================================================
@@ -340,23 +356,29 @@ int nero_get_variable_count() {
 // ============================================================================
 
 std::vector<int> nero_unit_latex_to_unit(const std::string& unit_latex) {
-    auto unit = unit_latex_to_unit(unit_latex);
-    std::vector<int> out(7);
-    for (int i = 0; i < 7; i++)
-        out[i] = unit.vec[i];
-    return out;
+    try {
+        auto unit = unit_latex_to_unit(unit_latex);
+        std::vector<int> out(7);
+        for (int i = 0; i < 7; i++)
+            out[i] = unit.vec[i];
+        return out;
+    } catch (...) { return std::vector<int>(7, 0); }
 }
 
 std::string nero_unit_to_latex(const std::vector<int>& unit_vec) {
     if (unit_vec.size() != 7) return "";
-    UnitVector uv;
-    for (int i = 0; i < 7; i++)
-        uv.vec[i] = static_cast<int8_t>(unit_vec[i]);
-    return unit_to_latex(uv);
+    try {
+        UnitVector uv;
+        for (int i = 0; i < 7; i++)
+            uv.vec[i] = static_cast<int8_t>(unit_vec[i]);
+        return unit_to_latex(uv);
+    } catch (...) { return ""; }
 }
 
 std::string nero_value_to_scientific(double value, int sig_figs) {
-    return value_to_scientific((long double)value, sig_figs);
+    try {
+        return value_to_scientific((long double)value, sig_figs);
+    } catch (...) { return ""; }
 }
 
 std::string nero_version() {

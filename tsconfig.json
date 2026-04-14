@@ -2,6 +2,7 @@
     "lib": ["ESNext"],
     "exclude": ["node_modules"],
     "compilerOptions": {
+        "types": ["node"],
         "strict": true,
         "noImplicitAny": false,
         "noEmitOnError": true,
