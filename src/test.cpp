@@ -620,6 +620,27 @@ int main(){
         {{"x = \\pi/4", "\\frac{d}{dx}(\\cot(x))"}, -2.0},
         // d/dx[csc(x)] at x=pi/2 → -csc(pi/2)·cot(pi/2) = -1·0 = 0
         {{"x = \\pi/2", "\\frac{d}{dx}(\\csc(x))"}, 0.0},
+
+        {{"\\varepsilon=2", "t = 4", "\\Phi _B=-\\varepsilon \\cdot t"}, -8},
+        {{"\\varepsilon=2", "t = 4", "\\Phi_B=-\\varepsilon \\cdot t"}, -8},
+
+        // Greek letter variable names — ensure prefix-matching bugs don't swallow them
+        // \sigma: "sig" prefix must not consume \sigma as \sig builtin
+        {{"\\sigma=5", "\\sigma * 2"}, 10.0},
+        // \Sigma (capital): not affected by sig-prefix bug, verify it works as variable
+        {{"\\Sigma=10", "\\Sigma / 2"}, 5.0},
+        // \varphi, \varpi, \varsigma, \varrho: "var" prefix must not consume them as \var builtin
+        {{"\\varphi=3", "\\varphi + 1"}, 4.0},
+        {{"\\varpi=7", "\\varpi - 4"}, 3.0},
+        {{"\\varsigma=6", "\\varsigma / 2"}, 3.0},
+        {{"\\varrho=4", "\\varrho^2"}, 16.0},
+
+        // Subscript with space: "\Phi _B" and "x _1" must be treated identically to "\Phi_B" / "x_1"
+        {{"x _1 = 5", "x_1 * 2"}, 10.0},
+        {{"\\alpha _0 = 3", "\\alpha_0 + 7"}, 10.0},
+
+        // Verify \sig and \var still work as builtins when not followed by alpha chars
+        {{"\\var([2, 4])"}, 1.0}
     };
 
     nero_println("=== Single Expression Tests ===");

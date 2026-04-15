@@ -233,5 +233,337 @@
       {"name": "L", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",     "constant": false},
       {"name": "C", "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",    "constant": false}
     ]
+  },
+  {
+    "name": "RLC Damped Angular Frequency",
+    "latex": "\\omega' = \\sqrt{\\frac{1}{LC} - \\frac{R^2}{4L^2}}",
+    "variables": [
+      {"name": "\\omega'", "unit": [0,-1,0,0,0,0,0],  "description": "Damped angular frequency", "constant": false},
+      {"name": "L",        "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",               "constant": false},
+      {"name": "C",        "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",              "constant": false},
+      {"name": "R",        "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",               "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Critical Damping Resistance",
+    "latex": "R_{cr} = 2\\sqrt{\\frac{L}{C}}",
+    "variables": [
+      {"name": "R_{cr}", "unit": [2,-3,1,-2,0,0,0], "description": "Critical damping resistance", "constant": false},
+      {"name": "L",      "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                  "constant": false},
+      {"name": "C",      "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",                 "constant": false}
+    ]
+  },
+  {
+    "name": "LC Oscillation Frequency",
+    "latex": "f = \\frac{1}{2\\pi\\sqrt{LC}}",
+    "variables": [
+      {"name": "f", "unit": [0,-1,0,0,0,0,0],  "description": "Oscillation frequency", "constant": false},
+      {"name": "L", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",            "constant": false},
+      {"name": "C", "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",           "constant": false}
+    ]
+  },
+  {
+    "name": "LC Oscillation Period",
+    "latex": "T = 2\\pi\\sqrt{LC}",
+    "variables": [
+      {"name": "T", "unit": [0,1,0,0,0,0,0],   "description": "Oscillation period", "constant": false},
+      {"name": "L", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",         "constant": false},
+      {"name": "C", "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",        "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Charge Amplitude Decay",
+    "latex": "Q_{amp} = Q_0 e^{-Rt/(2L)}",
+    "variables": [
+      {"name": "Q_{amp}", "unit": [0,1,0,1,0,0,0],  "description": "Charge amplitude at time t", "constant": false},
+      {"name": "Q_0",     "unit": [0,1,0,1,0,0,0],  "description": "Initial charge amplitude",   "constant": false},
+      {"name": "R",       "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                "constant": false},
+      {"name": "t",       "unit": [0,1,0,0,0,0,0],  "description": "Time",                       "constant": false},
+      {"name": "L",       "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                "constant": false}
+    ]
+  },
+  {
+    "name": "LC Max Current from Max Charge",
+    "latex": "I_{max} = \\frac{Q_{max}}{\\sqrt{LC}}",
+    "variables": [
+      {"name": "I_{max}", "unit": [0,0,0,1,0,0,0],  "description": "Maximum current",    "constant": false},
+      {"name": "Q_{max}", "unit": [0,1,0,1,0,0,0],  "description": "Maximum charge",     "constant": false},
+      {"name": "L",       "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",        "constant": false},
+      {"name": "C",       "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",       "constant": false}
+    ]
+  },
+  {
+    "name": "LC Charge-Current Energy Relation",
+    "latex": "Q = \\sqrt{Q_{max}^2 - LC I^2}",
+    "variables": [
+      {"name": "Q",       "unit": [0,1,0,1,0,0,0],  "description": "Charge at instant",  "constant": false},
+      {"name": "Q_{max}", "unit": [0,1,0,1,0,0,0],  "description": "Maximum charge",     "constant": false},
+      {"name": "L",       "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",        "constant": false},
+      {"name": "C",       "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",       "constant": false},
+      {"name": "I",       "unit": [0,0,0,1,0,0,0],  "description": "Current at instant", "constant": false}
+    ]
+  },
+  {
+    "name": "Inductor Voltage Drop",
+    "latex": "V_L = L \\frac{di}{dt}",
+    "variables": [
+      {"name": "V_L",      "unit": [2,-3,1,-1,0,0,0], "description": "Voltage across inductor", "constant": false},
+      {"name": "L",        "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",              "constant": false},
+      {"name": "di\\_dt",  "unit": [0,-1,0,1,0,0,0],  "description": "Rate of change of current","constant": false}
+    ]
+  },
+  {
+    "name": "RL Inductor Voltage (KVL)",
+    "latex": "V_L = \\varepsilon - iR",
+    "variables": [
+      {"name": "V_L",          "unit": [2,-3,1,-1,0,0,0], "description": "Voltage across inductor", "constant": false},
+      {"name": "\\varepsilon", "unit": [2,-3,1,-1,0,0,0], "description": "EMF of source",           "constant": false},
+      {"name": "i",            "unit": [0,0,0,1,0,0,0],   "description": "Instantaneous current",   "constant": false},
+      {"name": "R",            "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",              "constant": false}
+    ]
+  },
+  {
+    "name": "RL Instantaneous Rate of Change",
+    "latex": "\\frac{di}{dt} = \\frac{\\varepsilon - iR}{L}",
+    "variables": [
+      {"name": "di\\_dt",      "unit": [0,-1,0,1,0,0,0],  "description": "Rate of change of current", "constant": false},
+      {"name": "\\varepsilon", "unit": [2,-3,1,-1,0,0,0], "description": "EMF of source",             "constant": false},
+      {"name": "i",            "unit": [0,0,0,1,0,0,0],   "description": "Instantaneous current",     "constant": false},
+      {"name": "R",            "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                "constant": false},
+      {"name": "L",            "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                "constant": false}
+    ]
+  },
+  {
+    "name": "RL Initial Rate of Change",
+    "latex": "\\frac{di}{dt}\\bigg|_{t=0} = \\frac{\\varepsilon}{L}",
+    "variables": [
+      {"name": "di\\_dt",      "unit": [0,-1,0,1,0,0,0],  "description": "Initial rate of change of current", "constant": false},
+      {"name": "\\varepsilon", "unit": [2,-3,1,-1,0,0,0], "description": "EMF of source",                    "constant": false},
+      {"name": "L",            "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                       "constant": false}
+    ]
+  },
+  {
+    "name": "Mutual Inductance from Flux Linkage",
+    "latex": "M = \\frac{N_2 \\Phi_{B2}}{I_1}",
+    "variables": [
+      {"name": "M",           "unit": [2,-2,1,-2,0,0,0], "description": "Mutual inductance",               "constant": false},
+      {"name": "N_2",         "unit": [0,0,0,0,0,0,0],   "description": "Number of turns in coil 2",       "constant": false},
+      {"name": "\\Phi_{B2}",  "unit": [2,-2,1,-1,0,0,0], "description": "Flux through each turn of coil 2","constant": false},
+      {"name": "I_1",         "unit": [0,0,0,1,0,0,0],   "description": "Current in coil 1",               "constant": false}
+    ]
+  },
+  {
+    "name": "Mutual Inductance Rate Form",
+    "latex": "\\varepsilon_M = M \\frac{di}{dt}",
+    "variables": [
+      {"name": "\\varepsilon_M", "unit": [2,-3,1,-1,0,0,0], "description": "Mutually induced EMF",           "constant": false},
+      {"name": "M",              "unit": [2,-2,1,-2,0,0,0], "description": "Mutual inductance",              "constant": false},
+      {"name": "di\\_dt",        "unit": [0,-1,0,1,0,0,0],  "description": "Rate of change of current",      "constant": false}
+    ]
+  },
+  {
+    "name": "LC Max Charge from Capacitor Voltage",
+    "latex": "Q_{max} = C V_0",
+    "variables": [
+      {"name": "Q_{max}", "unit": [0,1,0,1,0,0,0],  "description": "Maximum charge on capacitor", "constant": false},
+      {"name": "C",       "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",                "constant": false},
+      {"name": "V_0",     "unit": [2,-3,1,-1,0,0,0], "description": "Initial voltage on capacitor","constant": false}
+    ]
+  },
+  {
+    "name": "LC Total Energy",
+    "latex": "U = \\frac{Q_{max}^2}{2C}",
+    "variables": [
+      {"name": "U",       "unit": [2,-2,1,0,0,0,0],  "description": "Total energy of LC circuit", "constant": false},
+      {"name": "Q_{max}", "unit": [0,1,0,1,0,0,0],   "description": "Maximum charge",             "constant": false},
+      {"name": "C",       "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",                "constant": false}
+    ]
+  },
+  {
+    "name": "Parallel Inductors",
+    "latex": "\\frac{1}{L_p} = \\frac{1}{L_1} + \\frac{1}{L_2}",
+    "variables": [
+      {"name": "L_p", "unit": [2,-2,1,-2,0,0,0], "description": "Total parallel inductance", "constant": false},
+      {"name": "L_1", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance 1",             "constant": false},
+      {"name": "L_2", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance 2",             "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Decay Time Constant",
+    "latex": "\\tau_{RLC} = \\frac{2L}{R}",
+    "variables": [
+      {"name": "\\tau_{RLC}", "unit": [0,1,0,0,0,0,0],  "description": "RLC amplitude decay time constant", "constant": false},
+      {"name": "L",           "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                       "constant": false},
+      {"name": "R",           "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                       "constant": false}
+    ]
+  },
+  {
+    "name": "Bandwidth of RLC Circuit",
+    "latex": "\\Delta \\omega = \\frac{R}{L}",
+    "variables": [
+      {"name": "\\Delta \\omega", "unit": [0,-1,0,0,0,0,0],  "description": "Bandwidth (half-power)",  "constant": false},
+      {"name": "R",               "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",              "constant": false},
+      {"name": "L",               "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",              "constant": false}
+    ]
+  },
+  {
+    "name": "RL Time to Decay to Fraction",
+    "latex": "t = \\tau \\ln\\left(\\frac{I_0}{i}\\right)",
+    "variables": [
+      {"name": "t",    "unit": [0,1,0,0,0,0,0],  "description": "Time for current to decay from I0 to i", "constant": false},
+      {"name": "\\tau","unit": [0,1,0,0,0,0,0],  "description": "RL time constant",                       "constant": false},
+      {"name": "I_0",  "unit": [0,0,0,1,0,0,0],  "description": "Initial current",                        "constant": false},
+      {"name": "i",    "unit": [0,0,0,1,0,0,0],  "description": "Current at time t",                      "constant": false}
+    ]
+  },
+  {
+    "name": "RL Time to Grow to Fraction of Max",
+    "latex": "t = -\\tau \\ln\\left(1 - \\frac{i}{I_0}\\right)",
+    "variables": [
+      {"name": "t",    "unit": [0,1,0,0,0,0,0],  "description": "Time for current to grow to i",    "constant": false},
+      {"name": "\\tau","unit": [0,1,0,0,0,0,0],  "description": "RL time constant",                  "constant": false},
+      {"name": "i",    "unit": [0,0,0,1,0,0,0],  "description": "Current at time t",                 "constant": false},
+      {"name": "I_0",  "unit": [0,0,0,1,0,0,0],  "description": "Maximum (steady-state) current",    "constant": false}
+    ]
+  },
+  {
+    "name": "RL Half-Life (decay to half)",
+    "latex": "t_{1/2} = \\tau \\ln(2)",
+    "variables": [
+      {"name": "t_{1/2}", "unit": [0,1,0,0,0,0,0], "description": "Time for current to decay to half", "constant": false},
+      {"name": "\\tau",   "unit": [0,1,0,0,0,0,0], "description": "RL time constant",                  "constant": false}
+    ]
+  },
+  {
+    "name": "RL Percent Decrease in Current (decay)",
+    "latex": "i = I_0 \\left(1 - \\frac{p}{100}\\right)",
+    "variables": [
+      {"name": "i",   "unit": [0,0,0,1,0,0,0], "description": "Current after p% decrease", "constant": false},
+      {"name": "I_0", "unit": [0,0,0,1,0,0,0], "description": "Initial current",           "constant": false},
+      {"name": "p",   "unit": [0,0,0,0,0,0,0], "description": "Percentage decrease",       "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Percent Decrease in Angular Frequency",
+    "latex": "\\omega' = \\omega_0 \\left(1 - \\frac{p}{100}\\right)",
+    "variables": [
+      {"name": "\\omega'",  "unit": [0,-1,0,0,0,0,0], "description": "Reduced angular frequency",         "constant": false},
+      {"name": "\\omega_0", "unit": [0,-1,0,0,0,0,0], "description": "Undamped resonant angular frequency","constant": false},
+      {"name": "p",         "unit": [0,0,0,0,0,0,0],  "description": "Percentage decrease",               "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Time for Amplitude to Decay to Fraction",
+    "latex": "t = -\\frac{2L}{R} \\ln\\left(\\frac{Q_{amp}}{Q_0}\\right)",
+    "variables": [
+      {"name": "t",        "unit": [0,1,0,0,0,0,0],  "description": "Time for amplitude to reach Q_amp",  "constant": false},
+      {"name": "L",        "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                        "constant": false},
+      {"name": "R",        "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                        "constant": false},
+      {"name": "Q_{amp}",  "unit": [0,1,0,1,0,0,0],  "description": "Charge amplitude at time t",         "constant": false},
+      {"name": "Q_0",      "unit": [0,1,0,1,0,0,0],  "description": "Initial charge amplitude",           "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Time for Amplitude to Decay to Percent",
+    "latex": "t = -\\frac{2L}{R} \\ln\\left(\\frac{p}{100}\\right)",
+    "variables": [
+      {"name": "t", "unit": [0,1,0,0,0,0,0],  "description": "Time for amplitude to decay to p% of initial","constant": false},
+      {"name": "L", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                                   "constant": false},
+      {"name": "R", "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                                   "constant": false},
+      {"name": "p", "unit": [0,0,0,0,0,0,0],  "description": "Percentage of initial amplitude remaining",     "constant": false}
+    ]
+  },
+  {
+    "name": "RL Steady-State Current",
+    "latex": "I_{ss} = \\frac{\\varepsilon}{R}",
+    "variables": [
+      {"name": "I_{ss}",       "unit": [0,0,0,1,0,0,0],   "description": "Steady-state current",    "constant": false},
+      {"name": "\\varepsilon", "unit": [2,-3,1,-1,0,0,0], "description": "EMF of source",           "constant": false},
+      {"name": "R",            "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",              "constant": false}
+    ]
+  },
+  {
+    "name": "RL Current Growth (explicit EMF form)",
+    "latex": "i = \\frac{\\varepsilon}{R} (1 - e^{-t/\\tau})",
+    "variables": [
+      {"name": "i",            "unit": [0,0,0,1,0,0,0],   "description": "Current at time t",    "constant": false},
+      {"name": "\\varepsilon", "unit": [2,-3,1,-1,0,0,0], "description": "Source EMF",           "constant": false},
+      {"name": "R",            "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",           "constant": false},
+      {"name": "t",            "unit": [0,1,0,0,0,0,0],   "description": "Time",                 "constant": false},
+      {"name": "\\tau",        "unit": [0,1,0,0,0,0,0],   "description": "RL time constant",     "constant": false}
+    ]
+  },
+  {
+    "name": "LC Energy Oscillation (charge form)",
+    "latex": "q = Q_{max} \\cos(\\omega t)",
+    "variables": [
+      {"name": "q",         "unit": [0,1,0,1,0,0,0],  "description": "Charge at time t",    "constant": false},
+      {"name": "Q_{max}",   "unit": [0,1,0,1,0,0,0],  "description": "Maximum charge",      "constant": false},
+      {"name": "\\omega",   "unit": [0,-1,0,0,0,0,0], "description": "Angular frequency",   "constant": false},
+      {"name": "t",         "unit": [0,1,0,0,0,0,0],  "description": "Time",                "constant": false}
+    ]
+  },
+  {
+    "name": "LC Current Oscillation",
+    "latex": "i = -I_{max} \\sin(\\omega t)",
+    "variables": [
+      {"name": "i",         "unit": [0,0,0,1,0,0,0],  "description": "Current at time t",  "constant": false},
+      {"name": "I_{max}",   "unit": [0,0,0,1,0,0,0],  "description": "Maximum current",    "constant": false},
+      {"name": "\\omega",   "unit": [0,-1,0,0,0,0,0], "description": "Angular frequency",  "constant": false},
+      {"name": "t",         "unit": [0,1,0,0,0,0,0],  "description": "Time",               "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Damped Charge Oscillation",
+    "latex": "q = Q_0 e^{-Rt/(2L)} \\cos(\\omega' t)",
+    "variables": [
+      {"name": "q",       "unit": [0,1,0,1,0,0,0],  "description": "Charge at time t",        "constant": false},
+      {"name": "Q_0",     "unit": [0,1,0,1,0,0,0],  "description": "Initial charge",           "constant": false},
+      {"name": "R",       "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",              "constant": false},
+      {"name": "t",       "unit": [0,1,0,0,0,0,0],  "description": "Time",                     "constant": false},
+      {"name": "L",       "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",              "constant": false},
+      {"name": "\\omega'","unit": [0,-1,0,0,0,0,0],  "description": "Damped angular frequency", "constant": false}
+    ]
+  },
+  {
+    "name": "RL Energy Growth",
+    "latex": "U_L = \\frac{1}{2} L I_{ss}^2 (1 - e^{-t/\\tau})^2",
+    "variables": [
+      {"name": "U_L",    "unit": [2,-2,1,0,0,0,0],  "description": "Energy stored at time t",       "constant": false},
+      {"name": "L",      "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                    "constant": false},
+      {"name": "I_{ss}", "unit": [0,0,0,1,0,0,0],   "description": "Steady-state current",          "constant": false},
+      {"name": "t",      "unit": [0,1,0,0,0,0,0],   "description": "Time",                          "constant": false},
+      {"name": "\\tau",  "unit": [0,1,0,0,0,0,0],   "description": "RL time constant",              "constant": false}
+    ]
+  },
+  {
+    "name": "RL Time for Energy to Reach Fraction of Max",
+    "latex": "t = -\\frac{\\tau}{2} \\ln\\left(1 - \\sqrt{\\frac{U_L}{U_{max}}}\\right)",
+    "variables": [
+      {"name": "t",       "unit": [0,1,0,0,0,0,0],  "description": "Time for inductor energy to reach U_L", "constant": false},
+      {"name": "\\tau",   "unit": [0,1,0,0,0,0,0],  "description": "RL time constant",                      "constant": false},
+      {"name": "U_L",     "unit": [2,-2,1,0,0,0,0], "description": "Energy at time t",                      "constant": false},
+      {"name": "U_{max}", "unit": [2,-2,1,0,0,0,0], "description": "Maximum stored energy",                 "constant": false}
+    ]
+  },
+  {
+    "name": "LC Total Energy (inductor + capacitor)",
+    "latex": "U = \\frac{1}{2} L I^2 + \\frac{Q^2}{2C}",
+    "variables": [
+      {"name": "U", "unit": [2,-2,1,0,0,0,0],  "description": "Total circuit energy", "constant": false},
+      {"name": "L", "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",           "constant": false},
+      {"name": "I", "unit": [0,0,0,1,0,0,0],   "description": "Current",              "constant": false},
+      {"name": "Q", "unit": [0,1,0,1,0,0,0],   "description": "Charge on capacitor",  "constant": false},
+      {"name": "C", "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",          "constant": false}
+    ]
+  },
+  {
+    "name": "Inductor Thermal Power Dissipation",
+    "latex": "P_{th} = I^2 R",
+    "variables": [
+      {"name": "P_{th}", "unit": [2,-3,1,0,0,0,0],  "description": "Thermal power dissipated in inductor resistance", "constant": false},
+      {"name": "I",      "unit": [0,0,0,1,0,0,0],   "description": "Current through inductor",                        "constant": false},
+      {"name": "R",      "unit": [2,-3,1,-2,0,0,0], "description": "DC resistance of inductor winding",               "constant": false}
+    ]
   }
 ]

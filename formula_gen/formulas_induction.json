@@ -98,5 +98,93 @@
       {"name": "\\omega",    "unit": [0,-1,0,0,0,0,0],  "description": "Angular velocity",  "constant": false},
       {"name": "t",          "unit": [0,1,0,0,0,0,0],   "description": "Time",              "constant": false}
     ]
+  },
+  {
+    "name": "Peak EMF of AC Generator",
+    "latex": "\\varepsilon_{max} = N B A \\omega",
+    "variables": [
+      {"name": "\\varepsilon_{max}", "unit": [2,-3,1,-1,0,0,0], "description": "Peak induced EMF",   "constant": false},
+      {"name": "N",                  "unit": [0,0,0,0,0,0,0],   "description": "Number of turns",    "constant": false},
+      {"name": "B",                  "unit": [0,-2,1,-1,0,0,0], "description": "Magnetic field",     "constant": false},
+      {"name": "A",                  "unit": [2,0,0,0,0,0,0],   "description": "Area of coil",       "constant": false},
+      {"name": "\\omega",            "unit": [0,-1,0,0,0,0,0],  "description": "Angular velocity",   "constant": false}
+    ]
+  },
+  {
+    "name": "Flux Linkage",
+    "latex": "N \\Phi_B = L I",
+    "variables": [
+      {"name": "N",       "unit": [0,0,0,0,0,0,0],   "description": "Number of turns",  "constant": false},
+      {"name": "\\Phi_B", "unit": [2,-2,1,-1,0,0,0], "description": "Magnetic flux",    "constant": false},
+      {"name": "L",       "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",       "constant": false},
+      {"name": "I",       "unit": [0,0,0,1,0,0,0],   "description": "Current",          "constant": false}
+    ]
+  },
+  {
+    "name": "Back-EMF of Motor",
+    "latex": "\\varepsilon_{back} = \\varepsilon - I R",
+    "variables": [
+      {"name": "\\varepsilon_{back}", "unit": [2,-3,1,-1,0,0,0], "description": "Back-EMF of motor",  "constant": false},
+      {"name": "\\varepsilon",        "unit": [2,-3,1,-1,0,0,0], "description": "Applied EMF",        "constant": false},
+      {"name": "I",                   "unit": [0,0,0,1,0,0,0],   "description": "Current",            "constant": false},
+      {"name": "R",                   "unit": [2,-3,1,-2,0,0,0], "description": "Armature resistance","constant": false}
+    ]
+  },
+  {
+    "name": "Motor Power Output",
+    "latex": "P_{mech} = \\varepsilon_{back} I",
+    "variables": [
+      {"name": "P_{mech}",            "unit": [2,-3,1,0,0,0,0],  "description": "Mechanical power output", "constant": false},
+      {"name": "\\varepsilon_{back}", "unit": [2,-3,1,-1,0,0,0], "description": "Back-EMF of motor",       "constant": false},
+      {"name": "I",                   "unit": [0,0,0,1,0,0,0],   "description": "Current",                 "constant": false}
+    ]
+  },
+  {
+    "name": "Transformer Current Ratio",
+    "latex": "\\frac{I_s}{I_p} = \\frac{N_p}{N_s}",
+    "variables": [
+      {"name": "I_s", "unit": [0,0,0,1,0,0,0], "description": "Secondary current",    "constant": false},
+      {"name": "I_p", "unit": [0,0,0,1,0,0,0], "description": "Primary current",      "constant": false},
+      {"name": "N_p", "unit": [0,0,0,0,0,0,0], "description": "Primary number of turns","constant": false},
+      {"name": "N_s", "unit": [0,0,0,0,0,0,0], "description": "Secondary number of turns","constant": false}
+    ]
+  },
+  {
+    "name": "Skin Depth",
+    "latex": "\\delta = \\sqrt{\\frac{\\rho_r}{\\pi f \\mu}}",
+    "variables": [
+      {"name": "\\delta",  "unit": [1,0,0,0,0,0,0],   "description": "Skin depth",              "constant": false},
+      {"name": "\\rho_r",  "unit": [3,-3,1,-2,0,0,0], "description": "Resistivity",             "constant": false},
+      {"name": "f",        "unit": [0,-1,0,0,0,0,0],  "description": "Frequency",               "constant": false},
+      {"name": "\\mu",     "unit": [1,-2,1,-2,0,0,0], "description": "Permeability of medium",  "constant": false}
+    ]
+  },
+  {
+    "name": "Induced EMF from Flux Rate (differential)",
+    "latex": "\\varepsilon = -\\frac{d\\Phi_B}{dt}",
+    "variables": [
+      {"name": "\\varepsilon",  "unit": [2,-3,1,-1,0,0,0], "description": "Induced EMF",                "constant": false},
+      {"name": "d\\Phi_B",     "unit": [2,-2,1,-1,0,0,0], "description": "Change in magnetic flux",     "constant": false},
+      {"name": "dt",            "unit": [0,1,0,0,0,0,0],   "description": "Infinitesimal time interval", "constant": false}
+    ]
+  },
+  {
+    "name": "Lenz's Law (induced current direction)",
+    "latex": "\\varepsilon = -N \\frac{d\\Phi_B}{dt}",
+    "variables": [
+      {"name": "\\varepsilon",  "unit": [2,-3,1,-1,0,0,0], "description": "Induced EMF (opposing flux change)", "constant": false},
+      {"name": "N",             "unit": [0,0,0,0,0,0,0],   "description": "Number of turns",                    "constant": false},
+      {"name": "d\\Phi_B",     "unit": [2,-2,1,-1,0,0,0], "description": "Change in magnetic flux",            "constant": false},
+      {"name": "dt",            "unit": [0,1,0,0,0,0,0],   "description": "Infinitesimal time interval",        "constant": false}
+    ]
+  },
+  {
+    "name": "Total Magnetic Flux Through N Turns",
+    "latex": "\\Phi_{total} = N \\Phi_B",
+    "variables": [
+      {"name": "\\Phi_{total}", "unit": [2,-2,1,-1,0,0,0], "description": "Total flux linkage",    "constant": false},
+      {"name": "N",             "unit": [0,0,0,0,0,0,0],   "description": "Number of turns",       "constant": false},
+      {"name": "\\Phi_B",       "unit": [2,-2,1,-1,0,0,0], "description": "Flux through one turn", "constant": false}
+    ]
   }
 ]

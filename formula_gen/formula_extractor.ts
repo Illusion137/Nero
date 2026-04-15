@@ -12,6 +12,7 @@ import formulas_induction         from "./formulas_induction.json"
 import formulas_inductance        from "./formulas_inductance.json"
 import formulas_thermodynamics    from "./formulas_thermodynamics.json"
 import formulas_chemistry         from "./formulas_chemistry.json"
+import formulas_ac_circuits         from "./formulas_ac_circuits.json"
 
 const formula_list = [
     ...formulas_physics1,
@@ -26,6 +27,7 @@ const formula_list = [
     ...formulas_inductance,
     ...formulas_thermodynamics,
     ...formulas_chemistry,
+    ...formulas_ac_circuits
 ];
 
 // pi and e (Euler) are always mathematical constants — never solve for them

@@ -101,5 +101,95 @@
       {"name": "m",      "unit": [1,0,0,0,0,0,0],    "description": "Distance",            "constant": false},
       {"name": "\\mu_0", "unit": [1,-2,1,-2,0,0,0],  "description": "Vacuum permeability", "constant": true}
     ]
+  },
+  {
+    "name": "Magnetic Field Inside Thick Conductor (Ampere)",
+    "latex": "B = \\frac{\\mu_0 I r}{2 \\pi R^2}",
+    "variables": [
+      {"name": "B",      "unit": [0,-2,1,-1,0,0,0], "description": "Magnetic field at r < R",        "constant": false},
+      {"name": "\\mu_0", "unit": [1,-2,1,-2,0,0,0], "description": "Vacuum permeability",            "constant": true},
+      {"name": "I",      "unit": [0,0,0,1,0,0,0],   "description": "Total current in conductor",     "constant": false},
+      {"name": "r",      "unit": [1,0,0,0,0,0,0],   "description": "Radial distance from axis",      "constant": false},
+      {"name": "R",      "unit": [1,0,0,0,0,0,0],   "description": "Radius of conductor",            "constant": false}
+    ]
+  },
+  {
+    "name": "Displacement Current",
+    "latex": "I_d = e_0 \\frac{\\Delta \\Phi_E}{\\Delta t}",
+    "variables": [
+      {"name": "I_d",              "unit": [0,0,0,1,0,0,0],   "description": "Displacement current",         "constant": false},
+      {"name": "e_0",              "unit": [-3,4,-1,2,0,0,0], "description": "Electric permittivity",        "constant": true},
+      {"name": "\\Delta \\Phi_E",  "unit": [3,-3,1,-1,0,0,0], "description": "Change in electric flux",      "constant": false},
+      {"name": "\\Delta t",        "unit": [0,1,0,0,0,0,0],   "description": "Time interval",                "constant": false}
+    ]
+  },
+  {
+    "name": "Biot-Savart Current Element (magnitude)",
+    "latex": "\\Delta B = \\frac{\\mu_0 I \\Delta l \\sin(\\theta)}{4 \\pi r^2}",
+    "variables": [
+      {"name": "\\Delta B",       "unit": [0,-2,1,-1,0,0,0], "description": "Magnetic field from current element", "constant": false},
+      {"name": "\\mu_0",          "unit": [1,-2,1,-2,0,0,0], "description": "Vacuum permeability",                  "constant": true},
+      {"name": "I",               "unit": [0,0,0,1,0,0,0],   "description": "Current",                             "constant": false},
+      {"name": "\\Delta l",       "unit": [1,0,0,0,0,0,0],   "description": "Length of current element",           "constant": false},
+      {"name": "\\theta",         "unit": [0,0,0,0,0,0,0],   "description": "Angle between dl and r-hat",          "constant": false},
+      {"name": "r",               "unit": [1,0,0,0,0,0,0],   "description": "Distance from element to field point","constant": false}
+    ]
+  },
+  {
+    "name": "Magnetic Field of Finite Straight Wire",
+    "latex": "B = \\frac{\\mu_0 I}{4 \\pi d} (\\sin\\theta_1 + \\sin\\theta_2)",
+    "variables": [
+      {"name": "B",          "unit": [0,-2,1,-1,0,0,0], "description": "Magnetic field at perpendicular distance d", "constant": false},
+      {"name": "\\mu_0",     "unit": [1,-2,1,-2,0,0,0], "description": "Vacuum permeability",                         "constant": true},
+      {"name": "I",          "unit": [0,0,0,1,0,0,0],   "description": "Current in wire",                            "constant": false},
+      {"name": "d",          "unit": [1,0,0,0,0,0,0],   "description": "Perpendicular distance from wire",           "constant": false},
+      {"name": "\\sin\\theta_1", "unit": [0,0,0,0,0,0,0], "description": "sin of angle to near end of wire",        "constant": false},
+      {"name": "\\sin\\theta_2", "unit": [0,0,0,0,0,0,0], "description": "sin of angle to far end of wire",         "constant": false}
+    ]
+  },
+  {
+    "name": "Magnetic Field of Semi-Infinite Straight Wire",
+    "latex": "B = \\frac{\\mu_0 I}{4 \\pi d}",
+    "variables": [
+      {"name": "B",      "unit": [0,-2,1,-1,0,0,0], "description": "Magnetic field at perpendicular distance d", "constant": false},
+      {"name": "\\mu_0", "unit": [1,-2,1,-2,0,0,0], "description": "Vacuum permeability",                         "constant": true},
+      {"name": "I",      "unit": [0,0,0,1,0,0,0],   "description": "Current in wire",                            "constant": false},
+      {"name": "d",      "unit": [1,0,0,0,0,0,0],   "description": "Perpendicular distance from wire end",       "constant": false}
+    ]
+  },
+  {
+    "name": "Magnetic Field of Toroid (N turns)",
+    "latex": "B = \\frac{\\mu_0 N I}{2 \\pi r}",
+    "variables": [
+      {"name": "B",      "unit": [0,-2,1,-1,0,0,0], "description": "Magnetic field inside toroid",  "constant": false},
+      {"name": "\\mu_0", "unit": [1,-2,1,-2,0,0,0], "description": "Vacuum permeability",           "constant": true},
+      {"name": "N",      "unit": [0,0,0,0,0,0,0],   "description": "Total number of turns",         "constant": false},
+      {"name": "I",      "unit": [0,0,0,1,0,0,0],   "description": "Current",                       "constant": false},
+      {"name": "r",      "unit": [1,0,0,0,0,0,0],   "description": "Mean radius of toroid",         "constant": false}
+    ]
+  },
+  {
+    "name": "Ampere-Maxwell Law (enclosed current + displacement)",
+    "latex": "B = \\frac{\\mu_0 (I_{enc} + I_d)}{2 \\pi r}",
+    "variables": [
+      {"name": "B",        "unit": [0,-2,1,-1,0,0,0], "description": "Magnetic field",              "constant": false},
+      {"name": "\\mu_0",   "unit": [1,-2,1,-2,0,0,0], "description": "Vacuum permeability",         "constant": true},
+      {"name": "I_{enc}",  "unit": [0,0,0,1,0,0,0],   "description": "Enclosed conduction current", "constant": false},
+      {"name": "I_d",      "unit": [0,0,0,1,0,0,0],   "description": "Displacement current",        "constant": false},
+      {"name": "r",        "unit": [1,0,0,0,0,0,0],   "description": "Radius of Amperian loop",     "constant": false}
+    ]
+  },
+  {
+    "name": "Magnetic Field Between Capacitor Plates (Ampere-Maxwell)",
+    "latex": "B = \\frac{\\mu_0 e_0}{2 \\pi r} \\frac{\\Delta V}{\\Delta t}  A_d",
+    "variables": [
+      {"name": "B",          "unit": [0,-2,1,-1,0,0,0], "description": "Magnetic field at radius r between plates", "constant": false},
+      {"name": "\\mu_0",     "unit": [1,-2,1,-2,0,0,0], "description": "Vacuum permeability",                        "constant": true},
+      {"name": "e_0",        "unit": [-3,4,-1,2,0,0,0], "description": "Electric permittivity",                      "constant": true},
+      {"name": "r",          "unit": [1,0,0,0,0,0,0],   "description": "Radial distance from axis",                  "constant": false},
+      {"name": "\\Delta V",  "unit": [2,-3,1,-1,0,0,0], "description": "Rate of voltage change numerator",           "constant": false},
+      {"name": "\\Delta t",  "unit": [0,1,0,0,0,0,0],   "description": "Time interval denominator",                  "constant": false},
+      {"name": "A_d",        "unit": [2,0,0,0,0,0,0],   "description": "Area of plates",                             "constant": false}
+    ]
   }
 ]

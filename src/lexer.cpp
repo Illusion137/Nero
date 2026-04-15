@@ -133,6 +133,9 @@ nero::Token nero::Lexer::get_numeric_literal_token() noexcept{
 }
 
 std::int32_t nero::Lexer::collect_subscript(char *buffer, std::size_t size, std::uint8_t &write) noexcept{
+    // Skip optional whitespace before subscript (handles "\Phi _B" same as "\Phi_B")
+    const char *saved = it;
+    while(peek() == ' ') advance();
     if(peek() == '_' && peek_next() == '{') {
         buffer[write++] = '_';
         buffer[write++] = '{';
@@ -152,6 +155,9 @@ std::int32_t nero::Lexer::collect_subscript(char *buffer, std::size_t size, std:
         buffer[write++] = '_';
         buffer[write++] = peek_next();
         advance(2);
+    }
+    else {
+        it = saved; // restore position if no subscript found (undo whitespace skip)
     }
     return 1;
 }
@@ -188,7 +194,7 @@ nero::Token nero::Lexer::get_indentifier_token(std::uint32_t max_length) noexcep
             return {TokenType::BAD_IDENTIFIER, begit};
         }
     }
-    return {TokenType::IDENTIFIER, {begit, it}};
+    return {TokenType::IDENTIFIER, std::string(buffer.data(), write)};
 }
 nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
     advance();
@@ -349,14 +355,20 @@ nero::Token nero::Lexer::get_special_indentifier_token() noexcept{
             case strint<"abs">(): return advance_with_token(TokenType::BUILTIN_FUNC_ABS, 3);
             case strint<"nCr">(): return advance_with_token(TokenType::BUILTIN_FUNC_NCR, 3);
             case strint<"nPr">(): return advance_with_token(TokenType::BUILTIN_FUNC_NPR, 3);
-            case strint<"sig">(): return advance_with_token(TokenType::BUILTIN_FUNC_SIG, 3);
+            case strint<"sig">():
+                if(remaining_length() < 4 || !std::isalpha(it[3]))
+                    return advance_with_token(TokenType::BUILTIN_FUNC_SIG, 3);
+                break;
             case strint<"val">(): return advance_with_token(TokenType::BUILTIN_FUNC_VALUE, 3);
             case strint<"max">(): return advance_with_token(TokenType::BUILTIN_FUNC_MAX, 3);
             case strint<"gcd">(): return advance_with_token(TokenType::BUILTIN_FUNC_GCD, 3);
             case strint<"lcm">(): return advance_with_token(TokenType::BUILTIN_FUNC_LCM, 3);
             case strint<"det">(): return advance_with_token(TokenType::BUILTIN_FUNC_DET, 3);
             case strint<"std">(): return advance_with_token(TokenType::BUILTIN_FUNC_STD, 3);
-            case strint<"var">(): return advance_with_token(TokenType::BUILTIN_FUNC_VAR, 3);
+            case strint<"var">():
+                if(remaining_length() < 4 || !std::isalpha(it[3]))
+                    return advance_with_token(TokenType::BUILTIN_FUNC_VAR, 3);
+                break;
             case strint<"dot">(): return advance_with_token(TokenType::BUILTIN_FUNC_DOT_ARRAY, 3);
             case strint<"ans">(): return Token{TokenType::IDENTIFIER, "ans"};
             case strint<"log">(): return advance_with_token(TokenType::BUILTIN_FUNC_LOG, 3);

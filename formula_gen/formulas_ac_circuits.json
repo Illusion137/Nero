@@ -1,0 +1,215 @@
+[
+  {
+    "name": "RMS Voltage from Peak",
+    "latex": "V_{rms} = \\frac{V_0}{\\sqrt{2}}",
+    "variables": [
+      {"name": "V_{rms}", "unit": [2,-3,1,-1,0,0,0], "description": "RMS voltage",   "constant": false},
+      {"name": "V_0",     "unit": [2,-3,1,-1,0,0,0], "description": "Peak voltage",  "constant": false}
+    ]
+  },
+  {
+    "name": "RMS Current from Peak",
+    "latex": "I_{rms} = \\frac{I_0}{\\sqrt{2}}",
+    "variables": [
+      {"name": "I_{rms}", "unit": [0,0,0,1,0,0,0], "description": "RMS current",   "constant": false},
+      {"name": "I_0",     "unit": [0,0,0,1,0,0,0], "description": "Peak current",  "constant": false}
+    ]
+  },
+  {
+    "name": "Angular Frequency from Frequency",
+    "latex": "\\omega = 2 \\pi f",
+    "variables": [
+      {"name": "\\omega", "unit": [0,-1,0,0,0,0,0], "description": "Angular frequency", "constant": false},
+      {"name": "f",       "unit": [0,-1,0,0,0,0,0], "description": "Frequency",         "constant": false}
+    ]
+  },
+  {
+    "name": "Period from Frequency",
+    "latex": "T = \\frac{1}{f}",
+    "variables": [
+      {"name": "T", "unit": [0,1,0,0,0,0,0],  "description": "Period",    "constant": false},
+      {"name": "f", "unit": [0,-1,0,0,0,0,0], "description": "Frequency", "constant": false}
+    ]
+  },
+  {
+    "name": "AC Ohm's Law (Impedance)",
+    "latex": "V_0 = I_0 Z",
+    "variables": [
+      {"name": "V_0", "unit": [2,-3,1,-1,0,0,0], "description": "Peak voltage",   "constant": false},
+      {"name": "I_0", "unit": [0,0,0,1,0,0,0],   "description": "Peak current",   "constant": false},
+      {"name": "Z",   "unit": [2,-3,1,-2,0,0,0], "description": "Impedance",      "constant": false}
+    ]
+  },
+  {
+    "name": "AC Ohm's Law (RMS)",
+    "latex": "V_{rms} = I_{rms} Z",
+    "variables": [
+      {"name": "V_{rms}", "unit": [2,-3,1,-1,0,0,0], "description": "RMS voltage",  "constant": false},
+      {"name": "I_{rms}", "unit": [0,0,0,1,0,0,0],   "description": "RMS current",  "constant": false},
+      {"name": "Z",       "unit": [2,-3,1,-2,0,0,0], "description": "Impedance",    "constant": false}
+    ]
+  },
+  {
+    "name": "Phase Angle (RLC)",
+    "latex": "\\tan(\\phi) = \\frac{X_L - X_C}{R}",
+    "variables": [
+      {"name": "\\phi", "unit": [0,0,0,0,0,0,0],   "description": "Phase angle (voltage leads current when positive)", "constant": false},
+      {"name": "X_L",   "unit": [2,-3,1,-2,0,0,0], "description": "Inductive reactance",                               "constant": false},
+      {"name": "X_C",   "unit": [2,-3,1,-2,0,0,0], "description": "Capacitive reactance",                              "constant": false},
+      {"name": "R",     "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                                        "constant": false}
+    ]
+  },
+  {
+    "name": "Power Factor",
+    "latex": "PF = \\cos(\\phi) = \\frac{R}{Z}",
+    "variables": [
+      {"name": "PF",    "unit": [0,0,0,0,0,0,0],   "description": "Power factor",  "constant": false},
+      {"name": "R",     "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",    "constant": false},
+      {"name": "Z",     "unit": [2,-3,1,-2,0,0,0], "description": "Impedance",     "constant": false}
+    ]
+  },
+  {
+    "name": "Average AC Power (general)",
+    "latex": "P_{avg} = V_{rms} I_{rms} \\cos(\\phi)",
+    "variables": [
+      {"name": "P_{avg}", "unit": [2,-3,1,0,0,0,0],  "description": "Average power",     "constant": false},
+      {"name": "V_{rms}", "unit": [2,-3,1,-1,0,0,0], "description": "RMS voltage",       "constant": false},
+      {"name": "I_{rms}", "unit": [0,0,0,1,0,0,0],   "description": "RMS current",       "constant": false},
+      {"name": "\\phi",   "unit": [0,0,0,0,0,0,0],   "description": "Phase angle",       "constant": false}
+    ]
+  },
+  {
+    "name": "Average AC Power (resistive)",
+    "latex": "P_{avg} = I_{rms}^2 R",
+    "variables": [
+      {"name": "P_{avg}", "unit": [2,-3,1,0,0,0,0],  "description": "Average power dissipated in resistor","constant": false},
+      {"name": "I_{rms}", "unit": [0,0,0,1,0,0,0],   "description": "RMS current",                         "constant": false},
+      {"name": "R",       "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                          "constant": false}
+    ]
+  },
+  {
+    "name": "Average AC Power (voltage and resistance)",
+    "latex": "P_{avg} = \\frac{V_{rms}^2}{R}",
+    "variables": [
+      {"name": "P_{avg}", "unit": [2,-3,1,0,0,0,0],  "description": "Average power",    "constant": false},
+      {"name": "V_{rms}", "unit": [2,-3,1,-1,0,0,0], "description": "RMS voltage",      "constant": false},
+      {"name": "R",       "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",       "constant": false}
+    ]
+  },
+  {
+    "name": "Apparent Power",
+    "latex": "S = V_{rms} I_{rms}",
+    "variables": [
+      {"name": "S",       "unit": [2,-3,1,0,0,0,0],  "description": "Apparent power (VA)", "constant": false},
+      {"name": "V_{rms}", "unit": [2,-3,1,-1,0,0,0], "description": "RMS voltage",         "constant": false},
+      {"name": "I_{rms}", "unit": [0,0,0,1,0,0,0],   "description": "RMS current",         "constant": false}
+    ]
+  },
+  {
+    "name": "Reactive Power",
+    "latex": "Q_r = V_{rms} I_{rms} \\sin(\\phi)",
+    "variables": [
+      {"name": "Q_r",     "unit": [2,-3,1,0,0,0,0],  "description": "Reactive power (VAR)", "constant": false},
+      {"name": "V_{rms}", "unit": [2,-3,1,-1,0,0,0], "description": "RMS voltage",          "constant": false},
+      {"name": "I_{rms}", "unit": [0,0,0,1,0,0,0],   "description": "RMS current",          "constant": false},
+      {"name": "\\phi",   "unit": [0,0,0,0,0,0,0],   "description": "Phase angle",          "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Half-Power Angular Frequency (upper)",
+    "latex": "\\omega_1 = \\omega_0 + \\frac{R}{2L}",
+    "variables": [
+      {"name": "\\omega_1", "unit": [0,-1,0,0,0,0,0],  "description": "Upper half-power angular frequency", "constant": false},
+      {"name": "\\omega_0", "unit": [0,-1,0,0,0,0,0],  "description": "Resonant angular frequency",         "constant": false},
+      {"name": "R",         "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                         "constant": false},
+      {"name": "L",         "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                         "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Half-Power Angular Frequency (lower)",
+    "latex": "\\omega_2 = \\omega_0 - \\frac{R}{2L}",
+    "variables": [
+      {"name": "\\omega_2", "unit": [0,-1,0,0,0,0,0],  "description": "Lower half-power angular frequency", "constant": false},
+      {"name": "\\omega_0", "unit": [0,-1,0,0,0,0,0],  "description": "Resonant angular frequency",         "constant": false},
+      {"name": "R",         "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                         "constant": false},
+      {"name": "L",         "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                         "constant": false}
+    ]
+  },
+  {
+    "name": "RLC Resonance Condition",
+    "latex": "\\omega_0 = \\frac{1}{\\sqrt{LC}}",
+    "variables": [
+      {"name": "\\omega_0", "unit": [0,-1,0,0,0,0,0],  "description": "Resonant angular frequency", "constant": false},
+      {"name": "L",         "unit": [2,-2,1,-2,0,0,0], "description": "Inductance",                 "constant": false},
+      {"name": "C",         "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance",                "constant": false}
+    ]
+  },
+  {
+    "name": "Series RLC Voltage Across Resistor",
+    "latex": "V_R = I_0 R",
+    "variables": [
+      {"name": "V_R", "unit": [2,-3,1,-1,0,0,0], "description": "Peak voltage across resistor", "constant": false},
+      {"name": "I_0", "unit": [0,0,0,1,0,0,0],   "description": "Peak current",                 "constant": false},
+      {"name": "R",   "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                   "constant": false}
+    ]
+  },
+  {
+    "name": "Series RLC Voltage Across Inductor",
+    "latex": "V_L = I_0 X_L",
+    "variables": [
+      {"name": "V_L", "unit": [2,-3,1,-1,0,0,0], "description": "Peak voltage across inductor",  "constant": false},
+      {"name": "I_0", "unit": [0,0,0,1,0,0,0],   "description": "Peak current",                  "constant": false},
+      {"name": "X_L", "unit": [2,-3,1,-2,0,0,0], "description": "Inductive reactance",           "constant": false}
+    ]
+  },
+  {
+    "name": "Series RLC Voltage Across Capacitor",
+    "latex": "V_C = I_0 X_C",
+    "variables": [
+      {"name": "V_C", "unit": [2,-3,1,-1,0,0,0], "description": "Peak voltage across capacitor", "constant": false},
+      {"name": "I_0", "unit": [0,0,0,1,0,0,0],   "description": "Peak current",                  "constant": false},
+      {"name": "X_C", "unit": [2,-3,1,-2,0,0,0], "description": "Capacitive reactance",          "constant": false}
+    ]
+  },
+  {
+    "name": "Transformer Efficiency",
+    "latex": "\\eta = \\frac{P_{out}}{P_{in}}",
+    "variables": [
+      {"name": "\\eta",   "unit": [0,0,0,0,0,0,0],  "description": "Efficiency (0 to 1)",    "constant": false},
+      {"name": "P_{out}", "unit": [2,-3,1,0,0,0,0], "description": "Output power",           "constant": false},
+      {"name": "P_{in}",  "unit": [2,-3,1,0,0,0,0], "description": "Input power",            "constant": false}
+    ]
+  },
+  {
+    "name": "AC Instantaneous Voltage",
+    "latex": "v = V_0 \\cos(\\omega t)",
+    "variables": [
+      {"name": "v",       "unit": [2,-3,1,-1,0,0,0], "description": "Instantaneous voltage", "constant": false},
+      {"name": "V_0",     "unit": [2,-3,1,-1,0,0,0], "description": "Peak voltage",          "constant": false},
+      {"name": "\\omega", "unit": [0,-1,0,0,0,0,0],  "description": "Angular frequency",     "constant": false},
+      {"name": "t",       "unit": [0,1,0,0,0,0,0],   "description": "Time",                  "constant": false}
+    ]
+  },
+  {
+    "name": "AC Instantaneous Current",
+    "latex": "i = I_0 \\cos(\\omega t - \\phi)",
+    "variables": [
+      {"name": "i",       "unit": [0,0,0,1,0,0,0],  "description": "Instantaneous current",     "constant": false},
+      {"name": "I_0",     "unit": [0,0,0,1,0,0,0],  "description": "Peak current",              "constant": false},
+      {"name": "\\omega", "unit": [0,-1,0,0,0,0,0], "description": "Angular frequency",         "constant": false},
+      {"name": "t",       "unit": [0,1,0,0,0,0,0],  "description": "Time",                      "constant": false},
+      {"name": "\\phi",   "unit": [0,0,0,0,0,0,0],  "description": "Phase angle",               "constant": false}
+    ]
+  },
+  {
+    "name": "Series RLC Peak Current",
+    "latex": "I_0 = \\frac{V_0}{\\sqrt{R^2 + (X_L - X_C)^2}}",
+    "variables": [
+      {"name": "I_0", "unit": [0,0,0,1,0,0,0],   "description": "Peak current",            "constant": false},
+      {"name": "V_0", "unit": [2,-3,1,-1,0,0,0], "description": "Peak voltage",            "constant": false},
+      {"name": "R",   "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",              "constant": false},
+      {"name": "X_L", "unit": [2,-3,1,-2,0,0,0], "description": "Inductive reactance",     "constant": false},
+      {"name": "X_C", "unit": [2,-3,1,-2,0,0,0], "description": "Capacitive reactance",    "constant": false}
+    ]
+  }
+]

@@ -94,5 +94,134 @@
       {"name": "R_2", "unit": [2,-3,1,-2,0,0,0], "description": "Known resistance 2","constant": false},
       {"name": "R_1", "unit": [2,-3,1,-2,0,0,0], "description": "Known resistance 1","constant": false}
     ]
+  },
+  {
+    "name": "RC Charging Current",
+    "latex": "i = \\frac{\\varepsilon}{R} e^{-t/\\tau}",
+    "variables": [
+      {"name": "i",            "unit": [0,0,0,1,0,0,0],   "description": "Current at time t during charging","constant": false},
+      {"name": "\\varepsilon", "unit": [2,-3,1,-1,0,0,0], "description": "EMF of source",                    "constant": false},
+      {"name": "R",            "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                       "constant": false},
+      {"name": "t",            "unit": [0,1,0,0,0,0,0],   "description": "Time",                             "constant": false},
+      {"name": "\\tau",        "unit": [0,1,0,0,0,0,0],   "description": "RC time constant",                 "constant": false}
+    ]
+  },
+  {
+    "name": "RC Discharging Current",
+    "latex": "i = \\frac{V_0}{R} e^{-t/\\tau}",
+    "variables": [
+      {"name": "i",     "unit": [0,0,0,1,0,0,0],   "description": "Current at time t during discharging", "constant": false},
+      {"name": "V_0",   "unit": [2,-3,1,-1,0,0,0], "description": "Initial voltage on capacitor",         "constant": false},
+      {"name": "R",     "unit": [2,-3,1,-2,0,0,0], "description": "Resistance",                           "constant": false},
+      {"name": "t",     "unit": [0,1,0,0,0,0,0],   "description": "Time",                                 "constant": false},
+      {"name": "\\tau", "unit": [0,1,0,0,0,0,0],   "description": "RC time constant",                     "constant": false}
+    ]
+  },
+  {
+    "name": "RC Charging Voltage",
+    "latex": "V_C = \\varepsilon (1 - e^{-t/\\tau})",
+    "variables": [
+      {"name": "V_C",          "unit": [2,-3,1,-1,0,0,0], "description": "Capacitor voltage at time t",   "constant": false},
+      {"name": "\\varepsilon", "unit": [2,-3,1,-1,0,0,0], "description": "Source EMF (final voltage)",    "constant": false},
+      {"name": "t",            "unit": [0,1,0,0,0,0,0],   "description": "Time",                          "constant": false},
+      {"name": "\\tau",        "unit": [0,1,0,0,0,0,0],   "description": "RC time constant",              "constant": false}
+    ]
+  },
+  {
+    "name": "RC Discharging Voltage",
+    "latex": "V_C = V_0 e^{-t/\\tau}",
+    "variables": [
+      {"name": "V_C",   "unit": [2,-3,1,-1,0,0,0], "description": "Capacitor voltage at time t", "constant": false},
+      {"name": "V_0",   "unit": [2,-3,1,-1,0,0,0], "description": "Initial capacitor voltage",   "constant": false},
+      {"name": "t",     "unit": [0,1,0,0,0,0,0],   "description": "Time",                        "constant": false},
+      {"name": "\\tau", "unit": [0,1,0,0,0,0,0],   "description": "RC time constant",            "constant": false}
+    ]
+  },
+  {
+    "name": "Energy Dissipated in Resistor",
+    "latex": "E_d = P t",
+    "variables": [
+      {"name": "E_d", "unit": [2,-2,1,0,0,0,0],  "description": "Energy dissipated", "constant": false},
+      {"name": "P",   "unit": [2,-3,1,0,0,0,0],  "description": "Power",             "constant": false},
+      {"name": "t",   "unit": [0,1,0,0,0,0,0],   "description": "Time",              "constant": false}
+    ]
+  },
+  {
+    "name": "Resistors in Series (three)",
+    "latex": "R_{eq} = R_1 + R_2 + R_3",
+    "variables": [
+      {"name": "R_{eq}", "unit": [2,-3,1,-2,0,0,0], "description": "Equivalent resistance","constant": false},
+      {"name": "R_1",    "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 1",          "constant": false},
+      {"name": "R_2",    "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 2",          "constant": false},
+      {"name": "R_3",    "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 3",          "constant": false}
+    ]
+  },
+  {
+    "name": "Resistors in Parallel (three)",
+    "latex": "\\frac{1}{R_{eq}} = \\frac{1}{R_1} + \\frac{1}{R_2} + \\frac{1}{R_3}",
+    "variables": [
+      {"name": "R_{eq}", "unit": [2,-3,1,-2,0,0,0], "description": "Equivalent resistance","constant": false},
+      {"name": "R_1",    "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 1",          "constant": false},
+      {"name": "R_2",    "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 2",          "constant": false},
+      {"name": "R_3",    "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 3",          "constant": false}
+    ]
+  },
+  {
+    "name": "Capacitors in Series (three)",
+    "latex": "\\frac{1}{C_{eq}} = \\frac{1}{C_1} + \\frac{1}{C_2} + \\frac{1}{C_3}",
+    "variables": [
+      {"name": "C_{eq}", "unit": [-2,4,-1,2,0,0,0], "description": "Equivalent series capacitance","constant": false},
+      {"name": "C_1",    "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance 1",                "constant": false},
+      {"name": "C_2",    "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance 2",                "constant": false},
+      {"name": "C_3",    "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance 3",                "constant": false}
+    ]
+  },
+  {
+    "name": "Capacitors in Parallel (three)",
+    "latex": "C_{eq} = C_1 + C_2 + C_3",
+    "variables": [
+      {"name": "C_{eq}", "unit": [-2,4,-1,2,0,0,0], "description": "Equivalent parallel capacitance","constant": false},
+      {"name": "C_1",    "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance 1",                  "constant": false},
+      {"name": "C_2",    "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance 2",                  "constant": false},
+      {"name": "C_3",    "unit": [-2,4,-1,2,0,0,0], "description": "Capacitance 3",                  "constant": false}
+    ]
+  },
+  {
+    "name": "Current Divider (two resistors)",
+    "latex": "I_1 = I_{total} \\frac{R_2}{R_1 + R_2}",
+    "variables": [
+      {"name": "I_1",      "unit": [0,0,0,1,0,0,0],   "description": "Current through R1",     "constant": false},
+      {"name": "I_{total}","unit": [0,0,0,1,0,0,0],   "description": "Total current",          "constant": false},
+      {"name": "R_1",      "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 1",           "constant": false},
+      {"name": "R_2",      "unit": [2,-3,1,-2,0,0,0], "description": "Resistance 2",           "constant": false}
+    ]
+  },
+  {
+    "name": "RC Half-Life (charge to half)",
+    "latex": "t_{1/2} = \\tau \\ln(2)",
+    "variables": [
+      {"name": "t_{1/2}", "unit": [0,1,0,0,0,0,0], "description": "Time to reach half the maximum charge", "constant": false},
+      {"name": "\\tau",   "unit": [0,1,0,0,0,0,0], "description": "RC time constant",                      "constant": false}
+    ]
+  },
+  {
+    "name": "RC Time to Reach Fraction of Final Value",
+    "latex": "t = -\\tau \\ln\\left(1 - \\frac{q}{Q_0}\\right)",
+    "variables": [
+      {"name": "t",   "unit": [0,1,0,0,0,0,0],  "description": "Time to reach charge q",      "constant": false},
+      {"name": "\\tau","unit": [0,1,0,0,0,0,0],  "description": "RC time constant",            "constant": false},
+      {"name": "q",   "unit": [0,1,0,1,0,0,0],  "description": "Charge at time t",            "constant": false},
+      {"name": "Q_0", "unit": [0,1,0,1,0,0,0],  "description": "Final (maximum) charge",      "constant": false}
+    ]
+  },
+  {
+    "name": "RC Time to Decay to Fraction",
+    "latex": "t = \\tau \\ln\\left(\\frac{Q_0}{q}\\right)",
+    "variables": [
+      {"name": "t",   "unit": [0,1,0,0,0,0,0],  "description": "Time to decay from Q0 to q", "constant": false},
+      {"name": "\\tau","unit": [0,1,0,0,0,0,0],  "description": "RC time constant",           "constant": false},
+      {"name": "Q_0", "unit": [0,1,0,1,0,0,0],  "description": "Initial charge",             "constant": false},
+      {"name": "q",   "unit": [0,1,0,1,0,0,0],  "description": "Charge at time t",           "constant": false}
+    ]
   }
 ]
