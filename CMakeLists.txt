@@ -25,6 +25,7 @@ if(EMSCRIPTEN)
         -sEXPORT_ES6=0
         -sENVIRONMENT=web
         -sALLOW_MEMORY_GROWTH=1
+        -sSTACK_SIZE=5242880
         -sFILESYSTEM=0
         -lembind
         --emit-tsd Nero.d.ts

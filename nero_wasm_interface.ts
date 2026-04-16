@@ -152,7 +152,7 @@ export class DimensionalEvaluator {
             return embindResultToEvalResult(raw);
         } catch (e) {
             this._handle_crash(e);
-            return { success: false, error: "wasm error – evaluator reinitialized" };
+            return { success: false, error: "wasm error - evaluator reinitialized" };
         }
     }
 

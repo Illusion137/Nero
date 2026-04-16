@@ -178,8 +178,9 @@ bool nero_init() {
 }
 
 void nero_destroy() {
-    delete g_eval;
+    Evaluator* tmp = g_eval;
     g_eval = nullptr;
+    delete tmp;
 }
 
 bool nero_is_initialized() {

@@ -640,7 +640,9 @@ int main(){
         {{"\\alpha _0 = 3", "\\alpha_0 + 7"}, 10.0},
 
         // Verify \sig and \var still work as builtins when not followed by alpha chars
-        {{"\\var([2, 4])"}, 1.0}
+        {{"\\var([2, 4])"}, 1.0},
+
+        {{"i=1", "t = 4", "a = 2", "\\tau = 2", "I_0=\\frac{i}{1-e^{\\frac{-ta}{\\tau }}}"}, (double)(1.0L / (1.0L - std::exp(-4.0L)))}
     };
 
     nero_println("=== Single Expression Tests ===");
